@@ -12,17 +12,12 @@
         /* CABEÇALHO */
         header { background: #0b0c10; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
         
-        /* LOGO ES INOVADORA */
-        .logo-container { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; letter-spacing: 1px; color: #e0e0e0; }
-        .logo-es {
-            background: linear-gradient(135deg, #00b4d8 0%, #4a00e0 100%);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 24px;
-            box-shadow: 0 0 15px rgba(74, 0, 224, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* ESTILO DA NOVA LOGO NO CABEÇALHO */
+        .logo-img {
+            height: 75px; 
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
         }
 
         /* BOTÃO CALL TO ACTION (CTA) */
@@ -42,14 +37,37 @@
         }
         .cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
         
-        /* SEÇÃO HERO (Fundo Azul Claro -> Azul Escuro -> Roxo) */
+        /* SEÇÃO HERO COM A LOGO APAGADA NO FUNDO */
         .hero { 
             text-align: center; 
             padding: 100px 5%; 
-            /* O radial-gradient cria o efeito de intensidade do centro para as bordas */
-            background: radial-gradient(circle at center, #00b4d8 0%, #0077b6 35%, #03045e 75%, #2a0066 100%);
+            position: relative; /* Necessário para a marca d'água */
+            background: radial-gradient(circle at center, rgba(0, 180, 216, 0.85) 0%, rgba(0, 119, 182, 0.9) 35%, rgba(3, 4, 94, 0.95) 75%, rgba(42, 0, 102, 1) 100%);
             color: white; 
+            overflow: hidden;
         }
+
+        /* Marca d'água da Logo no fundo da tela */
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-image: url('Elevare Logo.png');
+            background-size: 60%; 
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15; /* Logo apagada */
+            z-index: 0; 
+            pointer-events: none; 
+        }
+
+        /* Garante que o texto e vídeos fiquem POR CIMA da logo */
+        .hero > * { position: relative; z-index: 1; }
+        
         .hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
         
@@ -71,15 +89,17 @@
 </head>
 <body>
 
+    <!-- CABEÇALHO -->
     <header>
         <div class="logo-container">
-            <span class="logo-es">ES</span>
-            Elevare Soluções
+            <!-- Puxando a sua imagem real da logo -->
+            <img src="Elevare Logo.png" alt="Elevare Soluções" class="logo-img">
         </div>
-        <!-- Botão com ID para o JavaScript capturar -->
+        <!-- Botão com classe para o JavaScript capturar -->
         <button class="cta-btn action-bridge">Garantir Meu Acesso</button>
     </header>
 
+    <!-- SEÇÃO HERO (Atenção e Interesse) -->
     <section class="hero">
         <h1>Eleve seu Potencial com a Biblioteca Digital Definitiva</h1>
         <p>Tenha acesso imediato a ferramentas, e-books e treinamentos em vídeo projetados para transformar seus resultados. Assista ao vídeo e descubra a plataforma por dentro.</p>
@@ -91,13 +111,7 @@
         <button class="cta-btn action-bridge">Quero Acessar a Plataforma</button>
     </section>
 
-    <footer>
-        <p>&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
-        <div class="copyright-clause">
-            <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
-            Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela (print screen/gravação) ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
-        </div><!-- ÁREA DE LOGIN -->
-    <<!-- ÁREA DE LOGIN -->
+    <!-- ÁREA DE LOGIN -->
     <section id="login-section" style="padding: 50px 5%; background: #1e293b; color: white; text-align: center;">
         <h2>Acesse sua conta Elevare</h2>
         <p style="margin-bottom: 20px;">Insira seus dados ou use o Google para acessar a plataforma.</p>
@@ -115,7 +129,6 @@
 
             <!-- Novo Botão do Google -->
             <button id="btn-google" style="background: white; color: #333; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <!-- Ícone SVG do Google -->
                 <svg width="20" height="20" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
                     <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
@@ -128,33 +141,21 @@
             <p id="mensagem-erro" style="color: #ef4444; font-size: 14px; display: none;"></p>
         </div>
     </section>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <p>&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
+        <div class="copyright-clause">
+            <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
+            Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela (print screen/gravação) ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
         </div>
-    </section>
     </footer>
 
-    <!-- SCRIPT JS PARA OS BOTÕES (A PONTE PARA A PLATAFORMA) -->
-    <script>
-        // Seleciona todos os botões que têm a classe 'action-bridge'
-        const botoesAcesso = document.querySelectorAll('.action-bridge');
-
-        // Adiciona um evento de clique a cada um deles
-        botoesAcesso.forEach(botao => {
-            botao.addEventListener('click', function(event) {
-                event.preventDefault(); // Evita recarregar a página
-                
-                // Abre a página da plataforma em uma NOVA ABA ('_blank')
-                window.open('plataforma.html', '_blank');
-            });
-        });
-    </script>
-</body>
-</html>
-<script type="module">
-        // 1. Importações do Firebase (Agora inclui GoogleAuthProvider e signInWithPopup)
+    <!-- SCRIPT DO FIREBASE (Precisa ficar dentro do Body) -->
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
-        // 2. Sua configuração
         const firebaseConfig = {
             apiKey: "AIzaSyBibGU7PuuezorXhncVgd6ElHMERprqltk",
             authDomain: "elevare-page-biblioteca.firebaseapp.com",
@@ -164,10 +165,9 @@
             appId: "1:870070120182:web:dc75f4cc8ba694786186d7"
         };
 
-        // 3. Inicializa Firebase e Autenticação
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider(); // Cria o provedor do Google
+        const googleProvider = new GoogleAuthProvider();
 
         // Faz os botões "Garantir Meu Acesso" rolarem até o login
         document.querySelectorAll('.action-bridge').forEach(botao => {
@@ -177,9 +177,7 @@
             });
         });
 
-        // ----------------------------------------------------
         // LÓGICA DE LOGIN COM E-MAIL E SENHA
-        // ----------------------------------------------------
         document.getElementById('btn-entrar').addEventListener('click', () => {
             const email = document.getElementById('email-login').value;
             const senha = document.getElementById('senha-login').value;
@@ -203,26 +201,22 @@
                 });
         });
 
-        // ----------------------------------------------------
         // LÓGICA DE LOGIN COM O GOOGLE
-        // ----------------------------------------------------
         document.getElementById('btn-google').addEventListener('click', () => {
             const msgErro = document.getElementById('mensagem-erro');
             msgErro.style.display = 'none';
 
-            // Abre a janela pop-up do Google
             signInWithPopup(auth, googleProvider)
                 .then((result) => {
-                    // O Google autorizou! Redireciona para a plataforma.
                     const user = result.user;
                     console.log("Logado com Google:", user.displayName);
                     window.location.href = "plataforma.html";
                 }).catch((error) => {
-                    // Usuário fechou a janela ou deu erro
                     console.error("Erro no Google:", error);
                     msgErro.textContent = "Erro ao fazer login com o Google.";
                     msgErro.style.display = 'block';
                 });
         });
     </script>
-    </script>
+</body>
+</html>
