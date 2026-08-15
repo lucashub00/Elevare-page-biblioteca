@@ -1,0 +1,89 @@
+/* ==================================
+   RESET GERAL
+=================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+/* ==================================
+   ESTILOS ESPECÍFICOS: INDEX (Vendas)
+=================================== */
+body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
+
+/* Cabeçalho Index */
+.page-index header { background: #0b0c10; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
+.logo-img { height: 75px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+
+/* Botões Padrão */
+.cta-btn { 
+    background: linear-gradient(90deg, #00b4d8, #0077b6); color: #fff; padding: 12px 28px; 
+    border-radius: 30px; font-weight: bold; text-transform: uppercase; font-size: 14px; 
+    transition: all 0.3s ease; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4); 
+}
+.cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
+
+/* Botão de Teste (Pode ser removido depois) */
+.btn-teste { background: #10b981; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+
+/* Hero Section */
+.hero { 
+    text-align: center; padding: 100px 5%; position: relative; color: white; overflow: hidden;
+    background: radial-gradient(circle at center, rgba(0, 180, 216, 0.85) 0%, rgba(0, 119, 182, 0.9) 35%, rgba(3, 4, 94, 0.95) 75%, rgba(42, 0, 102, 1) 100%);
+}
+.hero::before {
+    content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 100%; height: 100%; background-image: url('Elevare Logo.png'); background-size: 60%; 
+    background-position: center; background-repeat: no-repeat; opacity: 0.15; z-index: 0; pointer-events: none; 
+}
+.hero > * { position: relative; z-index: 1; }
+.hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+.hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
+.video-placeholder { 
+    background: rgba(0, 0, 0, 0.6); width: 100%; max-width: 800px; height: 450px; margin: 0 auto 40px; 
+    display: flex; align-items: center; justify-content: center; color: #fff; border-radius: 12px; 
+    border: 2px solid rgba(0, 180, 216, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+}
+
+/* Área de Login */
+.login-area { padding: 50px 5%; background: #1e293b; color: white; text-align: center; }
+.login-box { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+.login-box input { padding: 12px; border-radius: 6px; border: none; color: #333; outline: none; }
+.divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #94a3b8; font-size: 14px; }
+.divisor hr { flex: 1; border-color: #334155; }
+.btn-google { 
+    background: white; color: #333; padding: 12px; border-radius: 6px; border: none; font-weight: bold; 
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
+}
+.msg-erro { color: #ef4444; font-size: 14px; display: none; margin-top: 10px; font-weight: bold; }
+
+/* Rodapé */
+footer { background: #0b0c10; color: #888; text-align: center; padding: 40px 5%; font-size: 0.9rem; }
+.copyright-clause { border: 1px solid #333; padding: 20px; margin-top: 20px; background: #111; color: #ccc; text-align: left; border-radius: 8px; font-size: 0.85rem; }
+.copyright-clause strong { color: #e63946; }
+
+
+/* ==================================
+   ESTILOS ESPECÍFICOS: PLATAFORMA
+=================================== */
+body.page-plataforma { display: flex; height: 100vh; background-color: #0f172a; color: #f1f5f9; user-select: none; }
+
+/* Barra Lateral */
+.sidebar { width: 280px; background: #1e293b; padding: 20px; border-right: 1px solid #334155; display: flex; flex-direction: column; overflow-y: auto; }
+.logo-es { background: linear-gradient(135deg, #00b4d8 0%, #4a00e0 100%); color: #fff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 20px; display: inline-block; margin-bottom: 20px; }
+.module-title { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 20px; font-weight: bold; }
+.aula-item { padding: 12px; background: #0f172a; margin-bottom: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; color: #cbd5e1; }
+.aula-item:hover, .aula-item.active { background: #38bdf8; color: #0f172a; font-weight: bold; }
+
+/* Perfil Lateral (NOVO) */
+.user-profile { display: flex; align-items: center; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid #334155; }
+.profile-img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #00b4d8; display: none; object-fit: cover; }
+.profile-info { display: flex; flex-direction: column; }
+#user-nome { font-size: 14px; font-weight: bold; color: #fff; }
+#btn-sair { font-size: 12px; color: #ef4444; background: none; border: none; cursor: pointer; text-align: left; margin-top: 4px; }
+#btn-sair:hover { text-decoration: underline; }
+
+/* Área de Conteúdo */
+.main-content { flex: 1; padding: 40px; overflow-y: auto; }
+.main-content h1 { font-size: 24px; margin-bottom: 10px; color: #fff; }
+.main-content p { color: #94a3b8; margin-bottom: 20px; }
+.video-player { width: 100%; max-width: 900px; height: 500px; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #555; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; }
+.download-btn { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+.download-btn:hover { background: #059669; }
