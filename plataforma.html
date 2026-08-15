@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevare Soluções - Área de Membros</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Impede que o usuário selecione texto na área de membros (Anti-cópia) */
+        body { display: flex; height: 100vh; background-color: #0f172a; color: #f1f5f9; user-select: none; }
+        
+        /* BARRA LATERAL (MENU DOS MÓDULOS) */
+        .sidebar { width: 280px; background: #1e293b; padding: 20px; border-right: 1px solid #334155; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        .logo-es {
+            background: linear-gradient(135deg, #00b4d8 0%, #4a00e0 100%); color: #fff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 20px; display: inline-block; margin-bottom: 30px;
+        }
+
+        .module-title { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 20px; }
+        
+        .aula-item { padding: 12px; background: #0f172a; margin-bottom: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; color: #cbd5e1; }
+        .aula-item:hover, .aula-item.active { background: #38bdf8; color: #0f172a; font-weight: bold; }
+
+        /* ÁREA PRINCIPAL DO CONTEÚDO */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .main-content h1 { font-size: 24px; margin-bottom: 10px; color: #fff; }
+        .main-content p { color: #94a3b8; margin-bottom: 20px; }
+
+        /* PLAYER DE VÍDEO FAKE */
+        .video-player { width: 100%; max-width: 900px; height: 500px; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #555; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; }
+
+        /* BOTÃO DE DOWNLOAD (PARA OS EBOOKS) */
+        .download-btn { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .download-btn:hover { background: #059669; }
+
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <div class="sidebar">
+        <div>
+            <span class="logo-es">ES</span>
+            <span style="font-weight: bold; margin-left: 5px;">Elevare</span>
+        </div>
+
+        <div class="module-title">Módulo 1: Boas Vindas</div>
+        <div class="aula-item active">1. Como usar a biblioteca</div>
+        <div class="aula-item">2. Regras e Direitos Autorais</div>
+
+        <div class="module-title">Módulo 2: E-books Premium</div>
+        <div class="aula-item">1. Guia de Produtividade</div>
+        <div class="aula-item">2. Estratégias de Venda</div>
+
+        <div class="module-title">Módulo 3: Cursos (Vídeos)</div>
+        <div class="aula-item">1. Fundamentos do Negócio</div>
+        <div class="aula-item">2. Escalando Resultados</div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-content">
+        <h1>1. Como usar a biblioteca (Boas Vindas)</h1>
+        <p>Assista ao vídeo abaixo para entender como navegar pelos módulos e baixar seus materiais.</p>
+
+        <!-- ESPAÇO DO VÍDEO -->
+        <div class="video-player">
+            [ Player de Vídeo Seguro (Ex: Vimeo com bloqueio de domínio) ]
+        </div>
+
+        <button class="download-btn">
+            ↓ Baixar Material de Apoio (PDF)
+        </button>
+    </div>
+
+    <!-- SCRIPT DE SEGURANÇA BÁSICA -->
+    <script>
+        // 1. Bloqueia o clique com o botão direito (evita "Salvar vídeo como...")
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('Aviso de Segurança: O download ou cópia não autorizada deste conteúdo é proibido pelos termos de uso da Elevare Soluções.');
+        });
+
+        // 2. Bloqueia atalhos comuns de teclado como F12 (Inspecionar Elemento), Ctrl+S, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.key === 's') || 
+               (e.ctrlKey && e.key === 'u') || 
+               (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                alert('Ação bloqueada por motivos de segurança e direitos autorais.');
+            }
+        });
+    </script>
+</body>
+</html>

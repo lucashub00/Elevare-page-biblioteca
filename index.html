@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevare Soluções - A Biblioteca Digital Definitiva</title>
+    <style>
+        /* RESET E FONTES */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; line-height: 1.6; }
+        
+        /* CABEÇALHO */
+        header { background: #0b0c10; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* LOGO ES INOVADORA */
+        .logo-container { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; letter-spacing: 1px; color: #e0e0e0; }
+        .logo-es {
+            background: linear-gradient(135deg, #00b4d8 0%, #4a00e0 100%);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 24px;
+            box-shadow: 0 0 15px rgba(74, 0, 224, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* BOTÃO CALL TO ACTION (CTA) */
+        .cta-btn { 
+            background: linear-gradient(90deg, #00b4d8, #0077b6); 
+            color: #fff; 
+            padding: 12px 28px; 
+            text-decoration: none; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: all 0.3s ease; 
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
+        }
+        .cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
+        
+        /* SEÇÃO HERO (Fundo Azul Claro -> Azul Escuro -> Roxo) */
+        .hero { 
+            text-align: center; 
+            padding: 100px 5%; 
+            /* O radial-gradient cria o efeito de intensidade do centro para as bordas */
+            background: radial-gradient(circle at center, #00b4d8 0%, #0077b6 35%, #03045e 75%, #2a0066 100%);
+            color: white; 
+        }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
+        
+        .video-placeholder { 
+            background: rgba(0, 0, 0, 0.6); 
+            width: 100%; max-width: 800px; height: 450px; 
+            margin: 0 auto 40px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: #fff; border-radius: 12px; 
+            border: 2px solid rgba(0, 180, 216, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        /* RODAPÉ E DIREITOS AUTORAIS */
+        footer { background: #0b0c10; color: #888; text-align: center; padding: 40px 5%; font-size: 0.9rem; }
+        .copyright-clause { border: 1px solid #333; padding: 20px; margin-top: 20px; background: #111; color: #ccc; text-align: left; border-radius: 8px; font-size: 0.85rem; }
+        .copyright-clause strong { color: #e63946; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <span class="logo-es">ES</span>
+            Elevare Soluções
+        </div>
+        <!-- Botão com ID para o JavaScript capturar -->
+        <button class="cta-btn action-bridge">Garantir Meu Acesso</button>
+    </header>
+
+    <section class="hero">
+        <h1>Eleve seu Potencial com a Biblioteca Digital Definitiva</h1>
+        <p>Tenha acesso imediato a ferramentas, e-books e treinamentos em vídeo projetados para transformar seus resultados. Assista ao vídeo e descubra a plataforma por dentro.</p>
+        
+        <div class="video-placeholder">
+            [ Espaço para o Vídeo de Vendas (VSL) ]<br>▶ Clique para Play
+        </div>
+
+        <button class="cta-btn action-bridge">Quero Acessar a Plataforma</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
+        <div class="copyright-clause">
+            <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
+            Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela (print screen/gravação) ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
+        </div>
+    </footer>
+
+    <!-- SCRIPT JS PARA OS BOTÕES (A PONTE PARA A PLATAFORMA) -->
+    <script>
+        // Seleciona todos os botões que têm a classe 'action-bridge'
+        const botoesAcesso = document.querySelectorAll('.action-bridge');
+
+        // Adiciona um evento de clique a cada um deles
+        botoesAcesso.forEach(botao => {
+            botao.addEventListener('click', function(event) {
+                event.preventDefault(); // Evita recarregar a página
+                
+                // Abre a página da plataforma em uma NOVA ABA ('_blank')
+                window.open('plataforma.html', '_blank');
+            });
+        });
+    </script>
+</body>
+</html>
