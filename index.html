@@ -97,15 +97,37 @@
             <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
             Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela (print screen/gravação) ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
         </div><!-- ÁREA DE LOGIN -->
+    <<!-- ÁREA DE LOGIN -->
     <section id="login-section" style="padding: 50px 5%; background: #1e293b; color: white; text-align: center;">
         <h2>Acesse sua conta Elevare</h2>
-        <p style="margin-bottom: 20px;">Insira seus dados para acessar a plataforma.</p>
+        <p style="margin-bottom: 20px;">Insira seus dados ou use o Google para acessar a plataforma.</p>
         
         <div style="max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
-            <input type="email" id="email-login" placeholder="Seu E-mail" style="padding: 12px; border-radius: 6px; border: none;">
-            <input type="password" id="senha-login" placeholder="Sua Senha" style="padding: 12px; border-radius: 6px; border: none;">
-            <button id="btn-entrar" class="cta-btn">Entrar na Plataforma</button>
+            <input type="email" id="email-login" placeholder="Seu E-mail" style="padding: 12px; border-radius: 6px; border: none; color: #333;">
+            <input type="password" id="senha-login" placeholder="Sua Senha" style="padding: 12px; border-radius: 6px; border: none; color: #333;">
+            
+            <button id="btn-entrar" class="cta-btn">Entrar com E-mail</button>
+            
+            <!-- Divisor visual -->
+            <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #94a3b8; font-size: 14px;">
+                <hr style="flex: 1; border-color: #334155;"> OU <hr style="flex: 1; border-color: #334155;">
+            </div>
+
+            <!-- Novo Botão do Google -->
+            <button id="btn-google" style="background: white; color: #333; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <!-- Ícone SVG do Google -->
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                </svg>
+                Continuar com o Google
+            </button>
+
             <p id="mensagem-erro" style="color: #ef4444; font-size: 14px; display: none;"></p>
+        </div>
+    </section>
         </div>
     </section>
     </footer>
@@ -128,11 +150,11 @@
 </body>
 </html>
 <script type="module">
-        // Importa o núcleo do Firebase e a Autenticação
+        // 1. Importações do Firebase (Agora inclui GoogleAuthProvider e signInWithPopup)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
-        // Sua configuração do Firebase
+        // 2. Sua configuração
         const firebaseConfig = {
             apiKey: "AIzaSyBibGU7PuuezorXhncVgd6ElHMERprqltk",
             authDomain: "elevare-page-biblioteca.firebaseapp.com",
@@ -142,11 +164,12 @@
             appId: "1:870070120182:web:dc75f4cc8ba694786186d7"
         };
 
-        // Inicializa o Firebase
+        // 3. Inicializa Firebase e Autenticação
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider(); // Cria o provedor do Google
 
-        // Faz os botões "Garantir Meu Acesso" rolarem a página até o formulário de login
+        // Faz os botões "Garantir Meu Acesso" rolarem até o login
         document.querySelectorAll('.action-bridge').forEach(botao => {
             botao.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -154,13 +177,14 @@
             });
         });
 
-        // Lógica de Login ao clicar em "Entrar"
+        // ----------------------------------------------------
+        // LÓGICA DE LOGIN COM E-MAIL E SENHA
+        // ----------------------------------------------------
         document.getElementById('btn-entrar').addEventListener('click', () => {
             const email = document.getElementById('email-login').value;
             const senha = document.getElementById('senha-login').value;
             const msgErro = document.getElementById('mensagem-erro');
             
-            // Limpa mensagens de erro
             msgErro.style.display = 'none';
 
             if(!email || !senha) {
@@ -169,17 +193,36 @@
                 return;
             }
 
-            // Tenta fazer o login no Firebase
             signInWithEmailAndPassword(auth, email, senha)
                 .then((userCredential) => {
-                    // Deu certo! O usuário existe. Redireciona para a plataforma:
                     window.location.href = "plataforma.html";
                 })
                 .catch((error) => {
-                    // Deu errado (senha incorreta, usuário não existe, etc.)
                     msgErro.textContent = "Erro: E-mail ou senha incorretos.";
                     msgErro.style.display = 'block';
-                    console.error("Erro do Firebase:", error.message);
                 });
         });
+
+        // ----------------------------------------------------
+        // LÓGICA DE LOGIN COM O GOOGLE
+        // ----------------------------------------------------
+        document.getElementById('btn-google').addEventListener('click', () => {
+            const msgErro = document.getElementById('mensagem-erro');
+            msgErro.style.display = 'none';
+
+            // Abre a janela pop-up do Google
+            signInWithPopup(auth, googleProvider)
+                .then((result) => {
+                    // O Google autorizou! Redireciona para a plataforma.
+                    const user = result.user;
+                    console.log("Logado com Google:", user.displayName);
+                    window.location.href = "plataforma.html";
+                }).catch((error) => {
+                    // Usuário fechou a janela ou deu erro
+                    console.error("Erro no Google:", error);
+                    msgErro.textContent = "Erro ao fazer login com o Google.";
+                    msgErro.style.display = 'block';
+                });
+        });
+    </script>
     </script>
