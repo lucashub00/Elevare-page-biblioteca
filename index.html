@@ -96,7 +96,18 @@
         <div class="copyright-clause">
             <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
             Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela (print screen/gravação) ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
+        </div><!-- ÁREA DE LOGIN -->
+    <section id="login-section" style="padding: 50px 5%; background: #1e293b; color: white; text-align: center;">
+        <h2>Acesse sua conta Elevare</h2>
+        <p style="margin-bottom: 20px;">Insira seus dados para acessar a plataforma.</p>
+        
+        <div style="max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
+            <input type="email" id="email-login" placeholder="Seu E-mail" style="padding: 12px; border-radius: 6px; border: none;">
+            <input type="password" id="senha-login" placeholder="Sua Senha" style="padding: 12px; border-radius: 6px; border: none;">
+            <button id="btn-entrar" class="cta-btn">Entrar na Plataforma</button>
+            <p id="mensagem-erro" style="color: #ef4444; font-size: 14px; display: none;"></p>
         </div>
+    </section>
     </footer>
 
     <!-- SCRIPT JS PARA OS BOTÕES (A PONTE PARA A PLATAFORMA) -->
@@ -116,3 +127,59 @@
     </script>
 </body>
 </html>
+<script type="module">
+        // Importa o núcleo do Firebase e a Autenticação
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+        // Sua configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBibGU7PuuezorXhncVgd6ElHMERprqltk",
+            authDomain: "elevare-page-biblioteca.firebaseapp.com",
+            projectId: "elevare-page-biblioteca",
+            storageBucket: "elevare-page-biblioteca.firebasestorage.app",
+            messagingSenderId: "870070120182",
+            appId: "1:870070120182:web:dc75f4cc8ba694786186d7"
+        };
+
+        // Inicializa o Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Faz os botões "Garantir Meu Acesso" rolarem a página até o formulário de login
+        document.querySelectorAll('.action-bridge').forEach(botao => {
+            botao.addEventListener('click', function(event) {
+                event.preventDefault();
+                document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Lógica de Login ao clicar em "Entrar"
+        document.getElementById('btn-entrar').addEventListener('click', () => {
+            const email = document.getElementById('email-login').value;
+            const senha = document.getElementById('senha-login').value;
+            const msgErro = document.getElementById('mensagem-erro');
+            
+            // Limpa mensagens de erro
+            msgErro.style.display = 'none';
+
+            if(!email || !senha) {
+                msgErro.textContent = "Preencha e-mail e senha!";
+                msgErro.style.display = 'block';
+                return;
+            }
+
+            // Tenta fazer o login no Firebase
+            signInWithEmailAndPassword(auth, email, senha)
+                .then((userCredential) => {
+                    // Deu certo! O usuário existe. Redireciona para a plataforma:
+                    window.location.href = "plataforma.html";
+                })
+                .catch((error) => {
+                    // Deu errado (senha incorreta, usuário não existe, etc.)
+                    msgErro.textContent = "Erro: E-mail ou senha incorretos.";
+                    msgErro.style.display = 'block';
+                    console.error("Erro do Firebase:", error.message);
+                });
+        });
+    </script>
