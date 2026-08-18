@@ -9,15 +9,19 @@
 </head>
 <body class="page-plataforma">
 
-    <!-- BARRA LATERAL -->
-    <div class="sidebar">
-        
-        <!-- LOGO ATUALIZADA AQUI -->
-        <div style="text-align: center; margin-bottom: 15px;">
-            <img src="Elevare Logo.png" alt="Elevare Soluções" class="sidebar-logo">
+    <!-- BARRA SUPERIOR (MENU) -->
+    <header class="topbar">
+        <div class="topbar-logo">
+            <img src="Elevare Logo.png" alt="Elevare Soluções" class="nav-logo">
         </div>
+        
+        <nav class="topbar-nav">
+            <button class="nav-btn active" data-target="tab-ebooks">E-books Premium</button>
+            <button class="nav-btn" data-target="tab-cursos">Cursos em Vídeo</button>
+            <button class="nav-btn" data-target="tab-consultoria">Consultoria</button>
+        </nav>
 
-        <!-- PERFIL DO USUÁRIO DINÂMICO -->
+        <!-- PERFIL DO USUÁRIO -->
         <div class="user-profile">
             <img id="user-foto" src="" alt="Foto" class="profile-img">
             <div class="profile-info">
@@ -25,34 +29,147 @@
                 <button id="btn-sair">Sair da conta</button>
             </div>
         </div>
+    </header>
 
-        <div class="module-title">Módulo 1: Boas Vindas</div>
-        <div class="aula-item active">1. Como usar a biblioteca</div>
-        <div class="aula-item">2. Regras e Direitos Autorais</div>
+    <!-- CONTEÚDO PRINCIPAL (As 3 Abas) -->
+    <main class="main-content">
+        
+        <!-- ================= ABA 1: E-BOOKS ================= -->
+        <section id="tab-ebooks" class="tab-content active">
+            <div class="section-header">
+                <h1>Biblioteca de E-books</h1>
+                <p>Deslize para o lado para ver todos os nossos títulos exclusivos.</p>
+            </div>
+            
+            <div class="scroll-horizontal">
+                
+                <!-- E-book 1 -->
+                <div class="card-ebook">
+                    <img src="https://placehold.co/250x350/1e293b/00b4d8?text=Capa+Livro+1" alt="Capa" class="ebook-cover">
+                    <div class="ebook-info">
+                        <span class="ebook-style">Estratégia e Negócios</span>
+                        <h3>Mentes Estratégicas</h3>
+                        <p>Aprenda a reprogramar sua forma de pensar para tomar decisões certeiras no seu negócio.</p>
+                        <div class="ebook-rating">
+                            <span class="stars">★★★★★</span>
+                            <span class="score">5.0</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="module-title">Módulo 2: E-books Premium</div>
-        <div class="aula-item">1. Guia de Produtividade</div>
-        <div class="aula-item">2. Estratégias de Venda</div>
+                <!-- E-book 2 -->
+                <div class="card-ebook">
+                    <img src="https://placehold.co/250x350/1e293b/00b4d8?text=Capa+Livro+2" alt="Capa" class="ebook-cover">
+                    <div class="ebook-info">
+                        <span class="ebook-style">Vendas</span>
+                        <h3>Escala Extrema</h3>
+                        <p>O passo a passo para multiplicar seu faturamento usando técnicas avançadas de conversão.</p>
+                        <div class="ebook-rating">
+                            <span class="stars">★★★★<span style="color:#334155;">★</span></span>
+                            <span class="score">4.8</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="module-title">Módulo 3: Cursos (Vídeos)</div>
-        <div class="aula-item">1. Fundamentos do Negócio</div>
-        <div class="aula-item">2. Escalando Resultados</div>
-    </div>
+                <!-- E-book 3 -->
+                <div class="card-ebook">
+                    <img src="https://placehold.co/250x350/1e293b/00b4d8?text=Capa+Livro+3" alt="Capa" class="ebook-cover">
+                    <div class="ebook-info">
+                        <span class="ebook-style">Produtividade</span>
+                        <h3>Foco Hiperbólico</h3>
+                        <p>Como produzir em 2 horas o que a maioria das pessoas demora uma semana inteira.</p>
+                        <div class="ebook-rating">
+                            <span class="stars">★★★★★</span>
+                            <span class="score">4.9</span>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <div class="main-content">
-        <h1>1. Como usar a biblioteca (Boas Vindas)</h1>
-        <p>Assista ao vídeo abaixo para entender como navegar pelos módulos e baixar seus materiais.</p>
+            </div>
+        </section>
 
-        <!-- ESPAÇO DO VÍDEO -->
-        <div class="video-player">
-            [ Player de Vídeo Seguro (Ex: Vimeo com bloqueio de domínio) ]
-        </div>
+        <!-- ================= ABA 2: CURSOS ================= -->
+        <section id="tab-cursos" class="tab-content">
+            <div class="section-header">
+                <h1>Treinamentos e Cursos</h1>
+                <p>Clique no curso desejado para acessar as pastas de materiais e videoaulas.</p>
+            </div>
 
-        <button class="download-btn">
-            ↓ Baixar Material de Apoio (PDF)
-        </button>
-    </div>
+            <div class="grid-cursos">
+                
+                <!-- Curso 1 -->
+                <div class="card-curso">
+                    <div class="curso-thumb">
+                        <!-- Imagem de capa que futuramente linkará pro YouTube -->
+                        <img src="https://placehold.co/600x337/0f172a/00b4d8?text=Thumb+do+Video" alt="Thumbnail">
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="curso-info">
+                        <h3>Fundamentos do Marketing Digital</h3>
+                        <p>Aula demonstrativa liberada. Acesse a pasta para ver o conteúdo completo.</p>
+                        <button class="btn-acessar-curso">Acessar Pasta do Curso</button>
+                    </div>
+                </div>
+
+                <!-- Curso 2 -->
+                <div class="card-curso">
+                    <div class="curso-thumb">
+                        <img src="https://placehold.co/600x337/0f172a/00b4d8?text=Thumb+do+Video" alt="Thumbnail">
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="curso-info">
+                        <h3>Tráfego Pago para Iniciantes</h3>
+                        <p>Aprenda a criar campanhas que convertem visitantes em clientes pagantes.</p>
+                        <button class="btn-acessar-curso">Acessar Pasta do Curso</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= ABA 3: CONSULTORIA ================= -->
+        <section id="tab-consultoria" class="tab-content">
+            <div class="section-header">
+                <h1>Consultoria Elevare</h1>
+                <p>Precisa de ajuda focada no seu negócio? Fale com nossa equipe.</p>
+            </div>
+
+            <div class="consultoria-grid">
+                
+                <!-- Contatos -->
+                <div class="contato-box">
+                    <h3>Fale Diretamente Conosco</h3>
+                    <p>Nossos especialistas estão prontos para desenhar um plano de ação para a sua empresa.</p>
+                    <div class="botoes-contato">
+                        <a href="#" class="cta-btn btn-wpp">Agendar via WhatsApp</a>
+                        <a href="#" class="cta-btn btn-email">Enviar E-mail</a>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="faq-box">
+                    <h3>Perguntas Frequentes (FAQ)</h3>
+                    
+                    <details class="faq-item">
+                        <summary>Como funciona a consultoria?</summary>
+                        <p>Realizamos uma reunião inicial de diagnóstico online, identificamos os gargalos e entregamos um mapa de execução.</p>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary>Quanto tempo demora para agendar?</summary>
+                        <p>Geralmente respondemos em até 24h úteis para marcar sua primeira sessão pelo WhatsApp.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Os e-books e cursos têm atualizações?</summary>
+                        <p>Sim! Como assinante, você sempre terá acesso à versão mais recente de todos os nossos materiais.</p>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
 
     <!-- Importando o arquivo JavaScript -->
     <script type="module" src="app.js"></script>

@@ -170,3 +170,19 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     });
 }
+// ===== NOVA LÓGICA: NAVEGAÇÃO DE ABAS =====
+    const botoesNav = document.querySelectorAll('.nav-btn');
+    const conteudosAba = document.querySelectorAll('.tab-content');
+
+    botoesNav.forEach(botao => {
+        botao.addEventListener('click', () => {
+            // Remove a classe 'active' de todos os botões e abas
+            botoesNav.forEach(btn => btn.classList.remove('active'));
+            conteudosAba.forEach(aba => aba.classList.remove('active'));
+
+            // Adiciona 'active' no botão clicado e na aba correspondente
+            botao.classList.add('active');
+            const targetId = botao.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
