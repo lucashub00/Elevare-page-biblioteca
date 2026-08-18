@@ -36,18 +36,12 @@ if (document.body.classList.contains('page-index')) {
         });
     });
 
-    // Função Compartilhada de Validação
-    function getLoginData() {
-        return {
-            email: document.getElementById('email-login').value,
-            senha: document.getElementById('senha-login').value,
-            msgErro: document.getElementById('mensagem-erro')
-        };
-    }
-
     // 1. Entrar com E-mail (Conta já existente)
     document.getElementById('btn-entrar').addEventListener('click', () => {
-        const { email, senha, msgErro } = getLoginData();
+        const email = document.getElementById('email-login').value;
+        const senha = document.getElementById('senha-login').value;
+        const msgErro = document.getElementById('mensagem-erro');
+        
         msgErro.style.display = 'none';
 
         if(!email || !senha) {
@@ -64,37 +58,7 @@ if (document.body.classList.contains('page-index')) {
             });
     });
 
-    // 2. CADASTRAR NOVA CONTA DE TESTE (Para desenvolvimento livre)
-    document.getElementById('btn-cadastrar').addEventListener('click', () => {
-        const { email, senha, msgErro } = getLoginData();
-        msgErro.style.display = 'none';
-
-        if(!email || !senha) {
-            msgErro.textContent = "Crie um e-mail e senha para se cadastrar!";
-            msgErro.style.display = 'block';
-            return;
-        }
-        
-        // Exige no mínimo 6 caracteres na senha (regra do Firebase)
-        if(senha.length < 6) {
-            msgErro.textContent = "A senha deve ter pelo menos 6 caracteres.";
-            msgErro.style.display = 'block';
-            return;
-        }
-
-        createUserWithEmailAndPassword(auth, email, senha)
-            .then(() => {
-                alert("Conta de teste criada e autenticada com sucesso! Bem-vindo(a).");
-                window.location.href = "plataforma.html";
-            })
-            .catch((error) => {
-                msgErro.textContent = "Erro ao criar conta. Talvez o e-mail já exista.";
-                msgErro.style.display = 'block';
-                console.error(error);
-            });
-    });
-
-    // 3. Entrar com Google
+    // 2. Entrar com Google
     document.getElementById('btn-google').addEventListener('click', () => {
         const msgErro = document.getElementById('mensagem-erro');
         msgErro.style.display = 'none';
@@ -103,6 +67,58 @@ if (document.body.classList.contains('page-index')) {
             .then(() => window.location.href = "plataforma.html")
             .catch((error) => {
                 msgErro.textContent = "Erro ao fazer login com o Google.";
+                msgErro.style.display = 'block';
+                console.error(error);
+            });
+    });
+}
+
+// ==========================================
+// LÓGICA DA PÁGINA: CADASTRO.HTML
+// ==========================================
+if (document.body.classList.contains('page-cadastro')) {
+    
+    // 1. Cadastrar nova conta com E-mail
+    document.getElementById('btn-cadastrar-novo').addEventListener('click', () => {
+        const email = document.getElementById('email-cadastro').value;
+        const senha = document.getElementById('senha-cadastro').value;
+        const msgErro = document.getElementById('mensagem-erro-cadastro');
+        
+        msgErro.style.display = 'none';
+
+        if(!email || !senha) {
+            msgErro.textContent = "Preencha e-mail e senha para se cadastrar!";
+            msgErro.style.display = 'block';
+            return;
+        }
+        
+        if(senha.length < 6) {
+            msgErro.textContent = "A senha deve ter pelo menos 6 caracteres.";
+            msgErro.style.display = 'block';
+            return;
+        }
+
+        createUserWithEmailAndPassword(auth, email, senha)
+            .then(() => {
+                // Após cadastrar, joga direto pra plataforma
+                window.location.href = "plataforma.html";
+            })
+            .catch((error) => {
+                msgErro.textContent = "Erro ao criar conta. O e-mail já pode estar em uso.";
+                msgErro.style.display = 'block';
+                console.error(error);
+            });
+    });
+
+    // 2. Cadastrar nova conta com Google
+    document.getElementById('btn-google-cadastro').addEventListener('click', () => {
+        const msgErro = document.getElementById('mensagem-erro-cadastro');
+        msgErro.style.display = 'none';
+
+        signInWithPopup(auth, googleProvider)
+            .then(() => window.location.href = "plataforma.html")
+            .catch((error) => {
+                msgErro.textContent = "Erro ao cadastrar com o Google.";
                 msgErro.style.display = 'block';
                 console.error(error);
             });
@@ -120,18 +136,15 @@ if (document.body.classList.contains('page-plataforma')) {
             const nomeElement = document.getElementById('user-nome');
             const fotoElement = document.getElementById('user-foto');
 
-            // Se for login por Google, tem nome. Se foi pelo e-mail de teste, pega o começo do e-mail.
             nomeElement.textContent = user.displayName || user.email.split('@')[0];
 
             if (user.photoURL) {
                 fotoElement.src = user.photoURL;
             } else {
-                // Foto padrão caso crie com E-mail e Senha
                 fotoElement.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
             }
             fotoElement.style.display = "block";
         } else {
-            // Chuta o usuário para fora
             alert("Acesso Negado! Faça login primeiro.");
             window.location.href = "index.html"; 
         }
@@ -144,7 +157,7 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // Trava de Segurança Anti-Cópia (Apenas dentro da plataforma)
+    // Trava de Segurança Anti-Cópia
     document.addEventListener('contextmenu', e => {
         e.preventDefault();
         alert('Aviso: O download ou cópia não autorizada deste conteúdo é proibido pelos termos de uso da Elevare Soluções.');
