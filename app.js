@@ -130,6 +130,9 @@ if (document.body.classList.contains('page-cadastro')) {
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
     
+    // Lista de Administradores Globais da Plataforma
+    const admins = ["pedroeliasm08@gmail.com"];
+    
     // Verifica Segurança e Carrega Dados do Usuário
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -146,16 +149,17 @@ if (document.body.classList.contains('page-plataforma')) {
             fotoElement.style.display = "block";
 
             // ======= CHECAGEM DE ADMIN =======
-            // O e-mail definido como dono/admin da plataforma
-            const admins = ["pedroeliasm08@gmail.com"];
-            
             if (admins.includes(user.email)) {
                 // Se for admin, mostra o botão de adicionar
                 const btnAdd = document.getElementById('btn-add-ebook');
                 if (btnAdd) btnAdd.style.display = 'block';
+
+                // Se for admin, mostra todas as lixeiras dos e-books já existentes
+                document.querySelectorAll('.btn-delete-ebook').forEach(btn => {
+                    btn.style.display = 'flex';
+                });
             }
             // =======================================
-
         } else {
             alert("Acesso Negado! Faça login primeiro.");
             window.location.href = "index.html"; 
@@ -232,15 +236,27 @@ if (document.body.classList.contains('page-plataforma')) {
                 return tag.trim() !== "" ? `<span class="hashtag">#${tag.trim()}</span>` : "";
             }).join('');
 
-            // Cria o código HTML do novo produto
+            // Define se a lixeira vai aparecer (como foi o admin que criou, ela aparece)
+            const isAdmin = auth.currentUser && admins.includes(auth.currentUser.email);
+            const displayDelete = isAdmin ? 'flex' : 'none';
+
+            // Cria o código HTML do novo produto (já com a lixeira e estrelas)
             const novoCard = document.createElement('div');
             novoCard.className = 'card-ebook';
             novoCard.innerHTML = `
+                <button class="btn-delete-ebook" style="display: ${displayDelete};" title="Apagar E-book">🗑️</button>
                 <img src="${fotoUrl}" alt="Capa" class="ebook-cover">
                 <div class="ebook-info">
                     <div class="hashtags">${tagsHtml}</div>
                     <h3>${titulo}</h3>
                     <p>${desc}</p>
+                    <div class="ebook-rating-interactive">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
                 </div>
             `;
 
@@ -253,6 +269,38 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('input-desc-ebook').value = '';
             document.getElementById('input-hash-ebook').value = '';
             document.getElementById('input-foto-ebook').value = '';
+        });
+    }
+
+    // ===== NOVA LÓGICA: LIXEIRA E ESTRELAS INTERATIVAS =====
+    const listaEbooks = document.getElementById('lista-ebooks');
+    
+    if (listaEbooks) {
+        listaEbooks.addEventListener('click', (event) => {
+            
+            // 1. Lógica de Apagar (Lixeira)
+            if (event.target.closest('.btn-delete-ebook')) {
+                if (confirm("Tem certeza que deseja apagar este e-book da plataforma?")) {
+                    event.target.closest('.card-ebook').remove();
+                }
+            }
+
+            // 2. Lógica das Estrelas de Avaliação
+            if (event.target.classList.contains('star')) {
+                const starClicked = event.target;
+                const ratingContainer = starClicked.parentElement;
+                const valorClicado = parseInt(starClicked.getAttribute('data-value'));
+
+                // Primeiro, apaga todas as estrelas deste e-book específico
+                ratingContainer.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+
+                // Depois, acende da primeira até a estrela que o usuário clicou
+                ratingContainer.querySelectorAll('.star').forEach(s => {
+                    if (parseInt(s.getAttribute('data-value')) <= valorClicado) {
+                        s.classList.add('active');
+                    }
+                });
+            }
         });
     }
 }
