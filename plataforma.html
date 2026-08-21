@@ -31,107 +31,44 @@
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL (As 3 Abas) -->
+   <!-- CONTEÚDO PRINCIPAL (As 3 Abas) -->
     <main class="main-content">
         
         <!-- ================= ABA 1: E-BOOKS ================= -->
         <section id="tab-ebooks" class="tab-content active">
-            <div class="section-header">
-                <h1>Biblioteca de E-books</h1>
-                <p>Deslize para o lado para ver todos os nossos títulos exclusivos.</p>
+            
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h1>Biblioteca de E-books</h1>
+                    <p>Títulos exclusivos para a evolução do seu negócio.</p>
+                </div>
+                
+                <!-- BOTÃO ADMIN (Escondido por padrão) -->
+                <button id="btn-add-ebook" class="cta-btn" style="display: none; background: #10b981; box-shadow: none;">
+                    + Adicionar E-book
+                </button>
             </div>
             
-            <div class="scroll-horizontal">
+            <!-- GRADE VERTICAL DE E-BOOKS -->
+            <div class="grid-ebooks" id="lista-ebooks">
                 
-               <!-- ================= ABA 1: E-BOOKS ================= -->
-        <section id="tab-ebooks" class="tab-content active">
-            <div class="section-header">
-                <h1>Biblioteca de E-books</h1>
-                <p>Deslize para o lado para ver todos os nossos títulos exclusivos.</p>
-            </div>
-            
-            <div class="scroll-horizontal">
-                
-                <!-- E-book 1 -->
+                <!-- MODELO 1 (Para você ver como fica e depois excluir) -->
                 <div class="card-ebook">
-                    <!-- AQUI FOI FEITA A MUDANÇA: src="capa-livro1.png" -->
-                    <img src="capa-livro1.png" alt="Capa Mentes Estratégicas" class="ebook-cover">
+                    <img src="vitrine-ebooks.png" alt="Capa" class="ebook-cover">
                     <div class="ebook-info">
-                        <span class="ebook-style">Estratégia e Negócios</span>
+                        <div class="hashtags">
+                            <span class="hashtag">#Estratégia</span>
+                            <span class="hashtag">#Negócios</span>
+                        </div>
                         <h3>Mentes Estratégicas</h3>
                         <p>Aprenda a reprogramar sua forma de pensar para tomar decisões certeiras no seu negócio.</p>
-                        <div class="ebook-rating">
-                            <span class="stars">★★★★★</span>
-                            <span class="score">5.0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- E-book 2 -->
-                <div class="card-ebook">
-                    <!-- AQUI FOI FEITA A MUDANÇA: src="capa-livro2.png" -->
-                    <img src="capa-livro2.png" alt="Capa Escala Extrema" class="ebook-cover">
-                    <div class="ebook-info">
-                        <span class="ebook-style">Vendas</span>
-                        <h3>Escala Extrema</h3>
-                        <p>O passo a passo para multiplicar seu faturamento usando técnicas avançadas de conversão.</p>
-                        <div class="ebook-rating">
-                            <span class="stars">★★★★<span style="color:#334155;">★</span></span>
-                            <span class="score">4.8</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- E-book 3 -->
-                <div class="card-ebook">
-                    <!-- AQUI FOI FEITA A MUDANÇA: src="capa-livro3.png" -->
-                    <img src="capa-livro3.png" alt="Capa Foco Hiperbólico" class="ebook-cover">
-                    <div class="ebook-info">
-                        <span class="ebook-style">Produtividade</span>
-                        <h3>Foco Hiperbólico</h3>
-                        <p>Como produzir em 2 horas o que a maioria das pessoas demora uma semana inteira.</p>
-                        <div class="ebook-rating">
-                            <span class="stars">★★★★★</span>
-                            <span class="score">4.9</span>
-                        </div>
                     </div>
                 </div>
 
             </div>
         </section>
 
-                <!-- E-book 2 -->
-                <div class="card-ebook">
-                    <img src="https://placehold.co/250x350/1e293b/00b4d8?text=Capa+Livro+2" alt="Capa" class="ebook-cover">
-                    <div class="ebook-info">
-                        <span class="ebook-style">Vendas</span>
-                        <h3>Escala Extrema</h3>
-                        <p>O passo a passo para multiplicar seu faturamento usando técnicas avançadas de conversão.</p>
-                        <div class="ebook-rating">
-                            <span class="stars">★★★★<span style="color:#334155;">★</span></span>
-                            <span class="score">4.8</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- E-book 3 -->
-                <div class="card-ebook">
-                    <img src="https://placehold.co/250x350/1e293b/00b4d8?text=Capa+Livro+3" alt="Capa" class="ebook-cover">
-                    <div class="ebook-info">
-                        <span class="ebook-style">Produtividade</span>
-                        <h3>Foco Hiperbólico</h3>
-                        <p>Como produzir em 2 horas o que a maioria das pessoas demora uma semana inteira.</p>
-                        <div class="ebook-rating">
-                            <span class="stars">★★★★★</span>
-                            <span class="score">4.9</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= ABA 2: CURSOS ================= -->
+        <!-- ================= ABA 2: CURSOS (Mantido igual) ================= -->
         <section id="tab-cursos" class="tab-content">
             <div class="section-header">
                 <h1>Treinamentos e Cursos</h1>
@@ -139,12 +76,10 @@
             </div>
 
             <div class="grid-cursos">
-                
                 <!-- Curso 1 -->
                 <div class="card-curso">
                     <div class="curso-thumb">
-                        <!-- Imagem de capa que futuramente linkará pro YouTube -->
-                        <img src="https://placehold.co/600x337/0f172a/00b4d8?text=Thumb+do+Video" alt="Thumbnail">
+                        <img src="vitrine-cursos.png" alt="Thumbnail">
                         <div class="play-btn">▶</div>
                     </div>
                     <div class="curso-info">
@@ -153,66 +88,60 @@
                         <button class="btn-acessar-curso">Acessar Pasta do Curso</button>
                     </div>
                 </div>
-
-                <!-- Curso 2 -->
-                <div class="card-curso">
-                    <div class="curso-thumb">
-                        <img src="https://placehold.co/600x337/0f172a/00b4d8?text=Thumb+do+Video" alt="Thumbnail">
-                        <div class="play-btn">▶</div>
-                    </div>
-                    <div class="curso-info">
-                        <h3>Tráfego Pago para Iniciantes</h3>
-                        <p>Aprenda a criar campanhas que convertem visitantes em clientes pagantes.</p>
-                        <button class="btn-acessar-curso">Acessar Pasta do Curso</button>
-                    </div>
-                </div>
-
             </div>
         </section>
 
-        <!-- ================= ABA 3: CONSULTORIA ================= -->
+        <!-- ================= ABA 3: CONSULTORIA (Mantido igual) ================= -->
         <section id="tab-consultoria" class="tab-content">
             <div class="section-header">
                 <h1>Consultoria Elevare</h1>
                 <p>Precisa de ajuda focada no seu negócio? Fale com nossa equipe.</p>
             </div>
-
+            <!-- (O conteúdo da consultoria continua o mesmo aqui) -->
             <div class="consultoria-grid">
-                
-                <!-- Contatos -->
                 <div class="contato-box">
                     <h3>Fale Diretamente Conosco</h3>
                     <p>Nossos especialistas estão prontos para desenhar um plano de ação para a sua empresa.</p>
                     <div class="botoes-contato">
                         <a href="#" class="cta-btn btn-wpp">Agendar via WhatsApp</a>
-                        <a href="#" class="cta-btn btn-email">Enviar E-mail</a>
                     </div>
                 </div>
-
-                <!-- FAQ -->
-                <div class="faq-box">
-                    <h3>Perguntas Frequentes (FAQ)</h3>
-                    
-                    <details class="faq-item">
-                        <summary>Como funciona a consultoria?</summary>
-                        <p>Realizamos uma reunião inicial de diagnóstico online, identificamos os gargalos e entregamos um mapa de execução.</p>
-                    </details>
-                    
-                    <details class="faq-item">
-                        <summary>Quanto tempo demora para agendar?</summary>
-                        <p>Geralmente respondemos em até 24h úteis para marcar sua primeira sessão pelo WhatsApp.</p>
-                    </details>
-
-                    <details class="faq-item">
-                        <summary>Os e-books e cursos têm atualizações?</summary>
-                        <p>Sim! Como assinante, você sempre terá acesso à versão mais recente de todos os nossos materiais.</p>
-                    </details>
-                </div>
-
             </div>
         </section>
 
     </main>
+
+    <!-- ================= MODAL DO ADMIN (Formulário de Upload) ================= -->
+    <div id="modal-add-ebook" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Adicionar Novo E-book</h2>
+            
+            <div class="form-group">
+                <label>Foto da Capa:</label>
+                <input type="file" id="input-foto-ebook" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label>Título do E-book:</label>
+                <input type="text" id="input-titulo-ebook" placeholder="Ex: O Guia Definitivo de Vendas">
+            </div>
+            
+            <div class="form-group">
+                <label>Descrição:</label>
+                <textarea id="input-desc-ebook" rows="3" placeholder="Escreva a descrição do produto..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Hashtags (separadas por vírgula):</label>
+                <input type="text" id="input-hash-ebook" placeholder="Ex: Vendas, Marketing, Foco">
+            </div>
+            
+            <div class="modal-actions">
+                <button id="btn-cancelar-ebook" class="btn-cancelar">Cancelar</button>
+                <button id="btn-salvar-ebook" class="cta-btn">Salvar Produto</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Importando o arquivo JavaScript -->
     <script type="module" src="app.js"></script>

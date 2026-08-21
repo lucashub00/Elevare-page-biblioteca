@@ -167,15 +167,6 @@ body.page-plataforma {
 .section-header h1 { font-size: 28px; color: #fff; }
 .section-header p { color: #94a3b8; font-size: 16px; }
 
-/* 1. ABA: E-BOOKS (Carrossel Horizontal) */
-.scroll-horizontal { 
-    display: flex; gap: 25px; overflow-x: auto; padding-bottom: 20px;
-    scroll-snap-type: x mandatory;
-}
-/* Estilizando a barra de rolagem */
-.scroll-horizontal::-webkit-scrollbar { height: 10px; }
-.scroll-horizontal::-webkit-scrollbar-track { background: #1e293b; border-radius: 5px; }
-.scroll-horizontal::-webkit-scrollbar-thumb { background: #00b4d8; border-radius: 5px; }
 
 .card-ebook { 
     background: #1e293b; min-width: 280px; max-width: 280px; border-radius: 12px; 
@@ -281,3 +272,45 @@ body.page-cadastro {
     color: #38bdf8;
     text-decoration: underline;
 }
+/* ==================================
+   ATUALIZAÇÃO: E-BOOKS & ADMIN MODAL
+=================================== */
+/* Nova grade de e-books (vertical) */
+.grid-ebooks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+.hashtags { 
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; 
+}
+.hashtag { 
+    font-size: 11px; background: rgba(0, 180, 216, 0.15); color: #38bdf8; 
+    padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;
+}
+
+/* Janela Modal do Admin */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: center;
+    z-index: 9999; backdrop-filter: blur(5px);
+}
+.modal-content {
+    background: #1e293b; padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 500px; border: 1px solid #334155;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.modal-content h2 { margin-bottom: 25px; color: #fff; font-size: 22px; }
+.form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 8px; font-size: 14px; color: #94a3b8; font-weight: bold;}
+.form-group input, .form-group textarea {
+    padding: 12px; border-radius: 6px; border: 1px solid #334155;
+    background: #0f172a; color: white; outline: none; font-family: inherit;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: #00b4d8; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
+.btn-cancelar {
+    background: transparent; border: 1px solid #ef4444; color: #ef4444;
+    padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-weight: bold;
+}
+.btn-cancelar:hover { background: #ef4444; color: white; }

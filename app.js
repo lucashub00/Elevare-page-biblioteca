@@ -144,6 +144,18 @@ if (document.body.classList.contains('page-plataforma')) {
                 fotoElement.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
             }
             fotoElement.style.display = "block";
+
+            // ======= CHECAGEM DE ADMIN =======
+            // O e-mail definido como dono/admin da plataforma
+            const admins = ["pedroeliasm08@gmail.com"];
+            
+            if (admins.includes(user.email)) {
+                // Se for admin, mostra o botão de adicionar
+                const btnAdd = document.getElementById('btn-add-ebook');
+                if (btnAdd) btnAdd.style.display = 'block';
+            }
+            // =======================================
+
         } else {
             alert("Acesso Negado! Faça login primeiro.");
             window.location.href = "index.html"; 
@@ -169,8 +181,8 @@ if (document.body.classList.contains('page-plataforma')) {
             alert('Ação bloqueada por motivos de segurança e direitos autorais.');
         }
     });
-}
-// ===== NOVA LÓGICA: NAVEGAÇÃO DE ABAS =====
+
+    // ===== LÓGICA: NAVEGAÇÃO DE ABAS =====
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
 
@@ -186,3 +198,61 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById(targetId).classList.add('active');
         });
     });
+
+    // ===== LÓGICA DO ADMIN: ADICIONAR E-BOOK =====
+    const btnAddEbook = document.getElementById('btn-add-ebook');
+    const modalEbook = document.getElementById('modal-add-ebook');
+    const btnCancelarEbook = document.getElementById('btn-cancelar-ebook');
+    const btnSalvarEbook = document.getElementById('btn-salvar-ebook');
+
+    if(btnAddEbook && modalEbook) {
+        // Abrir Modal
+        btnAddEbook.addEventListener('click', () => modalEbook.style.display = 'flex');
+        
+        // Fechar Modal
+        btnCancelarEbook.addEventListener('click', () => modalEbook.style.display = 'none');
+
+        // Salvar Produto e Criar Card na Tela
+        btnSalvarEbook.addEventListener('click', () => {
+            const fotoInput = document.getElementById('input-foto-ebook').files[0];
+            const titulo = document.getElementById('input-titulo-ebook').value;
+            const desc = document.getElementById('input-desc-ebook').value;
+            const hash = document.getElementById('input-hash-ebook').value;
+
+            if(!fotoInput || !titulo || !desc) {
+                alert("Preencha a Foto, Título e Descrição!");
+                return;
+            }
+
+            // Truque de Mágica Front-end: Lê a imagem do seu PC e cria um link local
+            const fotoUrl = URL.createObjectURL(fotoInput);
+
+            // Transforma o texto em caixinhas de Hashtags
+            const tagsHtml = hash.split(',').map(tag => {
+                return tag.trim() !== "" ? `<span class="hashtag">#${tag.trim()}</span>` : "";
+            }).join('');
+
+            // Cria o código HTML do novo produto
+            const novoCard = document.createElement('div');
+            novoCard.className = 'card-ebook';
+            novoCard.innerHTML = `
+                <img src="${fotoUrl}" alt="Capa" class="ebook-cover">
+                <div class="ebook-info">
+                    <div class="hashtags">${tagsHtml}</div>
+                    <h3>${titulo}</h3>
+                    <p>${desc}</p>
+                </div>
+            `;
+
+            // Joga o produto na tela (dentro da grade)
+            document.getElementById('lista-ebooks').appendChild(novoCard);
+
+            // Limpa o formulário e fecha a janela
+            modalEbook.style.display = 'none';
+            document.getElementById('input-titulo-ebook').value = '';
+            document.getElementById('input-desc-ebook').value = '';
+            document.getElementById('input-hash-ebook').value = '';
+            document.getElementById('input-foto-ebook').value = '';
+        });
+    }
+}
