@@ -448,3 +448,28 @@ body.page-cadastro {
 #detalhe-desc::-webkit-scrollbar { width: 6px; }
 #detalhe-desc::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
 #detalhe-desc::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+/* ==================================
+   ATUALIZAÇÕES: CURSOS E VÍDEOS
+=================================== */
+/* Tela de detalhes mais larga para Cursos */
+.modal-curso-content {
+    max-width: 800px !important;
+}
+
+/* Deixa o vídeo do YouTube responsivo (Proporção 16:9) */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 2px solid #334155;
+    background: #0f172a;
+    margin-bottom: 20px;
+}
+.video-wrapper iframe, .video-wrapper object, .video-wrapper embed {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
