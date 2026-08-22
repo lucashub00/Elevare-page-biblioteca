@@ -354,7 +354,8 @@ if (document.body.classList.contains('page-plataforma')) {
              acaoContainer.innerHTML = `<a href="${ebook.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo (Abrir PDF)</a>`;
         } else {
              const msgZap = encodeURIComponent(`Olá, tenho interesse no E-book "${ebook.titulo}" (ID: ${id}). Meu ID de Cliente é: ${usuarioAtualUid}`);
-             acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Comprar Acesso via WhatsApp</a>`;
+             // AQUI ESTÁ A MUDANÇA DA FRASE
+             acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Clique aqui e garanta já seu acesso</a>`;
         }
 
         modalDetalhes.style.display = 'flex';
