@@ -1,3 +1,13 @@
+// ==========================================
+// RADAR ANTIBUG (Mostra erros na tela se existirem)
+// ==========================================
+window.onerror = function(msg, url, line) {
+    const box = document.createElement('div');
+    box.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:#fff; padding:20px; z-index:99999; border-radius:8px; font-weight:bold; box-shadow:0 10px 25px rgba(0,0,0,0.5);";
+    box.innerHTML = `🚨 O NAVEGADOR TRAVOU!<br>Erro: ${msg}<br>Linha: ${line}`;
+    document.body.appendChild(box);
+};
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
@@ -39,20 +49,6 @@ function extrairIdYoutube(url) {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = String(url).match(regex);
     return match ? match[1] : "";
-}
-
-// NOVO: Corta a conexão se o Firebase tentar travar a tela por mais de 3.5 segundos!
-async function lerAcessosComTimeout(uid) {
-    try {
-        const snap = await Promise.race([
-            getDoc(doc(db, "acessos", uid)),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3500))
-        ]);
-        return (snap && snap.exists()) ? (snap.data().produtos || []) : [];
-    } catch (error) {
-        console.warn("Memória do navegador travou a leitura. Liberando a tela à força...");
-        return [];
-    }
 }
 
 // ==========================================
@@ -114,8 +110,9 @@ if (document.body.classList.contains('page-plataforma')) {
                 
                 carregarEbooks(isAdmin, usuarioAtualUid);
                 carregarCursos(isAdmin, usuarioAtualUid);
+
             } catch (err) {
-                console.error("Erro interno:", err);
+                console.error("Erro no cabeçalho:", err);
             }
         } else {
             window.location.href = "index.html"; 
@@ -126,10 +123,15 @@ if (document.body.classList.contains('page-plataforma')) {
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if(!listaEbooks) return;
-        listaEbooks.innerHTML = '<p style="color: #94a3b8;">Carregando...</p>';
+        listaEbooks.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando e-books...</p>';
         try {
-            // Usa a nova função blindada anti-travamento
-            let ebooksLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
+            let ebooksLiberados = [];
+            if (!isAdmin) {
+                try {
+                    const snap = await getDoc(doc(db, "acessos", uid));
+                    if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
+                } catch(e) { ebooksLiberados = []; }
+            }
             
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
@@ -181,10 +183,15 @@ if (document.body.classList.contains('page-plataforma')) {
     async function carregarCursos(isAdmin, uid) {
         const lista = document.getElementById('lista-cursos');
         if(!lista) return;
-        lista.innerHTML = '<p style="color: #94a3b8;">Carregando cursos...</p>';
+        lista.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando cursos...</p>';
         try {
-            // Usa a nova função blindada anti-travamento
-            let cursosLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
+            let cursosLiberados = [];
+            if (!isAdmin) {
+                try {
+                    const snap = await getDoc(doc(db, "acessos", uid));
+                    if (snap.exists()) cursosLiberados = snap.data().produtos || [];
+                } catch(e) { cursosLiberados = []; }
+            }
             
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = ''; 
@@ -233,12 +240,11 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     }
 
-    // Ações Gerais
+    // Ações Gerais de Botões
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     document.querySelectorAll('.fechar-modal').forEach(btn => {
         btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; });
     });
-    
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
     botoesNav.forEach(botao => {
