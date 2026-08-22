@@ -22,11 +22,11 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ==========================================
-// FUNÇÕES AUXILIARES MÁGICAS
+// FUNÇÕES AUXILIARES BLINDADAS
 // ==========================================
 function extrairLinkImagem(inputTexto) {
     if (!inputTexto) return "";
-    let txt = inputTexto.trim();
+    let txt = String(inputTexto).trim();
     const matchDireto = txt.match(/https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp)/i);
     if (matchDireto) return matchDireto[0];
     const matchSrc = txt.match(/src=["']?(https?:\/\/[^"'\s>]+)["']?/i);
@@ -35,8 +35,9 @@ function extrairLinkImagem(inputTexto) {
 }
 
 function extrairIdYoutube(url) {
+    if (!url) return ""; // Impede o travamento se o curso não tiver link
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const match = url.match(regex);
+    const match = String(url).match(regex);
     return match ? match[1] : "";
 }
 
@@ -84,39 +85,49 @@ if (document.body.classList.contains('page-plataforma')) {
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            usuarioAtualUid = user.uid; 
-            document.getElementById('user-nome').textContent = user.displayName || user.email.split('@')[0];
-            document.getElementById('user-uid').textContent = "ID Cliente: " + usuarioAtualUid;
-            document.getElementById('user-foto').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-            document.getElementById('user-foto').style.display = "block";
+            try {
+                usuarioAtualUid = user.uid || "SemID"; 
+                const emailUsuario = user.email || ""; 
+                const nomeUsuario = user.displayName || (emailUsuario ? emailUsuario.split('@')[0] : "Visitante");
+                
+                document.getElementById('user-nome').textContent = nomeUsuario;
+                document.getElementById('user-uid').textContent = "ID Cliente: " + usuarioAtualUid;
+                document.getElementById('user-foto').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+                document.getElementById('user-foto').style.display = "block";
 
-            const isAdmin = admins.includes(user.email);
-            if (isAdmin) document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
-            
-            carregarEbooks(isAdmin, usuarioAtualUid);
-            carregarCursos(isAdmin, usuarioAtualUid);
+                const isAdmin = admins.includes(emailUsuario);
+                if (isAdmin) {
+                    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
+                }
+                
+                carregarEbooks(isAdmin, usuarioAtualUid);
+                carregarCursos(isAdmin, usuarioAtualUid);
+
+            } catch (err) {
+                console.error("Erro ao montar cabeçalho:", err);
+            }
         } else {
             window.location.href = "index.html"; 
         }
     });
 
-    // ===== 1. CARREGAR E-BOOKS (COM BLINDAGEM) =====
+    // ===== 1. CARREGAR E-BOOKS =====
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if(!listaEbooks) return;
-        listaEbooks.innerHTML = '<p style="color: #94a3b8;">Carregando...</p>';
+        listaEbooks.innerHTML = '<p style="color: #94a3b8;">Carregando e-books...</p>';
         try {
             let ebooksLiberados = [];
             if (!isAdmin) {
                 try {
                     const snap = await getDoc(doc(db, "acessos", uid));
                     if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
-                } catch(err) {
-                    ebooksLiberados = []; // Se não existir a pasta ainda, assume vazio sem travar
-                }
+                } catch(e) { ebooksLiberados = []; }
             }
+            
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
+            
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data(), id = docSnap.id; 
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
@@ -126,7 +137,7 @@ if (document.body.classList.contains('page-plataforma')) {
 
                 window.catalogoEbooks[id] = { ...data, id: id, fotoLimpa: fotoLimpa, media: media, hasAccess: hasAccess };
 
-                const tagsHtml = data.hash ? data.hash.split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
+                const tagsHtml = data.hash ? String(data.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
                 let estrelasHtml = '';
                 for(let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
 
@@ -140,8 +151,8 @@ if (document.body.classList.contains('page-plataforma')) {
                     <div class="ebook-info">
                         ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id}</span>` : ''}
                         <div class="hashtags">${tagsHtml}</div>
-                        <h3>${data.titulo}</h3>
-                        <p class="desc-preview">${data.desc}</p>
+                        <h3>${data.titulo || 'Sem Título'}</h3>
+                        <p class="desc-preview">${data.desc || ''}</p>
                         <span class="ler-mais-txt">Ler mais...</span>
                         <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px;">
                             <div class="stars-container" style="display: flex; gap: 4px; font-size: 24px; cursor: pointer; color: #334155;">
@@ -160,7 +171,7 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     }
 
-    // ===== 2. CARREGAR CURSOS (COM BLINDAGEM) =====
+    // ===== 2. CARREGAR CURSOS =====
     async function carregarCursos(isAdmin, uid) {
         const lista = document.getElementById('lista-cursos');
         if(!lista) return;
@@ -171,12 +182,12 @@ if (document.body.classList.contains('page-plataforma')) {
                 try {
                     const snap = await getDoc(doc(db, "acessos", uid));
                     if (snap.exists()) cursosLiberados = snap.data().produtos || [];
-                } catch(err) {
-                    cursosLiberados = []; // Se não existir a pasta ainda, assume vazio sem travar
-                }
+                } catch(e) { cursosLiberados = []; }
             }
+            
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = ''; 
+            
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data(), id = docSnap.id; 
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
@@ -200,8 +211,8 @@ if (document.body.classList.contains('page-plataforma')) {
                     <img src="${fotoLimpa}" alt="Capa" class="ebook-cover">
                     <div class="ebook-info">
                         ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id}</span>` : ''}
-                        <h3>${data.titulo}</h3>
-                        <p class="desc-preview">${data.desc}</p>
+                        <h3>${data.titulo || 'Sem Título'}</h3>
+                        <p class="desc-preview">${data.desc || ''}</p>
                         <span class="ler-mais-txt">Assistir Aula Demo...</span>
                         
                         <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px; position: relative; z-index: 10;">
@@ -221,11 +232,12 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     }
 
-    // Ações Gerais de Botões
+    // Ações Gerais
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     document.querySelectorAll('.fechar-modal').forEach(btn => {
         btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; });
     });
+    
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
     botoesNav.forEach(botao => {
@@ -333,7 +345,7 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('detalhe-img').src = ebook.fotoLimpa;
             document.getElementById('detalhe-titulo').textContent = ebook.titulo;
             document.getElementById('detalhe-desc').textContent = ebook.desc;
-            document.getElementById('detalhe-tags').innerHTML = ebook.hash ? ebook.hash.split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
+            document.getElementById('detalhe-tags').innerHTML = ebook.hash ? String(ebook.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
             
             const acaoContainer = document.getElementById('detalhe-acao');
             if(ebook.hasAccess) {
@@ -397,8 +409,11 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('modal-detalhes-curso').style.display = 'flex';
         });
 
-        document.querySelector('#modal-detalhes-curso .fechar-modal').addEventListener('click', () => {
-            document.getElementById('detalhe-curso-video').src = "";
-        });
+        const btnFecharCurso = document.querySelector('#modal-detalhes-curso .fechar-modal');
+        if (btnFecharCurso) {
+            btnFecharCurso.addEventListener('click', () => {
+                document.getElementById('detalhe-curso-video').src = "";
+            });
+        }
     }
 }
