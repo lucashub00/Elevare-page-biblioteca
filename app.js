@@ -22,7 +22,7 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ==========================================
-// FUNÇÕES AUXILIARES BLINDADAS
+// FUNÇÕES AUXILIARES MÁGICAS
 // ==========================================
 function extrairLinkImagem(inputTexto) {
     if (!inputTexto) return "";
@@ -35,10 +35,24 @@ function extrairLinkImagem(inputTexto) {
 }
 
 function extrairIdYoutube(url) {
-    if (!url) return ""; // Impede o travamento se o curso não tiver link
+    if (!url) return "";
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = String(url).match(regex);
     return match ? match[1] : "";
+}
+
+// NOVO: Corta a conexão se o Firebase tentar travar a tela por mais de 3.5 segundos!
+async function lerAcessosComTimeout(uid) {
+    try {
+        const snap = await Promise.race([
+            getDoc(doc(db, "acessos", uid)),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3500))
+        ]);
+        return (snap && snap.exists()) ? (snap.data().produtos || []) : [];
+    } catch (error) {
+        console.warn("Memória do navegador travou a leitura. Liberando a tela à força...");
+        return [];
+    }
 }
 
 // ==========================================
@@ -96,15 +110,12 @@ if (document.body.classList.contains('page-plataforma')) {
                 document.getElementById('user-foto').style.display = "block";
 
                 const isAdmin = admins.includes(emailUsuario);
-                if (isAdmin) {
-                    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
-                }
+                if (isAdmin) document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
                 
                 carregarEbooks(isAdmin, usuarioAtualUid);
                 carregarCursos(isAdmin, usuarioAtualUid);
-
             } catch (err) {
-                console.error("Erro ao montar cabeçalho:", err);
+                console.error("Erro interno:", err);
             }
         } else {
             window.location.href = "index.html"; 
@@ -115,15 +126,10 @@ if (document.body.classList.contains('page-plataforma')) {
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if(!listaEbooks) return;
-        listaEbooks.innerHTML = '<p style="color: #94a3b8;">Carregando e-books...</p>';
+        listaEbooks.innerHTML = '<p style="color: #94a3b8;">Carregando...</p>';
         try {
-            let ebooksLiberados = [];
-            if (!isAdmin) {
-                try {
-                    const snap = await getDoc(doc(db, "acessos", uid));
-                    if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
-                } catch(e) { ebooksLiberados = []; }
-            }
+            // Usa a nova função blindada anti-travamento
+            let ebooksLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
             
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
@@ -177,13 +183,8 @@ if (document.body.classList.contains('page-plataforma')) {
         if(!lista) return;
         lista.innerHTML = '<p style="color: #94a3b8;">Carregando cursos...</p>';
         try {
-            let cursosLiberados = [];
-            if (!isAdmin) {
-                try {
-                    const snap = await getDoc(doc(db, "acessos", uid));
-                    if (snap.exists()) cursosLiberados = snap.data().produtos || [];
-                } catch(e) { cursosLiberados = []; }
-            }
+            // Usa a nova função blindada anti-travamento
+            let cursosLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
             
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = ''; 
