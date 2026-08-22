@@ -362,3 +362,35 @@ body.page-cadastro {
 .ebook-rating-interactive .star.active {
     color: #fbbf24; /* Cor amarelo/ouro quando acesa */
 }
+/* ==================================
+   BLOQUEIO DE ACESSO (CADEADO)
+=================================== */
+.padlock-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 350px; /* Altura da capa da foto */
+    background: rgba(15, 23, 42, 0.7);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: white; z-index: 5; backdrop-filter: blur(3px);
+}
+.padlock-overlay span.icon {
+    font-size: 40px; margin-bottom: 10px;
+}
+.padlock-overlay span.texto {
+    font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+}
+.btn-wpp-buy {
+    width: 100%; background: #25D366; color: white; padding: 12px; border: none; 
+    border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
+    margin-top: 15px; display: block; text-align: center; text-decoration: none;
+}
+.btn-wpp-buy:hover { background: #1da851; }
+.btn-download-pdf {
+    width: 100%; background: #00b4d8; color: white; padding: 12px; border: none; 
+    border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
+    margin-top: 15px; display: block; text-align: center; text-decoration: none;
+}
+.btn-download-pdf:hover { background: #0077b6; }
+.admin-id-tag {
+    font-size: 11px; background: #334155; color: #94a3b8; padding: 4px 8px; 
+    border-radius: 4px; display: block; margin-bottom: 10px;
+}
