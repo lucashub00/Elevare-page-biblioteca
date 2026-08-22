@@ -100,7 +100,7 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     });
 
-    // ===== 1. CARREGAR E-BOOKS =====
+    // ===== 1. CARREGAR E-BOOKS (COM BLINDAGEM) =====
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if(!listaEbooks) return;
@@ -108,8 +108,12 @@ if (document.body.classList.contains('page-plataforma')) {
         try {
             let ebooksLiberados = [];
             if (!isAdmin) {
-                const snap = await getDoc(doc(db, "acessos", uid));
-                if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
+                try {
+                    const snap = await getDoc(doc(db, "acessos", uid));
+                    if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
+                } catch(err) {
+                    ebooksLiberados = []; // Se não existir a pasta ainda, assume vazio sem travar
+                }
             }
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
@@ -151,10 +155,12 @@ if (document.body.classList.contains('page-plataforma')) {
                 `;
                 listaEbooks.appendChild(card);
             });
-        } catch(error) {}
+        } catch(error) {
+            listaEbooks.innerHTML = '<p style="color: #ef4444;">Erro ao carregar e-books.</p>';
+        }
     }
 
-    // ===== 2. CARREGAR CURSOS (AGORA COM VISUAL DE E-BOOK) =====
+    // ===== 2. CARREGAR CURSOS (COM BLINDAGEM) =====
     async function carregarCursos(isAdmin, uid) {
         const lista = document.getElementById('lista-cursos');
         if(!lista) return;
@@ -162,8 +168,12 @@ if (document.body.classList.contains('page-plataforma')) {
         try {
             let cursosLiberados = [];
             if (!isAdmin) {
-                const snap = await getDoc(doc(db, "acessos", uid));
-                if (snap.exists()) cursosLiberados = snap.data().produtos || [];
+                try {
+                    const snap = await getDoc(doc(db, "acessos", uid));
+                    if (snap.exists()) cursosLiberados = snap.data().produtos || [];
+                } catch(err) {
+                    cursosLiberados = []; // Se não existir a pasta ainda, assume vazio sem travar
+                }
             }
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = ''; 
@@ -182,7 +192,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 for(let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
 
                 const card = document.createElement('div');
-                // IMPORTANTE: Usei as classes "card-ebook card-curso" juntas para aplicar as regras de design perfeito do E-book!
                 card.className = 'card-ebook card-curso'; 
                 card.setAttribute('data-id', id);
                 card.innerHTML = `
@@ -195,7 +204,6 @@ if (document.body.classList.contains('page-plataforma')) {
                         <p class="desc-preview">${data.desc}</p>
                         <span class="ler-mais-txt">Assistir Aula Demo...</span>
                         
-                        <!-- ESTRELAS AGORA TAMBÉM NOS CURSOS -->
                         <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px; position: relative; z-index: 10;">
                             <div class="stars-container" style="display: flex; gap: 4px; font-size: 24px; cursor: pointer; color: #334155;">
                                 ${estrelasHtml}
@@ -208,7 +216,9 @@ if (document.body.classList.contains('page-plataforma')) {
                 `;
                 lista.appendChild(card);
             });
-        } catch(error) {}
+        } catch(error) {
+            lista.innerHTML = '<p style="color: #ef4444;">Erro ao carregar cursos.</p>';
+        }
     }
 
     // Ações Gerais de Botões
@@ -254,9 +264,7 @@ if (document.body.classList.contains('page-plataforma')) {
             const d = document.getElementById('input-desc-curso').value;
             if(!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
             
-            // Adiciona a array de ratings vazia nos cursos!
             await addDoc(collection(db, "cursos"), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
-            
             document.getElementById('modal-add-curso').style.display = 'none';
             carregarCursos(true, usuarioAtualUid); 
         });
@@ -307,7 +315,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
-            // MÁGICA DE NÃO ABRIR JANELA AO CLICAR NA ESTRELA
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
@@ -318,7 +325,7 @@ if (document.body.classList.contains('page-plataforma')) {
                         await updateDoc(ref, { ratings: notas }); carregarEbooks(admins.includes(auth.currentUser.email), usuarioAtualUid);
                     }
                 }
-                return; // O CÓDIGO MORRE AQUI, NÃO ABRE A JANELA!
+                return;
             }
 
             const ebook = window.catalogoEbooks[ebookId];
@@ -352,7 +359,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
-            // MÁGICA DA ESTRELA TAMBÉM NOS CURSOS
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
@@ -363,7 +369,7 @@ if (document.body.classList.contains('page-plataforma')) {
                         await updateDoc(ref, { ratings: notas }); carregarCursos(admins.includes(auth.currentUser.email), usuarioAtualUid);
                     }
                 }
-                return; // O CÓDIGO MORRE AQUI, NÃO ABRE O MODAL DO VÍDEO!
+                return;
             }
 
             const curso = window.catalogoCursos[cursoId];
@@ -391,7 +397,6 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('modal-detalhes-curso').style.display = 'flex';
         });
 
-        // Para o vídeo do YouTube quando fechar a janela
         document.querySelector('#modal-detalhes-curso .fechar-modal').addEventListener('click', () => {
             document.getElementById('detalhe-curso-video').src = "";
         });
