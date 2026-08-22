@@ -21,22 +21,48 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
+// ==========================================
+// FUNÇÃO INTELIGENTE: EXTRAIR LINK DA FOTO
+// ==========================================
+// Essa função garimpa o link puro não importa o código sujo que o ImgBB entregue
+function extrairLinkImagem(inputTexto) {
+    if (!inputTexto) return "";
+    
+    // Se o usuário copiou o código HTML inteiro (<a href...><img src="...">)
+    const matchHtml = inputTexto.match(/src=["']?(https?:\/\/[^"'\s>]+)/);
+    if (matchHtml && matchHtml[1]) return matchHtml[1].trim();
+
+    // Se o usuário copiou o código BBCode ([img]...[/img])
+    const matchBbcode = inputTexto.match(/\[img\](https?:\/\/[^\[]+)\[\/img\]/i);
+    if (matchBbcode && matchBbcode[1]) return matchBbcode[1].trim();
+
+    // Se ele já colou o link certinho, só tira espaços e aspas perdidas
+    return inputTexto.replace(/['"]/g, '').trim();
+}
+
+// ==========================================
+// LÓGICA: INDEX E CADASTRO
+// ==========================================
 if (document.body.classList.contains('page-index')) {
     document.querySelectorAll('.action-bridge').forEach(botao => {
         botao.addEventListener('click', function(event) {
             event.preventDefault(); document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' });
         });
     });
+
     document.getElementById('btn-entrar').addEventListener('click', () => {
         const email = document.getElementById('email-login').value;
         const senha = document.getElementById('senha-login').value;
         const msgErro = document.getElementById('mensagem-erro');
         msgErro.style.display = 'none';
+
         if(!email || !senha) { msgErro.textContent = "Preencha e-mail e senha!"; msgErro.style.display = 'block'; return; }
+
         signInWithEmailAndPassword(auth, email, senha)
             .then(() => window.location.href = "plataforma.html")
             .catch(() => { msgErro.textContent = "Erro: E-mail ou senha incorretos."; msgErro.style.display = 'block'; });
     });
+
     document.getElementById('btn-google').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
     });
@@ -48,24 +74,29 @@ if (document.body.classList.contains('page-cadastro')) {
         const senha = document.getElementById('senha-cadastro').value;
         const msgErro = document.getElementById('mensagem-erro-cadastro');
         msgErro.style.display = 'none';
+
         if(!email || !senha) { msgErro.textContent = "Preencha e-mail e senha!"; msgErro.style.display = 'block'; return; }
         if(senha.length < 6) { msgErro.textContent = "Senha mínima de 6 caracteres."; msgErro.style.display = 'block'; return; }
+
         createUserWithEmailAndPassword(auth, email, senha)
             .then(() => window.location.href = "plataforma.html")
             .catch(() => { msgErro.textContent = "Erro ao criar conta. E-mail já em uso."; msgErro.style.display = 'block'; });
     });
+
     document.getElementById('btn-google-cadastro').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
     });
 }
 
+// ==========================================
+// LÓGICA DA PÁGINA: PLATAFORMA
+// ==========================================
 if (document.body.classList.contains('page-plataforma')) {
     
     const admins = ["pedroeliasm08@gmail.com", "suporteelevaresolucoes@gmail.com"];
     const NUMERO_DO_ZAP = "5532999999999"; 
     let usuarioAtualUid = "";
 
-    // Armazém de dados temporário para a janela de Detalhes
     window.catalogoEbooks = {};
 
     onAuthStateChanged(auth, (user) => {
@@ -110,8 +141,8 @@ if (document.body.classList.contains('page-plataforma')) {
                 const data = docSnap.data();
                 const id = docSnap.id; 
                 
-                // Limpeza de segurança (Remove aspas se a pessoa colou sem querer no ImgBB)
-                const fotoLimpa = data.fotoUrl ? data.fotoUrl.replace(/['"]/g, '') : '';
+                // MÁGICA DE LIMPEZA: Conserta as imagens antigas que estavam quebradas
+                const fotoLimpa = extrairLinkImagem(data.fotoUrl);
 
                 const hasAccess = isAdmin || ebooksLiberados.includes(id);
                 let media = 0;
@@ -119,7 +150,6 @@ if (document.body.classList.contains('page-plataforma')) {
                     media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
                 }
 
-                // Salva no catálogo para a janela de Detalhes
                 window.catalogoEbooks[id] = {
                     ...data, id: id, fotoLimpa: fotoLimpa, media: media, hasAccess: hasAccess
                 };
@@ -165,7 +195,7 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     }
 
-    // Navegação Básica
+    // Navegação
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
@@ -178,26 +208,34 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // Adicionar Ebook
+    // Adicionar E-book
     const modalEbook = document.getElementById('modal-add-ebook');
     if(document.getElementById('btn-add-ebook') && modalEbook) {
         document.getElementById('btn-add-ebook').addEventListener('click', () => modalEbook.style.display = 'flex');
         document.getElementById('btn-cancelar-ebook').addEventListener('click', () => modalEbook.style.display = 'none');
 
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
-            const fotoUrl = document.getElementById('input-foto-ebook').value.replace(/['"]/g, ''); // Limpa as aspas!
+            // APLICA O FILTRO INTELIGENTE NO LINK QUE O USUÁRIO COLOU
+            const inputCru = document.getElementById('input-foto-ebook').value;
+            const fotoUrlLimpa = extrairLinkImagem(inputCru); 
+            
             const pdfUrl = document.getElementById('input-pdf-ebook').value;
             const titulo = document.getElementById('input-titulo-ebook').value;
             const desc = document.getElementById('input-desc-ebook').value;
             const hash = document.getElementById('input-hash-ebook').value;
 
-            if(!fotoUrl || !pdfUrl || !titulo || !desc) { alert("Preencha todos os links e textos!"); return; }
+            if(!fotoUrlLimpa || !pdfUrl || !titulo || !desc) { alert("Preencha todos os links e textos!"); return; }
 
             try {
                 await addDoc(collection(db, "ebooks"), {
-                    titulo: titulo, desc: desc, hash: hash, fotoUrl: fotoUrl, pdfUrl: pdfUrl, ratings: []
+                    titulo: titulo, desc: desc, hash: hash, fotoUrl: fotoUrlLimpa, pdfUrl: pdfUrl, ratings: []
                 });
                 modalEbook.style.display = 'none';
+                document.getElementById('input-foto-ebook').value = '';
+                document.getElementById('input-pdf-ebook').value = '';
+                document.getElementById('input-titulo-ebook').value = '';
+                document.getElementById('input-desc-ebook').value = '';
+                document.getElementById('input-hash-ebook').value = '';
                 carregarEbooks(true, usuarioAtualUid); 
             } catch (error) { alert("Erro ao salvar: " + error.message); }
         });
@@ -243,7 +281,7 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     }
 
-    // Cliques na Vitrine (Apagar, Estrelas, e LER MAIS/DETALHES)
+    // Cliques na Vitrine
     const listaEbooks = document.getElementById('lista-ebooks');
     const modalDetalhes = document.getElementById('modal-detalhes-ebook');
 
@@ -277,19 +315,17 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
-            // 3. SE CLICOU EM QUALQUER OUTRO LUGAR DO CARD: ABRIR DETALHES
+            // 3. ABRIR DETALHES
             abrirDetalhesEbook(ebookId);
         });
     }
 
-    // Fechar Detalhes
     if(document.getElementById('btn-fechar-detalhes')) {
         document.getElementById('btn-fechar-detalhes').addEventListener('click', () => {
             modalDetalhes.style.display = 'none';
         });
     }
 
-    // Função para montar a Janela de Detalhes
     function abrirDetalhesEbook(id) {
         const ebook = window.catalogoEbooks[id];
         if(!ebook) return;
@@ -298,11 +334,9 @@ if (document.body.classList.contains('page-plataforma')) {
         document.getElementById('detalhe-titulo').textContent = ebook.titulo;
         document.getElementById('detalhe-desc').textContent = ebook.desc;
 
-        // Tags
         document.getElementById('detalhe-tags').innerHTML = ebook.hash.split(',')
             .map(tag => tag.trim() !== "" ? `<span class="hashtag">#${tag.trim()}</span>` : "").join('');
         
-        // Estrelas Fixas (Apenas Visualização)
         const mediaArr = Math.round(ebook.media);
         let estrelasDet = '';
         for(let i = 1; i <= 5; i++) {
@@ -310,7 +344,6 @@ if (document.body.classList.contains('page-plataforma')) {
         }
         document.getElementById('detalhe-rating').innerHTML = `${estrelasDet} <span style="font-size: 16px; color: #fff; margin-left: 10px; background: #334155; padding: 2px 8px; border-radius: 4px;">${ebook.media > 0 ? ebook.media : 'Novo'}</span>`;
 
-        // Botões (Acessar ou Comprar)
         const acaoContainer = document.getElementById('detalhe-acao');
         if(ebook.hasAccess) {
              acaoContainer.innerHTML = `<a href="${ebook.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo (Abrir PDF)</a>`;
