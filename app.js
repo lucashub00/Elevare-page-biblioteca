@@ -63,7 +63,7 @@ if (document.body.classList.contains('page-cadastro')) {
         const e = document.getElementById('email-cadastro').value, s = document.getElementById('senha-cadastro').value, m = document.getElementById('mensagem-erro-cadastro');
         m.style.display = 'none';
         if(!e || !s) { m.textContent = "Preencha tudo!"; m.style.display = 'block'; return; }
-        createUserWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro ao criar conta. E-mail já em uso."; m.style.display = 'block'; });
+        createUserWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro ao criar conta."; m.style.display = 'block'; });
     });
     document.getElementById('btn-google-cadastro').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
@@ -91,9 +91,8 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('user-foto').style.display = "block";
 
             const isAdmin = admins.includes(user.email);
-            if (isAdmin) {
-                document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
-            }
+            if (isAdmin) document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
+            
             carregarEbooks(isAdmin, usuarioAtualUid);
             carregarCursos(isAdmin, usuarioAtualUid);
         } else {
@@ -155,7 +154,7 @@ if (document.body.classList.contains('page-plataforma')) {
         } catch(error) {}
     }
 
-    // ===== 2. CARREGAR CURSOS =====
+    // ===== 2. CARREGAR CURSOS (AGORA COM VISUAL DE E-BOOK) =====
     async function carregarCursos(isAdmin, uid) {
         const lista = document.getElementById('lista-cursos');
         if(!lista) return;
@@ -174,23 +173,37 @@ if (document.body.classList.contains('page-plataforma')) {
                 const videoId = extrairIdYoutube(data.ytUrl); 
                 const hasAccess = isAdmin || cursosLiberados.includes(id);
 
+                let media = 0;
+                if (data.ratings && data.ratings.length > 0) media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
+
                 window.catalogoCursos[id] = { ...data, id: id, fotoLimpa: fotoLimpa, videoId: videoId, hasAccess: hasAccess };
 
+                let estrelasHtml = '';
+                for(let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
+
                 const card = document.createElement('div');
-                card.className = 'card-curso card-item'; 
+                // IMPORTANTE: Usei as classes "card-ebook card-curso" juntas para aplicar as regras de design perfeito do E-book!
+                card.className = 'card-ebook card-curso'; 
                 card.setAttribute('data-id', id);
                 card.innerHTML = `
-                    <button class="btn-delete-curso" style="display: ${isAdmin ? 'flex' : 'none'}; position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; z-index: 10; font-size: 14px;">🗑️</button>
-                    ${hasAccess ? '' : `<div class="badge-lock">🔒 Aula Demo Liberada</div>`}
-                    <div class="curso-thumb">
-                        <img src="${fotoLimpa}" alt="Thumb" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
-                        <div class="play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 3px solid #00b4d8; pointer-events: none;">▶</div>
-                    </div>
-                    <div class="curso-info" style="padding: 20px;">
+                    <button class="btn-delete-curso" style="display: ${isAdmin ? 'flex' : 'none'};" title="Apagar Curso">🗑️</button>
+                    ${hasAccess ? '' : `<div class="badge-lock">🔒 Bloqueado</div>`}
+                    <img src="${fotoLimpa}" alt="Capa" class="ebook-cover">
+                    <div class="ebook-info">
                         ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id}</span>` : ''}
                         <h3>${data.titulo}</h3>
                         <p class="desc-preview">${data.desc}</p>
-                        <span class="ler-mais-txt">Assistir Aula Demonstrativa</span>
+                        <span class="ler-mais-txt">Assistir Aula Demo...</span>
+                        
+                        <!-- ESTRELAS AGORA TAMBÉM NOS CURSOS -->
+                        <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px; position: relative; z-index: 10;">
+                            <div class="stars-container" style="display: flex; gap: 4px; font-size: 24px; cursor: pointer; color: #334155;">
+                                ${estrelasHtml}
+                            </div>
+                            <span class="score" style="margin-left: 10px; font-weight: bold; color: #fff; font-size: 16px; background: #334155; padding: 2px 8px; border-radius: 4px;">
+                                ${media > 0 ? media : 'Novo'}
+                            </span>
+                        </div>
                     </div>
                 `;
                 lista.appendChild(card);
@@ -198,12 +211,11 @@ if (document.body.classList.contains('page-plataforma')) {
         } catch(error) {}
     }
 
-    // Ações Gerais
+    // Ações Gerais de Botões
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     document.querySelectorAll('.fechar-modal').forEach(btn => {
         btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; });
     });
-    
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
     botoesNav.forEach(botao => {
@@ -241,13 +253,16 @@ if (document.body.classList.contains('page-plataforma')) {
             const t = document.getElementById('input-titulo-curso').value;
             const d = document.getElementById('input-desc-curso').value;
             if(!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
-            await addDoc(collection(db, "cursos"), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f });
+            
+            // Adiciona a array de ratings vazia nos cursos!
+            await addDoc(collection(db, "cursos"), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
+            
             document.getElementById('modal-add-curso').style.display = 'none';
             carregarCursos(true, usuarioAtualUid); 
         });
     }
 
-    // ===== GERENCIAR ACESSOS UNIVERSAL (E-BOOKS E CURSOS) =====
+    // ===== GERENCIAR ACESSOS UNIVERSAL =====
     const modalAcesso = document.getElementById('modal-gerenciar-acessos');
     document.querySelectorAll('.btn-abrir-gerenciador').forEach(btn => {
         btn.addEventListener('click', () => modalAcesso.style.display = 'flex');
@@ -262,12 +277,8 @@ if (document.body.classList.contains('page-plataforma')) {
             const snap = await getDoc(ref);
             let prod = snap.exists() ? snap.data().produtos || [] : [];
             if(!prod.includes(pId)) { 
-                prod.push(pId); 
-                await setDoc(ref, { produtos: prod }, { merge: true }); 
-                alert("✅ Acesso Liberado!"); 
-            } else {
-                alert("O cliente já possui acesso.");
-            }
+                prod.push(pId); await setDoc(ref, { produtos: prod }, { merge: true }); alert("✅ Acesso Liberado!"); 
+            } else { alert("O cliente já possui acesso."); }
         });
         document.getElementById('btn-revogar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
@@ -296,6 +307,7 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
+            // MÁGICA DE NÃO ABRIR JANELA AO CLICAR NA ESTRELA
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
@@ -306,7 +318,7 @@ if (document.body.classList.contains('page-plataforma')) {
                         await updateDoc(ref, { ratings: notas }); carregarEbooks(admins.includes(auth.currentUser.email), usuarioAtualUid);
                     }
                 }
-                return;
+                return; // O CÓDIGO MORRE AQUI, NÃO ABRE A JANELA!
             }
 
             const ebook = window.catalogoEbooks[ebookId];
@@ -314,7 +326,7 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('detalhe-img').src = ebook.fotoLimpa;
             document.getElementById('detalhe-titulo').textContent = ebook.titulo;
             document.getElementById('detalhe-desc').textContent = ebook.desc;
-            document.getElementById('detalhe-tags').innerHTML = ebook.hash.split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('');
+            document.getElementById('detalhe-tags').innerHTML = ebook.hash ? ebook.hash.split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
             
             const acaoContainer = document.getElementById('detalhe-acao');
             if(ebook.hasAccess) {
@@ -338,6 +350,20 @@ if (document.body.classList.contains('page-plataforma')) {
             if (event.target.closest('.btn-delete-curso')) {
                 if (confirm("Apagar Curso?")) { await deleteDoc(doc(db, "cursos", cursoId)); card.remove(); }
                 return;
+            }
+
+            // MÁGICA DA ESTRELA TAMBÉM NOS CURSOS
+            if (event.target.closest('.ebook-rating-interactive')) {
+                if (event.target.classList.contains('star')) {
+                    const valor = parseInt(event.target.getAttribute('data-value'));
+                    const ref = doc(db, "cursos", cursoId);
+                    const snap = await getDoc(ref);
+                    if (snap.exists()) {
+                        const notas = snap.data().ratings || []; notas.push(valor); 
+                        await updateDoc(ref, { ratings: notas }); carregarCursos(admins.includes(auth.currentUser.email), usuarioAtualUid);
+                    }
+                }
+                return; // O CÓDIGO MORRE AQUI, NÃO ABRE O MODAL DO VÍDEO!
             }
 
             const curso = window.catalogoCursos[cursoId];

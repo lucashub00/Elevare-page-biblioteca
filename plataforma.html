@@ -47,7 +47,7 @@
             <div class="grid-ebooks" id="lista-ebooks"></div>
         </section>
 
-        <!-- ABA 2: CURSOS -->
+       <!-- ABA 2: CURSOS -->
         <section id="tab-cursos" class="tab-content">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div>
@@ -55,14 +55,14 @@
                     <p>Assista às aulas demonstrativas e garanta seu acesso ao conteúdo completo.</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <!-- NOVO: Botão de gerenciar acesso também na aba de cursos -->
                     <button class="cta-btn btn-admin btn-abrir-gerenciador" style="display: none; background: #f59e0b; box-shadow: none;">🛡️ Gerenciar Acessos</button>
                     <button id="btn-add-curso" class="cta-btn btn-admin" style="display: none; background: #8b5cf6; box-shadow: none;">+ Adicionar Curso</button>
                 </div>
             </div>
-            <div class="grid-cursos" id="lista-cursos"></div>
+            
+            <!-- Usando a mesma classe 'grid-ebooks' para garantir o tamanho pequeno dos cards! -->
+            <div class="grid-ebooks" id="lista-cursos"></div>
         </section>
-
         <!-- ABA 3: CONSULTORIA -->
         <section id="tab-consultoria" class="tab-content">
             <div class="section-header">
@@ -147,21 +147,26 @@
         </div>
     </div>
 
-    <!-- MODAL: DETALHES CURSO (COM VÍDEO) -->
+   <!-- MODAL: DETALHES CURSO (TELA TRAVADA COM VÍDEO TOP E SCROLL) -->
     <div id="modal-detalhes-curso" class="modal-overlay" style="display: none;">
-        <div class="modal-content modal-curso-content" style="text-align: left;">
-            <h2 id="detalhe-curso-titulo" style="margin-bottom: 15px; color: #fff; font-size: 26px;"></h2>
-            <div class="video-wrapper">
+        <div class="modal-content" style="max-width: 600px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; text-align: left;">
+            
+            <!-- 1. TÍTULO -->
+            <h2 id="detalhe-curso-titulo" style="margin-bottom: 15px; color: #fff; font-size: 24px; flex-shrink: 0;"></h2>
+            
+            <!-- 2. VÍDEO RETANGULAR NO TOPO -->
+            <div class="video-wrapper" style="flex-shrink: 0; margin-bottom: 15px;">
                 <iframe id="detalhe-curso-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-            <h4 style="color: #00b4d8; margin-bottom: 5px;">Sobre o Treinamento:</h4>
-            <p id="detalhe-curso-desc" style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 25px;"></p>
+
+            <!-- 3. BOTÃO ACIMA DA DESCRIÇÃO -->
+            <div id="detalhe-curso-acao" style="flex-shrink: 0; margin-bottom: 15px;"></div>
+
+            <!-- 4. DESCRIÇÃO COM SCROLL (TELA NÃO AUMENTA) -->
+            <h4 style="color: #00b4d8; margin-bottom: 5px; flex-shrink: 0;">Sobre o Treinamento:</h4>
+            <p id="detalhe-curso-desc" style="color: #94a3b8; font-size: 14px; line-height: 1.6; overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-bottom: 15px;"></p>
             
-            <div id="detalhe-curso-acao"></div>
-            <button class="btn-cancelar fechar-modal" style="margin-top: 15px; width: 100%;">Fechar Aula Demonstrativa</button>
+            <!-- 5. BOTÃO FECHAR -->
+            <button class="btn-cancelar fechar-modal" style="flex-shrink: 0; width: 100%;">Fechar Aula Demonstrativa</button>
         </div>
     </div>
-
-    <script type="module" src="app.js"></script>
-</body>
-</html>
