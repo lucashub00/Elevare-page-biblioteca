@@ -21,29 +21,22 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// ==========================================
-// LÓGICA: INDEX E CADASTRO (MANTIDO)
-// ==========================================
 if (document.body.classList.contains('page-index')) {
     document.querySelectorAll('.action-bridge').forEach(botao => {
         botao.addEventListener('click', function(event) {
             event.preventDefault(); document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' });
         });
     });
-
     document.getElementById('btn-entrar').addEventListener('click', () => {
         const email = document.getElementById('email-login').value;
         const senha = document.getElementById('senha-login').value;
         const msgErro = document.getElementById('mensagem-erro');
         msgErro.style.display = 'none';
-
         if(!email || !senha) { msgErro.textContent = "Preencha e-mail e senha!"; msgErro.style.display = 'block'; return; }
-
         signInWithEmailAndPassword(auth, email, senha)
             .then(() => window.location.href = "plataforma.html")
             .catch(() => { msgErro.textContent = "Erro: E-mail ou senha incorretos."; msgErro.style.display = 'block'; });
     });
-
     document.getElementById('btn-google').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
     });
@@ -55,37 +48,29 @@ if (document.body.classList.contains('page-cadastro')) {
         const senha = document.getElementById('senha-cadastro').value;
         const msgErro = document.getElementById('mensagem-erro-cadastro');
         msgErro.style.display = 'none';
-
         if(!email || !senha) { msgErro.textContent = "Preencha e-mail e senha!"; msgErro.style.display = 'block'; return; }
         if(senha.length < 6) { msgErro.textContent = "Senha mínima de 6 caracteres."; msgErro.style.display = 'block'; return; }
-
         createUserWithEmailAndPassword(auth, email, senha)
             .then(() => window.location.href = "plataforma.html")
             .catch(() => { msgErro.textContent = "Erro ao criar conta. E-mail já em uso."; msgErro.style.display = 'block'; });
     });
-
     document.getElementById('btn-google-cadastro').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
     });
 }
 
-// ==========================================
-// LÓGICA DA PÁGINA: PLATAFORMA (NOVA)
-// ==========================================
 if (document.body.classList.contains('page-plataforma')) {
     
     const admins = ["pedroeliasm08@gmail.com", "suporteelevaresolucoes@gmail.com"];
-    
-    // AQUI VOCÊ COLOCA O NÚMERO DE TELEFONE COM DDD PARA AS VENDAS!
     const NUMERO_DO_ZAP = "5532999999999"; 
-    
     let usuarioAtualUid = "";
 
-    // Autenticação
+    // Armazém de dados temporário para a janela de Detalhes
+    window.catalogoEbooks = {};
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            usuarioAtualUid = user.uid; // ID ÚNICO DO CLIENTE
-            
+            usuarioAtualUid = user.uid; 
             document.getElementById('user-nome').textContent = user.displayName || user.email.split('@')[0];
             document.getElementById('user-uid').textContent = "ID Cliente: " + usuarioAtualUid;
             
@@ -98,22 +83,18 @@ if (document.body.classList.contains('page-plataforma')) {
                 document.getElementById('btn-add-ebook').style.display = 'block';
                 document.getElementById('btn-gerenciar-acessos').style.display = 'block';
             }
-
             carregarEbooks(isAdmin, usuarioAtualUid);
-
         } else {
             window.location.href = "index.html"; 
         }
     });
 
-    // Função Carregar Ebooks (Com Trava de Segurança)
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if(!listaEbooks) return;
         listaEbooks.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando sua biblioteca...</p>';
         
         try {
-            // 1. Puxa os acessos que esse cliente comprou
             let ebooksLiberados = [];
             if (!isAdmin) {
                 const acessoSnap = await getDoc(doc(db, "acessos", uid));
@@ -122,21 +103,26 @@ if (document.body.classList.contains('page-plataforma')) {
                 }
             }
 
-            // 2. Puxa todos os E-books do banco
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
             
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                const id = docSnap.id; // ID ÚNICO DO PRODUTO
+                const id = docSnap.id; 
                 
-                // Checa se o cara tem o produto ou se é admin
-                const hasAccess = isAdmin || ebooksLiberados.includes(id);
+                // Limpeza de segurança (Remove aspas se a pessoa colou sem querer no ImgBB)
+                const fotoLimpa = data.fotoUrl ? data.fotoUrl.replace(/['"]/g, '') : '';
 
+                const hasAccess = isAdmin || ebooksLiberados.includes(id);
                 let media = 0;
                 if (data.ratings && data.ratings.length > 0) {
                     media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
                 }
+
+                // Salva no catálogo para a janela de Detalhes
+                window.catalogoEbooks[id] = {
+                    ...data, id: id, fotoLimpa: fotoLimpa, media: media, hasAccess: hasAccess
+                };
 
                 const tagsHtml = data.hash.split(',').map(tag => tag.trim() !== "" ? `<span class="hashtag">#${tag.trim()}</span>` : "").join('');
                 let estrelasHtml = '';
@@ -145,25 +131,8 @@ if (document.body.classList.contains('page-plataforma')) {
                 }
 
                 const displayDelete = isAdmin ? 'flex' : 'none';
-                
-                // Renderização condicional do Botão e Cadeado
-                let cadeadoHtml = '';
-                let botaoAcaoHtml = '';
+                let cadeadoHtml = hasAccess ? '' : `<div class="badge-lock">🔒 Bloqueado</div>`;
                 let adminIdLabel = isAdmin ? `<span class="admin-id-tag">ID Produto: ${id}</span>` : '';
-
-                if (hasAccess) {
-                    botaoAcaoHtml = `<a href="${data.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo</a>`;
-                } else {
-                    cadeadoHtml = `
-                        <div class="padlock-overlay">
-                            <span class="icon">🔒</span>
-                            <span class="texto">Conteúdo Bloqueado</span>
-                        </div>
-                    `;
-                    
-                    const msgZap = encodeURIComponent(`Olá, quero comprar o E-book "${data.titulo}" (ID Prod: ${id}). Meu ID de Cliente é: ${uid}`);
-                    botaoAcaoHtml = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">Comprar via WhatsApp</a>`;
-                }
 
                 const card = document.createElement('div');
                 card.className = 'card-ebook';
@@ -171,14 +140,15 @@ if (document.body.classList.contains('page-plataforma')) {
                 card.innerHTML = `
                     <button class="btn-delete-ebook" style="display: ${displayDelete};" title="Apagar E-book">🗑️</button>
                     ${cadeadoHtml}
-                    <img src="${data.fotoUrl}" alt="Capa" class="ebook-cover">
+                    <img src="${fotoLimpa}" alt="Capa" class="ebook-cover">
                     <div class="ebook-info">
                         ${adminIdLabel}
                         <div class="hashtags">${tagsHtml}</div>
                         <h3>${data.titulo}</h3>
-                        <p>${data.desc}</p>
-                        ${botaoAcaoHtml}
-                        <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 15px; position: relative; z-index: 10;">
+                        <p class="desc-preview">${data.desc}</p>
+                        <span class="ler-mais-txt">Ler mais...</span>
+                        
+                        <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px; position: relative; z-index: 10;">
                             <div class="stars-container" style="display: flex; gap: 4px; font-size: 24px; cursor: pointer; color: #334155;">
                                 ${estrelasHtml}
                             </div>
@@ -191,12 +161,11 @@ if (document.body.classList.contains('page-plataforma')) {
                 listaEbooks.appendChild(card);
             });
         } catch(error) {
-            console.error(error);
             listaEbooks.innerHTML = '<p style="color: #ef4444;">Erro ao carregar a biblioteca.</p>';
         }
     }
 
-    // Ações Básicas e Navegação
+    // Navegação Básica
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
@@ -209,15 +178,14 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // ===== ADICIONAR E-BOOK =====
-    const btnAddEbook = document.getElementById('btn-add-ebook');
+    // Adicionar Ebook
     const modalEbook = document.getElementById('modal-add-ebook');
-    if(btnAddEbook && modalEbook) {
-        btnAddEbook.addEventListener('click', () => modalEbook.style.display = 'flex');
+    if(document.getElementById('btn-add-ebook') && modalEbook) {
+        document.getElementById('btn-add-ebook').addEventListener('click', () => modalEbook.style.display = 'flex');
         document.getElementById('btn-cancelar-ebook').addEventListener('click', () => modalEbook.style.display = 'none');
 
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
-            const fotoUrl = document.getElementById('input-foto-ebook').value;
+            const fotoUrl = document.getElementById('input-foto-ebook').value.replace(/['"]/g, ''); // Limpa as aspas!
             const pdfUrl = document.getElementById('input-pdf-ebook').value;
             const titulo = document.getElementById('input-titulo-ebook').value;
             const desc = document.getElementById('input-desc-ebook').value;
@@ -235,44 +203,33 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     }
 
-    // ===== PAINEL DO ADMIN: GERENCIAR ACESSOS =====
-    const btnGerenciar = document.getElementById('btn-gerenciar-acessos');
+    // Gerenciar Acessos
     const modalAcesso = document.getElementById('modal-gerenciar-acessos');
-    
-    if(btnGerenciar) {
-        btnGerenciar.addEventListener('click', () => modalAcesso.style.display = 'flex');
+    if(document.getElementById('btn-gerenciar-acessos')) {
+        document.getElementById('btn-gerenciar-acessos').addEventListener('click', () => modalAcesso.style.display = 'flex');
         document.getElementById('btn-fechar-acessos').addEventListener('click', () => modalAcesso.style.display = 'none');
 
-        // LIBERAR ACESSO
         document.getElementById('btn-liberar-acesso').addEventListener('click', async () => {
             const clienteId = document.getElementById('input-cliente-id').value.trim();
             const produtoId = document.getElementById('input-produto-id').value.trim();
-
             if(!clienteId || !produtoId) { alert("Preencha os dois IDs!"); return; }
-
             try {
                 const acessoRef = doc(db, "acessos", clienteId);
                 const acessoSnap = await getDoc(acessoRef);
-                
                 let produtosLiberados = [];
                 if (acessoSnap.exists()) { produtosLiberados = acessoSnap.data().produtos || []; }
-                
                 if(!produtosLiberados.includes(produtoId)) {
                     produtosLiberados.push(produtoId);
                     await setDoc(acessoRef, { produtos: produtosLiberados }, { merge: true });
                     alert("✅ Acesso Liberado com Sucesso para o cliente!");
-                } else {
-                    alert("Este cliente já possui acesso a este material.");
-                }
+                } else { alert("Este cliente já possui acesso a este material."); }
             } catch(e) { alert("Erro: " + e.message); }
         });
 
-        // REVOGAR / BLOQUEAR ACESSO
         document.getElementById('btn-revogar-acesso').addEventListener('click', async () => {
             const clienteId = document.getElementById('input-cliente-id').value.trim();
             const produtoId = document.getElementById('input-produto-id').value.trim();
-            if(!clienteId || !produtoId) { alert("Preencha os dois IDs!"); return; }
-
+            if(!clienteId || !produtoId) return;
             try {
                 const acessoRef = doc(db, "acessos", clienteId);
                 const acessoSnap = await getDoc(acessoRef);
@@ -280,26 +237,31 @@ if (document.body.classList.contains('page-plataforma')) {
                     let produtosLiberados = acessoSnap.data().produtos || [];
                     const novaLista = produtosLiberados.filter(id => id !== produtoId);
                     await setDoc(acessoRef, { produtos: novaLista }, { merge: true });
-                    alert("🚫 Acesso Bloqueado/Removido com sucesso!");
+                    alert("🚫 Acesso Removido com sucesso!");
                 }
             } catch(e) { alert("Erro: " + e.message); }
         });
     }
 
-    // ===== LIXEIRA E AVALIAÇÕES =====
+    // Cliques na Vitrine (Apagar, Estrelas, e LER MAIS/DETALHES)
     const listaEbooks = document.getElementById('lista-ebooks');
+    const modalDetalhes = document.getElementById('modal-detalhes-ebook');
+
     if (listaEbooks) {
         listaEbooks.addEventListener('click', async (event) => {
             const card = event.target.closest('.card-ebook');
             if(!card) return;
             const ebookId = card.getAttribute('data-id');
 
+            // 1. Apagar
             if (event.target.closest('.btn-delete-ebook')) {
                 if (confirm("Deseja apagar este e-book definitivamente?")) {
                     await deleteDoc(doc(db, "ebooks", ebookId)); card.remove(); 
                 }
+                return;
             }
 
+            // 2. Avaliar (Estrelas)
             if (event.target.classList.contains('star')) {
                 const valor = parseInt(event.target.getAttribute('data-value'));
                 try {
@@ -312,7 +274,51 @@ if (document.body.classList.contains('page-plataforma')) {
                         carregarEbooks(admins.includes(auth.currentUser.email), usuarioAtualUid);
                     }
                 } catch (e) { console.error(e); }
+                return;
             }
+
+            // 3. SE CLICOU EM QUALQUER OUTRO LUGAR DO CARD: ABRIR DETALHES
+            abrirDetalhesEbook(ebookId);
         });
+    }
+
+    // Fechar Detalhes
+    if(document.getElementById('btn-fechar-detalhes')) {
+        document.getElementById('btn-fechar-detalhes').addEventListener('click', () => {
+            modalDetalhes.style.display = 'none';
+        });
+    }
+
+    // Função para montar a Janela de Detalhes
+    function abrirDetalhesEbook(id) {
+        const ebook = window.catalogoEbooks[id];
+        if(!ebook) return;
+
+        document.getElementById('detalhe-img').src = ebook.fotoLimpa;
+        document.getElementById('detalhe-titulo').textContent = ebook.titulo;
+        document.getElementById('detalhe-desc').textContent = ebook.desc;
+
+        // Tags
+        document.getElementById('detalhe-tags').innerHTML = ebook.hash.split(',')
+            .map(tag => tag.trim() !== "" ? `<span class="hashtag">#${tag.trim()}</span>` : "").join('');
+        
+        // Estrelas Fixas (Apenas Visualização)
+        const mediaArr = Math.round(ebook.media);
+        let estrelasDet = '';
+        for(let i = 1; i <= 5; i++) {
+            estrelasDet += `<span style="color: ${i <= mediaArr ? '#fbbf24' : '#334155'};">★</span>`;
+        }
+        document.getElementById('detalhe-rating').innerHTML = `${estrelasDet} <span style="font-size: 16px; color: #fff; margin-left: 10px; background: #334155; padding: 2px 8px; border-radius: 4px;">${ebook.media > 0 ? ebook.media : 'Novo'}</span>`;
+
+        // Botões (Acessar ou Comprar)
+        const acaoContainer = document.getElementById('detalhe-acao');
+        if(ebook.hasAccess) {
+             acaoContainer.innerHTML = `<a href="${ebook.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo (Abrir PDF)</a>`;
+        } else {
+             const msgZap = encodeURIComponent(`Olá, tenho interesse no E-book "${ebook.titulo}" (ID: ${id}). Meu ID de Cliente é: ${usuarioAtualUid}`);
+             acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Comprar Acesso via WhatsApp</a>`;
+        }
+
+        modalDetalhes.style.display = 'flex';
     }
 }

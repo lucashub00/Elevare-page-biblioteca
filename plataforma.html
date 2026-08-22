@@ -132,7 +132,27 @@
             </div>
         </div>
     </div>
+<!-- ================= MODAL DE DETALHES DO E-BOOK (Visão do Cliente) ================= -->
+    <div id="modal-detalhes-ebook" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 650px; text-align: left;">
+            <div class="detalhe-layout">
+                <img id="detalhe-img" src="" alt="Capa E-book">
+                <div class="detalhe-info">
+                    <div id="detalhe-tags" class="hashtags" style="margin-bottom: 10px;"></div>
+                    <h2 id="detalhe-titulo" style="margin-bottom: 10px; color: #fff; font-size: 24px;"></h2>
+                    <div id="detalhe-rating" style="margin-bottom: 15px; font-size: 20px;"></div>
+                    
+                    <h4 style="color: #00b4d8; margin-bottom: 5px;">Sinopse do E-book:</h4>
+                    <p id="detalhe-desc" style="color: #94a3b8; font-size: 14px; line-height: 1.6; max-height: 180px; overflow-y: auto; margin-bottom: 20px; padding-right: 5px;"></p>
 
+                    <div id="detalhe-acao">
+                        <!-- O Botão de Comprar ou de Baixar PDF vai aparecer aqui automaticamente -->
+                    </div>
+                </div>
+            </div>
+            <button id="btn-fechar-detalhes" class="btn-cancelar" style="margin-top: 25px; width: 100%;">Fechar Detalhes</button>
+        </div>
+    </div>
     <script type="module" src="app.js"></script>
 </body>
 </html>

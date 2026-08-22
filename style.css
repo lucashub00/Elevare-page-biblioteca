@@ -375,9 +375,7 @@ body.page-cadastro {
 .padlock-overlay span.icon {
     font-size: 40px; margin-bottom: 10px;
 }
-.padlock-overlay span.texto {
-    font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
-}
+
 .btn-wpp-buy {
     width: 100%; background: #25D366; color: white; padding: 12px; border: none; 
     border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
@@ -394,3 +392,59 @@ body.page-cadastro {
     font-size: 11px; background: #334155; color: #94a3b8; padding: 4px 8px; 
     border-radius: 4px; display: block; margin-bottom: 10px;
 }
+/* ==================================
+   ATUALIZAÇÕES: CAPA, CADEADO E LER MAIS
+=================================== */
+/* Fixando o tamanho da Capa para não quebrar */
+.ebook-cover { 
+    width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #00b4d8; 
+}
+
+/* O card agora é clicável (efeito Netflix) */
+.card-ebook {
+    cursor: pointer;
+}
+
+/* Etiqueta pequena de bloqueado */
+.badge-lock {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #f87171;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 12px;
+    z-index: 5;
+    border: 1px solid #f87171;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+}
+
+/* Truque do "Ler mais" (Corta na 3ª linha) */
+.desc-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 5px !important;
+}
+.ler-mais-txt {
+    color: #00b4d8; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px;
+}
+
+/* Layout da Janela de Detalhes */
+.detalhe-layout {
+    display: flex; gap: 25px; flex-wrap: wrap;
+}
+.detalhe-layout img {
+    width: 220px; height: 320px; object-fit: cover; border-radius: 8px; border: 2px solid #334155;
+}
+.detalhe-info {
+    flex: 1; min-width: 250px;
+}
+/* Estilizando a barra de rolagem da sinopse */
+#detalhe-desc::-webkit-scrollbar { width: 6px; }
+#detalhe-desc::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+#detalhe-desc::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
