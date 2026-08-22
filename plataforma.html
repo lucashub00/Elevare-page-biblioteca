@@ -40,8 +40,7 @@
                     <p>Títulos exclusivos para a evolução do seu negócio.</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <!-- Botões Admin Gerais -->
-                    <button id="btn-gerenciar-acessos" class="cta-btn btn-admin" style="display: none; background: #f59e0b; box-shadow: none;">🛡️ Gerenciar Acessos</button>
+                    <button class="cta-btn btn-admin btn-abrir-gerenciador" style="display: none; background: #f59e0b; box-shadow: none;">🛡️ Gerenciar Acessos</button>
                     <button id="btn-add-ebook" class="cta-btn btn-admin" style="display: none; background: #10b981; box-shadow: none;">+ Adicionar E-book</button>
                 </div>
             </div>
@@ -56,6 +55,8 @@
                     <p>Assista às aulas demonstrativas e garanta seu acesso ao conteúdo completo.</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
+                    <!-- NOVO: Botão de gerenciar acesso também na aba de cursos -->
+                    <button class="cta-btn btn-admin btn-abrir-gerenciador" style="display: none; background: #f59e0b; box-shadow: none;">🛡️ Gerenciar Acessos</button>
                     <button id="btn-add-curso" class="cta-btn btn-admin" style="display: none; background: #8b5cf6; box-shadow: none;">+ Adicionar Curso</button>
                 </div>
             </div>
@@ -104,7 +105,7 @@
             <div class="form-group"><label>Aula Demonstrativa (Link YouTube):</label><input type="text" id="input-yt-curso" placeholder="Ex: https://youtu.be/..."></div>
             <div class="form-group"><label>Pasta do Curso (Link Google Drive):</label><input type="text" id="input-pdf-curso"></div>
             <div class="form-group"><label>Título do Curso:</label><input type="text" id="input-titulo-curso"></div>
-            <div class="form-group"><label>Descrição Completa:</label><textarea id="input-desc-curso" rows="2"></textarea></div>
+            <div class="form-group"><label>Descrição Completa:</label><textarea id="input-desc-curso" rows="3"></textarea></div>
             <div class="modal-actions">
                 <button class="btn-cancelar fechar-modal">Cancelar</button>
                 <button id="btn-salvar-curso" class="cta-btn" style="background: #8b5cf6;">Salvar Curso</button>
@@ -116,8 +117,9 @@
     <div id="modal-gerenciar-acessos" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h2 style="color: #f59e0b;">🛡️ Painel de Liberação</h2>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Use este painel para liberar E-books ou Cursos para um cliente.</p>
             <div class="form-group"><label>ID do Cliente:</label><input type="text" id="input-cliente-id"></div>
-            <div class="form-group"><label>ID do E-book ou Curso:</label><input type="text" id="input-produto-id"></div>
+            <div class="form-group"><label>ID do Produto (E-book ou Curso):</label><input type="text" id="input-produto-id"></div>
             <div class="modal-actions" style="justify-content: space-between;">
                 <button class="btn-cancelar fechar-modal">Fechar</button>
                 <div style="display: flex; gap: 10px;">
@@ -148,14 +150,10 @@
     <!-- MODAL: DETALHES CURSO (COM VÍDEO) -->
     <div id="modal-detalhes-curso" class="modal-overlay" style="display: none;">
         <div class="modal-content modal-curso-content" style="text-align: left;">
-            
             <h2 id="detalhe-curso-titulo" style="margin-bottom: 15px; color: #fff; font-size: 26px;"></h2>
-            
-            <!-- VÍDEO DO YOUTUBE AQUI -->
             <div class="video-wrapper">
                 <iframe id="detalhe-curso-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-
             <h4 style="color: #00b4d8; margin-bottom: 5px;">Sobre o Treinamento:</h4>
             <p id="detalhe-curso-desc" style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 25px;"></p>
             

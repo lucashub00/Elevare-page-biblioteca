@@ -34,7 +34,6 @@ function extrairLinkImagem(inputTexto) {
     return txt.replace(/['"]/g, '');
 }
 
-// Pega qualquer link do YouTube e tira só o ID do vídeo para rodar no site
 function extrairIdYoutube(url) {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = url.match(regex);
@@ -64,7 +63,7 @@ if (document.body.classList.contains('page-cadastro')) {
         const e = document.getElementById('email-cadastro').value, s = document.getElementById('senha-cadastro').value, m = document.getElementById('mensagem-erro-cadastro');
         m.style.display = 'none';
         if(!e || !s) { m.textContent = "Preencha tudo!"; m.style.display = 'block'; return; }
-        createUserWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro ao criar conta."; m.style.display = 'block'; });
+        createUserWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro ao criar conta. E-mail já em uso."; m.style.display = 'block'; });
     });
     document.getElementById('btn-google-cadastro').addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
@@ -172,7 +171,7 @@ if (document.body.classList.contains('page-plataforma')) {
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data(), id = docSnap.id; 
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
-                const videoId = extrairIdYoutube(data.ytUrl); // Pega só o ID pro iframe
+                const videoId = extrairIdYoutube(data.ytUrl); 
                 const hasAccess = isAdmin || cursosLiberados.includes(id);
 
                 window.catalogoCursos[id] = { ...data, id: id, fotoLimpa: fotoLimpa, videoId: videoId, hasAccess: hasAccess };
@@ -248,9 +247,13 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     }
 
-    // ===== GERENCIAR ACESSOS =====
-    if(document.getElementById('btn-gerenciar-acessos')) {
-        document.getElementById('btn-gerenciar-acessos').addEventListener('click', () => document.getElementById('modal-gerenciar-acessos').style.display = 'flex');
+    // ===== GERENCIAR ACESSOS UNIVERSAL (E-BOOKS E CURSOS) =====
+    const modalAcesso = document.getElementById('modal-gerenciar-acessos');
+    document.querySelectorAll('.btn-abrir-gerenciador').forEach(btn => {
+        btn.addEventListener('click', () => modalAcesso.style.display = 'flex');
+    });
+
+    if(document.getElementById('btn-liberar-acesso')) {
         document.getElementById('btn-liberar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
@@ -258,7 +261,13 @@ if (document.body.classList.contains('page-plataforma')) {
             const ref = doc(db, "acessos", cId);
             const snap = await getDoc(ref);
             let prod = snap.exists() ? snap.data().produtos || [] : [];
-            if(!prod.includes(pId)) { prod.push(pId); await setDoc(ref, { produtos: prod }, { merge: true }); alert("✅ Liberado!"); }
+            if(!prod.includes(pId)) { 
+                prod.push(pId); 
+                await setDoc(ref, { produtos: prod }, { merge: true }); 
+                alert("✅ Acesso Liberado!"); 
+            } else {
+                alert("O cliente já possui acesso.");
+            }
         });
         document.getElementById('btn-revogar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
@@ -269,7 +278,7 @@ if (document.body.classList.contains('page-plataforma')) {
             if (snap.exists()) {
                 let prod = snap.data().produtos || [];
                 await setDoc(ref, { produtos: prod.filter(id => id !== pId) }, { merge: true });
-                alert("🚫 Removido!");
+                alert("🚫 Acesso Removido!");
             }
         });
     }
@@ -282,13 +291,11 @@ if (document.body.classList.contains('page-plataforma')) {
             if(!card) return;
             const ebookId = card.getAttribute('data-id');
 
-            // Apagar
             if (event.target.closest('.btn-delete-ebook')) {
                 if (confirm("Apagar E-book?")) { await deleteDoc(doc(db, "ebooks", ebookId)); card.remove(); }
                 return;
             }
 
-            // MÁGICA DO BUG DAS ESTRELAS: Para a execução aqui e não abre a janela!
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
@@ -299,10 +306,9 @@ if (document.body.classList.contains('page-plataforma')) {
                         await updateDoc(ref, { ratings: notas }); carregarEbooks(admins.includes(auth.currentUser.email), usuarioAtualUid);
                     }
                 }
-                return; // <-- Isso impede de abrir o Modal de detalhes ao clicar na estrela!
+                return;
             }
 
-            // Abrir Detalhes E-book
             const ebook = window.catalogoEbooks[ebookId];
             if(!ebook) return;
             document.getElementById('detalhe-img').src = ebook.fotoLimpa;
@@ -329,20 +335,17 @@ if (document.body.classList.contains('page-plataforma')) {
             if(!card) return;
             const cursoId = card.getAttribute('data-id');
 
-            // Apagar Curso
             if (event.target.closest('.btn-delete-curso')) {
                 if (confirm("Apagar Curso?")) { await deleteDoc(doc(db, "cursos", cursoId)); card.remove(); }
                 return;
             }
 
-            // Abrir Detalhes Curso (Video)
             const curso = window.catalogoCursos[cursoId];
             if(!curso) return;
 
             document.getElementById('detalhe-curso-titulo').textContent = curso.titulo;
             document.getElementById('detalhe-curso-desc').textContent = curso.desc;
             
-            // Injeta o vídeo do YouTube
             const iframe = document.getElementById('detalhe-curso-video');
             if (curso.videoId) {
                 iframe.src = `https://www.youtube.com/embed/${curso.videoId}?autoplay=1`;
@@ -362,7 +365,7 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('modal-detalhes-curso').style.display = 'flex';
         });
 
-        // Quando fechar o modal do curso, parar de tocar o vídeo do YouTube no fundo
+        // Para o vídeo do YouTube quando fechar a janela
         document.querySelector('#modal-detalhes-curso .fechar-modal').addEventListener('click', () => {
             document.getElementById('detalhe-curso-video').src = "";
         });
