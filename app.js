@@ -22,22 +22,26 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ==========================================
-// FUNÇÃO INTELIGENTE: EXTRAIR LINK DA FOTO
+// MÁGICA: EXTRATOR BLINDADO DE IMAGEM
 // ==========================================
-// Essa função garimpa o link puro não importa o código sujo que o ImgBB entregue
 function extrairLinkImagem(inputTexto) {
     if (!inputTexto) return "";
+    let txt = inputTexto.trim();
     
-    // Se o usuário copiou o código HTML inteiro (<a href...><img src="...">)
-    const matchHtml = inputTexto.match(/src=["']?(https?:\/\/[^"'\s>]+)/);
-    if (matchHtml && matchHtml[1]) return matchHtml[1].trim();
+    // 1. Busca como um raio laser qualquer link que termine com .png, .jpg, .jpeg, .webp
+    const matchDireto = txt.match(/https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp)/i);
+    if (matchDireto) {
+        return matchDireto[0]; // Retorna SÓ a foto pura!
+    }
 
-    // Se o usuário copiou o código BBCode ([img]...[/img])
-    const matchBbcode = inputTexto.match(/\[img\](https?:\/\/[^\[]+)\[\/img\]/i);
-    if (matchBbcode && matchBbcode[1]) return matchBbcode[1].trim();
+    // 2. Plano B: Procura dentro do src="..."
+    const matchSrc = txt.match(/src=["']?(https?:\/\/[^"'\s>]+)["']?/i);
+    if (matchSrc) {
+        return matchSrc[1];
+    }
 
-    // Se ele já colou o link certinho, só tira espaços e aspas perdidas
-    return inputTexto.replace(/['"]/g, '').trim();
+    // 3. Limpa aspas que sobrarem caso seja um link puro
+    return txt.replace(/['"]/g, '');
 }
 
 // ==========================================
@@ -141,7 +145,7 @@ if (document.body.classList.contains('page-plataforma')) {
                 const data = docSnap.data();
                 const id = docSnap.id; 
                 
-                // MÁGICA DE LIMPEZA: Conserta as imagens antigas que estavam quebradas
+                // Aplica o extrator blindado no momento de carregar
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
 
                 const hasAccess = isAdmin || ebooksLiberados.includes(id);
@@ -215,7 +219,8 @@ if (document.body.classList.contains('page-plataforma')) {
         document.getElementById('btn-cancelar-ebook').addEventListener('click', () => modalEbook.style.display = 'none');
 
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
-            // APLICA O FILTRO INTELIGENTE NO LINK QUE O USUÁRIO COLOU
+            
+            // Aplica o extrator blindado logo que o admin cola o link
             const inputCru = document.getElementById('input-foto-ebook').value;
             const fotoUrlLimpa = extrairLinkImagem(inputCru); 
             
@@ -224,7 +229,7 @@ if (document.body.classList.contains('page-plataforma')) {
             const desc = document.getElementById('input-desc-ebook').value;
             const hash = document.getElementById('input-hash-ebook').value;
 
-            if(!fotoUrlLimpa || !pdfUrl || !titulo || !desc) { alert("Preencha todos os links e textos!"); return; }
+            if(!fotoUrlLimpa || !pdfUrl || !titulo || !desc) { alert("Preencha todos os links e textos! (A capa precisa ser válida)"); return; }
 
             try {
                 await addDoc(collection(db, "ebooks"), {
@@ -281,7 +286,7 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     }
 
-    // Cliques na Vitrine
+    // Cliques na Vitrine (Apagar, Estrelas, Detalhes)
     const listaEbooks = document.getElementById('lista-ebooks');
     const modalDetalhes = document.getElementById('modal-detalhes-ebook');
 
