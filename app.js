@@ -51,6 +51,18 @@ function extrairIdYoutube(url) {
     return match ? match[1] : "";
 }
 
+async function lerAcessosComTimeout(uid) {
+    try {
+        const snap = await Promise.race([
+            getDoc(doc(db, "acessos", uid)),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3500))
+        ]);
+        return (snap && snap.exists()) ? (snap.data().produtos || []) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
 // ==========================================
 // LÓGICA: INDEX E CADASTRO
 // ==========================================
@@ -125,14 +137,7 @@ if (document.body.classList.contains('page-plataforma')) {
         if(!listaEbooks) return;
         listaEbooks.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando e-books...</p>';
         try {
-            let ebooksLiberados = [];
-            if (!isAdmin) {
-                try {
-                    const snap = await getDoc(doc(db, "acessos", uid));
-                    if (snap.exists()) ebooksLiberados = snap.data().produtos || [];
-                } catch(e) { ebooksLiberados = []; }
-            }
-            
+            let ebooksLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = ''; 
             
@@ -185,14 +190,7 @@ if (document.body.classList.contains('page-plataforma')) {
         if(!lista) return;
         lista.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando cursos...</p>';
         try {
-            let cursosLiberados = [];
-            if (!isAdmin) {
-                try {
-                    const snap = await getDoc(doc(db, "acessos", uid));
-                    if (snap.exists()) cursosLiberados = snap.data().produtos || [];
-                } catch(e) { cursosLiberados = []; }
-            }
-            
+            let cursosLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = ''; 
             
@@ -240,11 +238,12 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     }
 
-    // Ações Gerais de Botões
+    // Ações Gerais
     document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
     document.querySelectorAll('.fechar-modal').forEach(btn => {
         btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; });
     });
+    
     const botoesNav = document.querySelectorAll('.nav-btn');
     const conteudosAba = document.querySelectorAll('.tab-content');
     botoesNav.forEach(botao => {
@@ -256,7 +255,7 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // ===== ADD E-BOOK =====
+    // ===== ADD E-BOOK (COM NOVO ID NUMÉRICO!) =====
     if(document.getElementById('btn-add-ebook')) {
         document.getElementById('btn-add-ebook').addEventListener('click', () => document.getElementById('modal-add-ebook').style.display = 'flex');
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
@@ -266,13 +265,20 @@ if (document.body.classList.contains('page-plataforma')) {
             const d = document.getElementById('input-desc-ebook').value;
             const h = document.getElementById('input-hash-ebook').value;
             if(!f || !p || !t || !d) { alert("Preencha tudo!"); return; }
-            await addDoc(collection(db, "ebooks"), { titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, ratings: [] });
+
+            // GERA O ID NUMÉRICO DE 7 DÍGITOS
+            const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
+
+            await setDoc(doc(db, "ebooks", novoId), { 
+                titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, ratings: [] 
+            });
+
             document.getElementById('modal-add-ebook').style.display = 'none';
             carregarEbooks(true, usuarioAtualUid); 
         });
     }
 
-    // ===== ADD CURSO =====
+    // ===== ADD CURSO (COM NOVO ID NUMÉRICO!) =====
     if(document.getElementById('btn-add-curso')) {
         document.getElementById('btn-add-curso').addEventListener('click', () => document.getElementById('modal-add-curso').style.display = 'flex');
         document.getElementById('btn-salvar-curso').addEventListener('click', async () => {
@@ -283,7 +289,13 @@ if (document.body.classList.contains('page-plataforma')) {
             const d = document.getElementById('input-desc-curso').value;
             if(!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
             
-            await addDoc(collection(db, "cursos"), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
+            // GERA O ID NUMÉRICO DE 7 DÍGITOS
+            const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
+
+            await setDoc(doc(db, "cursos", novoId), { 
+                titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] 
+            });
+
             document.getElementById('modal-add-curso').style.display = 'none';
             carregarCursos(true, usuarioAtualUid); 
         });
