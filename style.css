@@ -8,6 +8,21 @@
 =================================== */
 /* 1. FUNDO CONTÍNUO (Azul com Roxo) */
 body.page-index { 
+    /* LOGO DE FUNDO (Marca d'água gigante na tela toda) */
+body.page-index::before {
+    content: "";
+    position: fixed; /* Fica travada no fundo mesmo quando o cliente rolar a página */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw; height: 100vh;
+    background-image: url('Elevare Logo.png');
+    background-size: 55%; /* Tamanho da logo no fundo (pode aumentar ou diminuir) */
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05; /* Transparência (0.05 é bem sutil, se quiser mais forte mude para 0.1) */
+    z-index: 0;
+    pointer-events: none; /* Garante que ela não atrapalhe o clique nos botões */
+}
     background: linear-gradient(135deg, #090e17 0%, #150e24 50%, #090e17 100%); 
     color: #f1f5f9; 
     line-height: 1.6; 
