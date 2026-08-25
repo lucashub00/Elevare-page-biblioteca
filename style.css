@@ -8,18 +8,12 @@
 =================================== */
 body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 
-/* Cabeçalho Index Flutuante (Sem barra preta) */
+/* Cabeçalho Index (Barra preta removida, agora flutua transparente) */
 .page-index header { 
     background: transparent; 
-    position: absolute; 
-    top: 0; left: 0; 
-    width: 100%; 
-    z-index: 100; 
-    color: #fff; 
-    padding: 20px 5%; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
+    position: absolute;
+    top: 0; left: 0; width: 100%; z-index: 100;
+    color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; 
 }
 .logo-img { height: 75px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
@@ -31,12 +25,12 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 }
 .cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
 
-/* NOVO: Botão CTA Neon Chamativo (Cor Original Elevare) */
+/* NOVO: Botão Neon Chamativo */
 .btn-neon-cyan {
     background: transparent;
     color: #00b4d8;
     border: 2px solid #00b4d8;
-    padding: 15px 40px;
+    padding: 16px 40px;
     border-radius: 8px;
     font-weight: 900;
     text-transform: uppercase;
@@ -47,9 +41,6 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
     box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.2), 0 0 10px rgba(0, 180, 216, 0.2);
     text-shadow: 0 0 5px #00b4d8;
     display: inline-block;
-    width: 100%;
-    max-width: 400px;
-    margin-top: 15px;
 }
 .btn-neon-cyan:hover {
     background: #00b4d8;
@@ -64,7 +55,7 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 
 /* Hero Section */
 .hero { 
-    text-align: center; padding: 120px 5% 100px; position: relative; color: white; overflow: hidden;
+    text-align: center; padding: 140px 5% 100px; position: relative; color: white; overflow: hidden;
     background: radial-gradient(circle at center, rgba(0, 180, 216, 0.85) 0%, rgba(0, 119, 182, 0.9) 35%, rgba(3, 4, 94, 0.95) 75%, rgba(42, 0, 102, 1) 100%);
 }
 .hero::before {
@@ -75,12 +66,11 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 .hero > * { position: relative; z-index: 1; }
 .hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 .hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
-
 .video-placeholder { 
-    background: rgba(0, 0, 0, 0.6); width: 100%; max-width: 800px; height: 450px; margin: 0 auto 40px; 
+    background-color: rgba(0, 0, 0, 0.6); background-size: cover; background-position: center;
+    width: 100%; max-width: 800px; height: 450px; margin: 0 auto 40px; 
     display: flex; align-items: center; justify-content: center; color: #fff; border-radius: 12px; 
-    border: 2px solid rgba(0, 180, 216, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    overflow: hidden;
+    border: 2px solid rgba(0, 180, 216, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative;
 }
 
 /* Área de Login */
@@ -208,28 +198,25 @@ body.page-plataforma {
 .section-header h1 { font-size: 28px; color: #fff; }
 .section-header p { color: #94a3b8; font-size: 16px; }
 
-/* 1. ABA: EBOOKS & CARDS EM GERAL */
 .card-ebook { 
     background: #1e293b; min-width: 280px; max-width: 280px; border-radius: 12px; 
     overflow: hidden; border: 1px solid #334155; scroll-snap-align: start; 
-    transition: 0.3s; position: relative; cursor: pointer;
+    transition: 0.3s;
 }
 .card-ebook:hover { transform: translateY(-5px); border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-.ebook-cover { width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #00b4d8; }
+.ebook-cover { width: 100%; height: 350px; object-fit: cover; border-bottom: 3px solid #00b4d8; }
 .ebook-info { padding: 20px; }
 .ebook-style { font-size: 12px; background: rgba(0, 180, 216, 0.2); color: #38bdf8; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
 .ebook-info h3 { font-size: 18px; margin: 10px 0; color: #f1f5f9; }
 .ebook-info p { font-size: 14px; color: #94a3b8; line-height: 1.4; margin-bottom: 15px; }
+.ebook-rating { display: flex; align-items: center; justify-content: space-between; font-weight: bold; }
+.stars { color: #fbbf24; font-size: 18px; letter-spacing: 2px; }
+.score { color: #fff; font-size: 16px; }
 
 /* 2. ABA: CURSOS */
-.grid-cursos { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-    gap: 30px; 
-    align-items: start; 
-}
-.card-curso { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; cursor: pointer; }
-.card-curso:hover { transform: translateY(-5px); border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+.grid-cursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+.card-curso { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; }
+.card-curso:hover { border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 .curso-thumb { position: relative; cursor: pointer; }
 .curso-thumb img { width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: 0.85; transition: 0.3s; }
 .curso-thumb:hover img { opacity: 1; }
@@ -249,7 +236,7 @@ body.page-plataforma {
 }
 .btn-acessar-curso:hover { background: #00b4d8; }
 
-/* 3. ABA: ATENDIMENTO */
+/* 3. ABA: CONSULTORIA / ATENDIMENTO */
 .consultoria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 @media (max-width: 768px) { .consultoria-grid { grid-template-columns: 1fr; } }
 .contato-box, .faq-box { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; }
@@ -312,7 +299,7 @@ body.page-cadastro {
 }
 
 /* ==================================
-   ATUALIZAÇÃO: E-BOOKS & MODAIS
+   ATUALIZAÇÃO: E-BOOKS & ADMIN MODAL
 =================================== */
 .grid-ebooks {
     display: grid;
@@ -354,73 +341,52 @@ body.page-cadastro {
 .btn-cancelar:hover { background: #ef4444; color: white; }
 
 /* ==================================
-   AVALIAÇÃO E LIXEIRA
+   ATUALIZAÇÃO: AVALIAÇÃO E LIXEIRA
 =================================== */
+.card-ebook {
+    position: relative; 
+}
 .btn-delete-ebook, .btn-delete-curso {
     position: absolute;
-    top: 10px; right: 10px;
-    background: #ef4444; color: white; border: none; border-radius: 50%;
-    width: 32px; height: 32px; font-size: 14px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; z-index: 10;
+    top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 50%;
+    width: 32px; height: 32px; font-size: 14px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; z-index: 10;
 }
-.btn-delete-ebook:hover, .btn-delete-curso:hover {
-    background: #b91c1c; transform: scale(1.15);
-}
+.btn-delete-ebook:hover, .btn-delete-curso:hover { background: #b91c1c; transform: scale(1.15); }
 
 .ebook-rating-interactive {
-    display: flex; gap: 4px; margin-top: 15px; font-size: 24px;
-    color: #334155; cursor: pointer;
+    display: flex; gap: 4px; margin-top: 15px; font-size: 24px; color: #334155; cursor: pointer;
 }
 .ebook-rating-interactive .star { transition: 0.2s; }
 .ebook-rating-interactive .star:hover, .ebook-rating-interactive .star.active { color: #fbbf24; }
 
 /* ==================================
-   BLOQUEIO, BOTÕES DE AÇÃO E LER MAIS
+   ATUALIZAÇÕES: CAPA, CADEADO E LER MAIS
 =================================== */
-.btn-wpp-buy {
-    width: 100%; background: #25D366; color: white; padding: 12px; border: none; 
-    border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
-    margin-top: 15px; display: block; text-align: center; text-decoration: none;
-}
-.btn-wpp-buy:hover { background: #1da851; }
-
-.btn-download-pdf {
-    width: 100%; background: #00b4d8; color: white; padding: 12px; border: none; 
-    border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
-    margin-top: 15px; display: block; text-align: center; text-decoration: none;
-}
-.btn-download-pdf:hover { background: #0077b6; }
-
-.admin-id-tag {
-    font-size: 11px; background: #334155; color: #94a3b8; padding: 4px 8px; 
-    border-radius: 4px; display: block; margin-bottom: 10px;
-}
-
+.ebook-cover { width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #00b4d8; }
+.card-ebook { cursor: pointer; }
 .badge-lock {
-    position: absolute; top: 10px; left: 10px; background: rgba(15, 23, 42, 0.85);
-    color: #f87171; padding: 6px 12px; border-radius: 6px; font-weight: bold;
-    font-size: 12px; z-index: 5; border: 1px solid #f87171; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-    backdrop-filter: blur(2px);
+    position: absolute; top: 10px; left: 10px; background: rgba(15, 23, 42, 0.85); color: #f87171;
+    padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; z-index: 5;
+    border: 1px solid #f87171; box-shadow: 0 4px 6px rgba(0,0,0,0.5); backdrop-filter: blur(2px);
 }
+.desc-preview { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px !important; }
+.ler-mais-txt { color: #00b4d8; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px; }
 
-.desc-preview {
-    display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical;
-    overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px !important;
-}
-
-.ler-mais-txt {
-    color: #00b4d8; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px;
-}
-
-/* Layout Modal de Detalhes */
+/* Layout da Janela de Detalhes */
 .detalhe-layout { display: flex; gap: 25px; flex-wrap: wrap; }
 .detalhe-layout img { width: 220px; height: 320px; object-fit: cover; border-radius: 8px; border: 2px solid #334155; }
 .detalhe-info { flex: 1; min-width: 250px; }
-
 #detalhe-desc::-webkit-scrollbar { width: 6px; }
 #detalhe-desc::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
 #detalhe-desc::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+.btn-wpp-buy, .btn-download-pdf {
+    width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; display: block; text-align: center; text-decoration: none; color: white;
+}
+.btn-wpp-buy { background: #25D366; } .btn-wpp-buy:hover { background: #1da851; }
+.btn-download-pdf { background: #00b4d8; } .btn-download-pdf:hover { background: #0077b6; }
+.admin-id-tag { font-size: 11px; background: #334155; color: #94a3b8; padding: 4px 8px; border-radius: 4px; display: block; margin-bottom: 10px; }
 
 /* ==================================
    CENTRAL DE COMANDOS (BOTÃO INVISÍVEL)
@@ -428,7 +394,6 @@ body.page-cadastro {
 .btn-floating-admin {
     position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #00b4d8;
     border: 2px solid #00b4d8; padding: 10px 20px; border-radius: 30px; cursor: pointer;
-    z-index: 9999; opacity: 0.05; transition: 0.4s ease-in-out; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    font-weight: bold; font-size: 16px;
+    z-index: 9999; opacity: 0.05; transition: 0.4s ease-in-out; box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-weight: bold; font-size: 16px;
 }
 .btn-floating-admin:hover { opacity: 1; background: #00b4d8; color: #0f172a; transform: scale(1.1); }
