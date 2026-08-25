@@ -8,8 +8,19 @@
 =================================== */
 body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 
-/* Cabeçalho Index */
-.page-index header { background: #0b0c10; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
+/* Cabeçalho Index Flutuante (Sem barra preta) */
+.page-index header { 
+    background: transparent; 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; 
+    z-index: 100; 
+    color: #fff; 
+    padding: 20px 5%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
 .logo-img { height: 75px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
 /* Botões Padrão */
@@ -20,12 +31,40 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 }
 .cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
 
+/* NOVO: Botão CTA Neon Chamativo (Cor Original Elevare) */
+.btn-neon-cyan {
+    background: transparent;
+    color: #00b4d8;
+    border: 2px solid #00b4d8;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
+    letter-spacing: 1px;
+    box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.2), 0 0 10px rgba(0, 180, 216, 0.2);
+    text-shadow: 0 0 5px #00b4d8;
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 15px;
+}
+.btn-neon-cyan:hover {
+    background: #00b4d8;
+    color: #0f172a;
+    box-shadow: 0 0 15px #00b4d8, 0 0 30px #00b4d8, 0 0 60px #00b4d8, inset 0 0 10px rgba(255,255,255,0.5);
+    text-shadow: none;
+    transform: scale(1.05);
+}
+
 /* Botão de Teste (Pode ser removido depois) */
 .btn-teste { background: #10b981; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 
 /* Hero Section */
 .hero { 
-    text-align: center; padding: 100px 5%; position: relative; color: white; overflow: hidden;
+    text-align: center; padding: 120px 5% 100px; position: relative; color: white; overflow: hidden;
     background: radial-gradient(circle at center, rgba(0, 180, 216, 0.85) 0%, rgba(0, 119, 182, 0.9) 35%, rgba(3, 4, 94, 0.95) 75%, rgba(42, 0, 102, 1) 100%);
 }
 .hero::before {
@@ -36,10 +75,12 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 .hero > * { position: relative; z-index: 1; }
 .hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 .hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
+
 .video-placeholder { 
     background: rgba(0, 0, 0, 0.6); width: 100%; max-width: 800px; height: 450px; margin: 0 auto 40px; 
     display: flex; align-items: center; justify-content: center; color: #fff; border-radius: 12px; 
     border: 2px solid rgba(0, 180, 216, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    overflow: hidden;
 }
 
 /* Área de Login */
@@ -167,26 +208,28 @@ body.page-plataforma {
 .section-header h1 { font-size: 28px; color: #fff; }
 .section-header p { color: #94a3b8; font-size: 16px; }
 
-
+/* 1. ABA: EBOOKS & CARDS EM GERAL */
 .card-ebook { 
     background: #1e293b; min-width: 280px; max-width: 280px; border-radius: 12px; 
     overflow: hidden; border: 1px solid #334155; scroll-snap-align: start; 
-    transition: 0.3s;
+    transition: 0.3s; position: relative; cursor: pointer;
 }
 .card-ebook:hover { transform: translateY(-5px); border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-.ebook-cover { width: 100%; height: 350px; object-fit: cover; border-bottom: 3px solid #00b4d8; }
+.ebook-cover { width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #00b4d8; }
 .ebook-info { padding: 20px; }
 .ebook-style { font-size: 12px; background: rgba(0, 180, 216, 0.2); color: #38bdf8; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
 .ebook-info h3 { font-size: 18px; margin: 10px 0; color: #f1f5f9; }
 .ebook-info p { font-size: 14px; color: #94a3b8; line-height: 1.4; margin-bottom: 15px; }
-.ebook-rating { display: flex; align-items: center; justify-content: space-between; font-weight: bold; }
-.stars { color: #fbbf24; font-size: 18px; letter-spacing: 2px; }
-.score { color: #fff; font-size: 16px; }
 
 /* 2. ABA: CURSOS */
-.grid-cursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
-.card-curso { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; }
-.card-curso:hover { border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+.grid-cursos { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 30px; 
+    align-items: start; 
+}
+.card-curso { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; cursor: pointer; }
+.card-curso:hover { transform: translateY(-5px); border-color: #00b4d8; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 .curso-thumb { position: relative; cursor: pointer; }
 .curso-thumb img { width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: 0.85; transition: 0.3s; }
 .curso-thumb:hover img { opacity: 1; }
@@ -206,22 +249,17 @@ body.page-plataforma {
 }
 .btn-acessar-curso:hover { background: #00b4d8; }
 
-/* 3. ABA: CONSULTORIA */
+/* 3. ABA: ATENDIMENTO */
 .consultoria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 @media (max-width: 768px) { .consultoria-grid { grid-template-columns: 1fr; } }
 .contato-box, .faq-box { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; }
 .contato-box h3, .faq-box h3 { margin-bottom: 15px; color: #38bdf8; }
 .contato-box p { color: #94a3b8; margin-bottom: 25px; }
 .botoes-contato { display: flex; flex-direction: column; gap: 15px; }
-.btn-wpp { background: #25D366; text-align: center; text-decoration: none; box-shadow: none; }
+.btn-wpp { background: #25D366; text-align: center; text-decoration: none; box-shadow: none; padding: 12px; border-radius: 6px; font-weight: bold; color: white;}
 .btn-wpp:hover { background: #1da851; }
-.btn-email { background: #334155; text-align: center; text-decoration: none; box-shadow: none; }
+.btn-email { background: #334155; text-align: center; text-decoration: none; box-shadow: none; padding: 12px; border-radius: 6px; font-weight: bold; color: white;}
 .btn-email:hover { background: #475569; }
-
-/* FAQ Styles */
-.faq-item { margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-.faq-item summary { font-weight: bold; cursor: pointer; color: #f1f5f9; outline: none; margin-bottom: 10px; }
-.faq-item p { color: #94a3b8; font-size: 14px; margin-left: 15px; line-height: 1.5; }
 
 /* ==================================
    ESTILOS ESPECÍFICOS: CADASTRO
@@ -272,10 +310,10 @@ body.page-cadastro {
     color: #38bdf8;
     text-decoration: underline;
 }
+
 /* ==================================
-   ATUALIZAÇÃO: E-BOOKS & ADMIN MODAL
+   ATUALIZAÇÃO: E-BOOKS & MODAIS
 =================================== */
-/* Nova grade de e-books (vertical) */
 .grid-ebooks {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -314,190 +352,83 @@ body.page-cadastro {
     padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-weight: bold;
 }
 .btn-cancelar:hover { background: #ef4444; color: white; }
+
 /* ==================================
-   ATUALIZAÇÃO: AVALIAÇÃO E LIXEIRA
+   AVALIAÇÃO E LIXEIRA
 =================================== */
-.card-ebook {
-    position: relative; /* Permite que a lixeira flutue no topo do card */
-}
-
-/* Botão de Apagar (Lixeira) */
-.btn-delete-ebook {
+.btn-delete-ebook, .btn-delete-curso {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: 0.3s;
-    z-index: 10;
+    top: 10px; right: 10px;
+    background: #ef4444; color: white; border: none; border-radius: 50%;
+    width: 32px; height: 32px; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; z-index: 10;
 }
-.btn-delete-ebook:hover {
-    background: #b91c1c;
-    transform: scale(1.15);
+.btn-delete-ebook:hover, .btn-delete-curso:hover {
+    background: #b91c1c; transform: scale(1.15);
 }
 
-/* Estrelas Interativas */
 .ebook-rating-interactive {
-    display: flex;
-    gap: 4px;
-    margin-top: 15px;
-    font-size: 24px;
-    color: #334155; /* Cor cinza/apagada por padrão */
-    cursor: pointer;
+    display: flex; gap: 4px; margin-top: 15px; font-size: 24px;
+    color: #334155; cursor: pointer;
 }
-.ebook-rating-interactive .star {
-    transition: 0.2s;
-}
-.ebook-rating-interactive .star:hover,
-.ebook-rating-interactive .star.active {
-    color: #fbbf24; /* Cor amarelo/ouro quando acesa */
-}
-/* ==================================
-   BLOQUEIO DE ACESSO (CADEADO)
-=================================== */
-.padlock-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 350px; /* Altura da capa da foto */
-    background: rgba(15, 23, 42, 0.7);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: white; z-index: 5; backdrop-filter: blur(3px);
-}
-.padlock-overlay span.icon {
-    font-size: 40px; margin-bottom: 10px;
-}
+.ebook-rating-interactive .star { transition: 0.2s; }
+.ebook-rating-interactive .star:hover, .ebook-rating-interactive .star.active { color: #fbbf24; }
 
+/* ==================================
+   BLOQUEIO, BOTÕES DE AÇÃO E LER MAIS
+=================================== */
 .btn-wpp-buy {
     width: 100%; background: #25D366; color: white; padding: 12px; border: none; 
     border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
     margin-top: 15px; display: block; text-align: center; text-decoration: none;
 }
 .btn-wpp-buy:hover { background: #1da851; }
+
 .btn-download-pdf {
     width: 100%; background: #00b4d8; color: white; padding: 12px; border: none; 
     border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; 
     margin-top: 15px; display: block; text-align: center; text-decoration: none;
 }
 .btn-download-pdf:hover { background: #0077b6; }
+
 .admin-id-tag {
     font-size: 11px; background: #334155; color: #94a3b8; padding: 4px 8px; 
     border-radius: 4px; display: block; margin-bottom: 10px;
 }
-/* ==================================
-   ATUALIZAÇÕES: CAPA, CADEADO E LER MAIS
-=================================== */
-/* Fixando o tamanho da Capa para não quebrar */
-.ebook-cover { 
-    width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #00b4d8; 
-}
 
-/* O card agora é clicável (efeito Netflix) */
-.card-ebook {
-    cursor: pointer;
-}
-
-/* Etiqueta pequena de bloqueado */
 .badge-lock {
-    position: absolute;
-    top: 10px; left: 10px;
-    background: rgba(15, 23, 42, 0.85);
-    color: #f87171;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 12px;
-    z-index: 5;
-    border: 1px solid #f87171;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    position: absolute; top: 10px; left: 10px; background: rgba(15, 23, 42, 0.85);
+    color: #f87171; padding: 6px 12px; border-radius: 6px; font-weight: bold;
+    font-size: 12px; z-index: 5; border: 1px solid #f87171; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
     backdrop-filter: blur(2px);
 }
 
-/* Truque do "Ler mais" (Corta na 3ª linha) */
 .desc-preview {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 5px !important;
+    display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px !important;
 }
+
 .ler-mais-txt {
     color: #00b4d8; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px;
 }
 
-/* Layout da Janela de Detalhes */
-.detalhe-layout {
-    display: flex; gap: 25px; flex-wrap: wrap;
-}
-.detalhe-layout img {
-    width: 220px; height: 320px; object-fit: cover; border-radius: 8px; border: 2px solid #334155;
-}
-.detalhe-info {
-    flex: 1; min-width: 250px;
-}
-/* Estilizando a barra de rolagem da sinopse */
+/* Layout Modal de Detalhes */
+.detalhe-layout { display: flex; gap: 25px; flex-wrap: wrap; }
+.detalhe-layout img { width: 220px; height: 320px; object-fit: cover; border-radius: 8px; border: 2px solid #334155; }
+.detalhe-info { flex: 1; min-width: 250px; }
+
 #detalhe-desc::-webkit-scrollbar { width: 6px; }
 #detalhe-desc::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
 #detalhe-desc::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-/* ==================================
-   CORREÇÃO DA GRADE DE CURSOS
-=================================== */
-.grid-cursos {
-    display: grid;
-    /* O "auto-fill" impede que um card sozinho estique a tela toda */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    align-items: start;
-}
 
-.card-curso {
-    background: #1e293b;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #334155;
-    transition: 0.3s;
-    cursor: pointer; /* Mostra a mãozinha pra indicar que clica e abre o vídeo */
-}
-
-.card-curso:hover {
-    transform: translateY(-5px);
-    border-color: #00b4d8;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-}
 /* ==================================
    CENTRAL DE COMANDOS (BOTÃO INVISÍVEL)
 =================================== */
 .btn-floating-admin {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #0f172a;
-    color: #d4af37;
-    border: 2px solid #d4af37;
-    padding: 10px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    z-index: 9999;
-    opacity: 0.05; /* Fica quase 100% invisível */
-    transition: 0.4s ease-in-out;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    font-weight: bold;
-    font-size: 16px;
+    position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #00b4d8;
+    border: 2px solid #00b4d8; padding: 10px 20px; border-radius: 30px; cursor: pointer;
+    z-index: 9999; opacity: 0.05; transition: 0.4s ease-in-out; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    font-weight: bold; font-size: 16px;
 }
-
-/* Quando passa o mouse, ele acende! */
-.btn-floating-admin:hover {
-    opacity: 1;
-    background: #d4af37;
-    color: #0f172a;
-    transform: scale(1.1);
-}
+.btn-floating-admin:hover { opacity: 1; background: #00b4d8; color: #0f172a; transform: scale(1.1); }
