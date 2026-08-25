@@ -3,105 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elevare Soluções - Infoprodutos e Treinamentos</title>
-    
-    <!-- Importando o arquivo CSS externo -->
+    <title>Elevare Soluções</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-index">
 
-    <!-- CABEÇALHO -->
-    <header>
-        <div class="logo-container">
-            <img src="Elevare Logo.png" alt="Elevare Soluções" class="logo-img">
+    <!-- HEADER FLUTUANTE (SEM BARRA PRETA) -->
+    <header class="header-index">
+        <div class="topbar-logo">
+            <img src="Elevare Logo.png" alt="Elevare Soluções" class="nav-logo">
         </div>
-        <button class="cta-btn action-bridge">Acessar Minha Conta</button>
+        <!-- Botão sutil dourado que leva para o login -->
+        <button class="action-bridge btn-outline-gold">Acessar minha conta</button>
     </header>
 
-    <!-- SEÇÃO HERO (FUNIL DE INTERESSE) -->
-    <section class="hero">
-        <h1>Conhecimento Estratégico para Alavancar seus Resultados</h1>
-        <p>Explore nossa vitrine exclusiva de e-books, cursos em vídeo e consultorias. Crie sua conta gratuitamente para gerenciar seus infoprodutos e dar o próximo passo no seu desenvolvimento.</p>
-        
-        <div class="video-placeholder">
-            [ Vídeo de Apresentação da Plataforma ]<br>▶ Clique para Play
-        </div>
+    <main>
+        <!-- SEÇÃO HERO (Apresentação Principal) -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="text-gold">Estratégias e Soluções práticas</span> para o dia a dia, ocasiões especiais e ambiente de trabalho.
+                </h1>
+                <p class="hero-subtitle">
+                    Eleve o patamar das suas ideias com e-books e material em vídeo inéditos no mercado com um toque especial Elevare. Nossos infoprodutos te ajudam a dar o próximo passo no desenvolvimento dos seus projetos de vida, da sua rotina, da sua saúde e do seu negócio.
+                </p>
 
-        <button class="cta-btn action-bridge">Quero Explorar o Catálogo</button>
-    </section>
+                <div class="video-cta-area">
+                    <h3 class="highlight-text text-gold">Assista ao vídeo abaixo e obtenha a solução!</h3>
+                    
+                    <!-- ÁREA DO VÍDEO -->
+                    <div class="video-wrapper hero-video-box">
+                        <iframe src="https://www.youtube.com/embed/SEU_VIDEO_AQUI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
 
-    <!-- NOVA SEÇÃO: VITRINE EXPOSITIVA -->
-    <section class="vitrine-expositiva">
-        <h2>O que você encontra na Elevare?</h2>
-        <p>Materiais práticos e direto ao ponto para a evolução do seu negócio.</p>
-        
-        <div class="vitrine-grid">
-            <div class="vitrine-card">
-                <!-- Imagem do E-book -->
-                <img src="vitrine-ebooks.png" alt="E-books Premium" class="vitrine-img">
-                <h3>E-books Premium</h3>
-                <p>Leituras aprofundadas com estratégias testadas e prontas para você aplicar na sua rotina hoje mesmo.</p>
+                    <!-- SUPER BOTÃO NEON -->
+                    <button class="action-bridge btn-neon">QUERO A SOLUÇÃO AGORA</button>
+                </div>
             </div>
-            <div class="vitrine-card">
-                <!-- Imagem de Cursos -->
-                <img src="vitrine-cursos.png" alt="Cursos e Treinamentos" class="vitrine-img">
-                <h3>Cursos e Treinamentos</h3>
-                <p>Aulas em vídeo com o passo a passo prático para você dominar novas habilidades do absoluto zero.</p>
-            </div>
-            <div class="vitrine-card">
-                <!-- Imagem de Consultoria -->
-                <img src="vitrine-consultoria.png" alt="Consultoria Direta" class="vitrine-img">
-                <h3>Consultoria Direta</h3>
-                <p>Acesso exclusivo à nossa equipe para diagnósticos precisos e um plano de ação personalizado para você.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ÁREA DE LOGIN E CADASTRO -->
-    <section id="login-section" class="login-area">
-        <h2>Acesse ou Crie sua Conta</h2>
-        <p style="margin-bottom: 20px;">O cadastro é 100% gratuito. Crie sua conta para acessar nosso catálogo e seus materiais comprados.</p>
-        
-        <div class="login-box">
-            <input type="email" id="email-login" placeholder="Seu E-mail">
-            <input type="password" id="senha-login" placeholder="Sua Senha">
+        <!-- SEÇÃO DE BENEFÍCIOS -->
+        <section class="features-section">
+            <h2 class="text-gold section-title">O que você encontra na Elevare Soluções?</h2>
             
-            <button id="btn-entrar" class="cta-btn">Entrar com E-mail</button>
-            
-            <!-- Link para a página de cadastro -->
-            <a href="cadastro.html" style="text-decoration: none; width: 100%; display: block; margin-top: 10px;">
-                <button type="button" class="cta-btn btn-teste" style="width: 100%;">Criar Conta Gratuita</button>
-            </a>
-            
-            <div class="divisor">
-                <hr> OU <hr>
+            <div class="features-grid">
+                <!-- Card 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>E-BOOKS PREMIUM EXCLUSIVOS</h3>
+                    <p>Leituras detalhadas e práticas com estratégias testadas e comprovadas para você aplicar na sua rotina e negócios hoje mesmo!</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">▶️</div>
+                    <h3>MATERIAL EM VÍDEO</h3>
+                    <p>Dicas práticas para resolver problemas práticos do cotidiano, para adquirir novas habilidades e conhecimentos práticos e aplicáveis!</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>ATENDIMENTO PERSONALIZADO</h3>
+                    <p>Acesso exclusivo à equipe de atendimento que te oferece diagnósticos precisos e recomendações de infoprodutos certos para o que você busca!</p>
+                </div>
             </div>
+        </section>
 
-            <!-- Botão do Google -->
-            <button id="btn-google" class="btn-google">
-                <svg width="20" height="20" viewBox="0 0 48 48">
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                </svg>
-                Continuar com o Google
-            </button>
+        <!-- SEÇÃO DE LOGIN E CADASTRO -->
+        <section id="login-section" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <h2 class="text-gold">Já sou cliente</h2>
+                    <p>Faça login para acessar seus infoprodutos.</p>
+                    
+                    <div id="mensagem-erro" class="msg-erro"></div>
+                    
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="email-login" placeholder="Seu e-mail">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="senha-login" placeholder="Sua senha">
+                    </div>
+                    <button id="btn-entrar" class="cta-btn btn-solid-gold">Entrar na Plataforma</button>
+                    
+                    <div class="divisor"><span>ou</span></div>
+                    <button id="btn-google" class="btn-google">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+                        Entrar com Google
+                    </button>
+                    
+                    <p class="link-cadastro">Ainda não tem conta? <a href="cadastro.html" style="color: #d4af37;">Crie uma grátis</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
 
-            <p id="mensagem-erro" class="msg-erro"></p>
-        </div>
-    </section>
-
-    <!-- RODAPÉ -->
-    <footer>
-        <p>&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
-        <div class="copyright-clause">
-            <strong>AVISO LEGAL DE DIREITOS AUTORAIS E USO PRIVADO:</strong><br>
-            Todo o conteúdo disponível neste site, incluindo vídeos, textos, e-books, e códigos, é de propriedade exclusiva da Elevare Soluções. É terminantemente proibida a cópia, reprodução, distribuição, captura de tela ou compartilhamento de credenciais. Infratores estarão sujeitos a penalidades civis e criminais.
-        </div>
-    </footer>
-
-    <!-- Importando o arquivo JavaScript -->
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=999"></script>
 </body>
 </html>

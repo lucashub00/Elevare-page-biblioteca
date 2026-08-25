@@ -473,3 +473,31 @@ body.page-cadastro {
     border-color: #00b4d8;
     box-shadow: 0 10px 20px rgba(0,0,0,0.4);
 }
+/* ==================================
+   CENTRAL DE COMANDOS (BOTÃO INVISÍVEL)
+=================================== */
+.btn-floating-admin {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0f172a;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    z-index: 9999;
+    opacity: 0.05; /* Fica quase 100% invisível */
+    transition: 0.4s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Quando passa o mouse, ele acende! */
+.btn-floating-admin:hover {
+    opacity: 1;
+    background: #d4af37;
+    color: #0f172a;
+    transform: scale(1.1);
+}

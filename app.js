@@ -1,6 +1,3 @@
-// ==========================================
-// RADAR ANTIBUG (Mostra erros na tela se existirem)
-// ==========================================
 window.onerror = function(msg, url, line) {
     const box = document.createElement('div');
     box.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:#fff; padding:20px; z-index:99999; border-radius:8px; font-weight:bold; box-shadow:0 10px 25px rgba(0,0,0,0.5);";
@@ -58,9 +55,7 @@ async function lerAcessosComTimeout(uid) {
             new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3500))
         ]);
         return (snap && snap.exists()) ? (snap.data().produtos || []) : [];
-    } catch (error) {
-        return [];
-    }
+    } catch (error) { return []; }
 }
 
 // ==========================================
@@ -99,13 +94,16 @@ if (document.body.classList.contains('page-cadastro')) {
 if (document.body.classList.contains('page-plataforma')) {
     
     const admins = ["pedroeliasm08@gmail.com", "suporteelevaresolucoes@gmail.com"];
-    const NUMERO_DO_ZAP = "5532999999999"; 
+    
+    // Variáveis Globais de Configuração (com valores padrão de segurança)
+    let NUMERO_DO_ZAP = "5532999999999"; 
+    let EMAIL_SUPORTE = "";
     let usuarioAtualUid = "";
 
     window.catalogoEbooks = {};
     window.catalogoCursos = {};
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             try {
                 usuarioAtualUid = user.uid || "SemID"; 
@@ -120,6 +118,9 @@ if (document.body.classList.contains('page-plataforma')) {
                 const isAdmin = admins.includes(emailUsuario);
                 if (isAdmin) document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
                 
+                // Puxa as configurações da Central de Comandos antes de carregar o resto
+                await carregarConfiguracoesGerais();
+
                 carregarEbooks(isAdmin, usuarioAtualUid);
                 carregarCursos(isAdmin, usuarioAtualUid);
 
@@ -130,6 +131,57 @@ if (document.body.classList.contains('page-plataforma')) {
             window.location.href = "index.html"; 
         }
     });
+
+    // ===== CARREGAR CENTRAL DE COMANDOS =====
+    async function carregarConfiguracoesGerais() {
+        try {
+            const configSnap = await getDoc(doc(db, "config", "geral"));
+            if (configSnap.exists()) {
+                const cfg = configSnap.data();
+                
+                if (cfg.telefone) NUMERO_DO_ZAP = cfg.telefone;
+                if (cfg.email) EMAIL_SUPORTE = cfg.email;
+                if (cfg.logoUrl) document.getElementById('logo-plataforma').src = cfg.logoUrl;
+
+                // Preenche os botões da aba "Atendimento ao Cliente"
+                const btnZapAtendimento = document.getElementById('link-zap-atendimento');
+                if (btnZapAtendimento) btnZapAtendimento.href = `https://wa.me/${NUMERO_DO_ZAP}?text=Ol%C3%A1,%20preciso%20de%20ajuda%20na%20plataforma.`;
+                
+                const btnEmailAtendimento = document.getElementById('link-email-atendimento');
+                if (btnEmailAtendimento && EMAIL_SUPORTE) btnEmailAtendimento.href = `mailto:${EMAIL_SUPORTE}`;
+
+                // Preenche os campos dentro do próprio Modal da Central para o Admin ver os atuais
+                if(document.getElementById('cfg-zap')) document.getElementById('cfg-zap').value = NUMERO_DO_ZAP;
+                if(document.getElementById('cfg-email')) document.getElementById('cfg-email').value = EMAIL_SUPORTE;
+                if(document.getElementById('cfg-logo') && cfg.logoUrl) document.getElementById('cfg-logo').value = cfg.logoUrl;
+            }
+        } catch (e) { console.error("Erro config:", e); }
+    }
+
+    // ===== SALVAR CENTRAL DE COMANDOS =====
+    if(document.getElementById('btn-central-admin')) {
+        const modalCentral = document.getElementById('modal-central-admin');
+        document.getElementById('btn-central-admin').addEventListener('click', () => modalCentral.style.display = 'flex');
+        
+        document.getElementById('btn-salvar-config').addEventListener('click', async () => {
+            const zapVal = document.getElementById('cfg-zap').value.replace(/\D/g, ''); // Tira traços e espaços, deixa só o número
+            const emailVal = document.getElementById('cfg-email').value;
+            const logoVal = extrairLinkImagem(document.getElementById('cfg-logo').value);
+
+            try {
+                await setDoc(doc(db, "config", "geral"), {
+                    telefone: zapVal,
+                    email: emailVal,
+                    logoUrl: logoVal
+                }, { merge: true });
+                
+                alert("✅ Configurações Globais atualizadas com sucesso!");
+                window.location.reload(); // Recarrega a página para aplicar em todos os botões e logo na hora
+            } catch (e) {
+                alert("Erro ao salvar: " + e.message);
+            }
+        });
+    }
 
     // ===== 1. CARREGAR E-BOOKS =====
     async function carregarEbooks(isAdmin, uid) {
@@ -255,7 +307,7 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // ===== ADD E-BOOK (COM NOVO ID NUMÉRICO!) =====
+    // ===== ADD E-BOOK =====
     if(document.getElementById('btn-add-ebook')) {
         document.getElementById('btn-add-ebook').addEventListener('click', () => document.getElementById('modal-add-ebook').style.display = 'flex');
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
@@ -266,19 +318,14 @@ if (document.body.classList.contains('page-plataforma')) {
             const h = document.getElementById('input-hash-ebook').value;
             if(!f || !p || !t || !d) { alert("Preencha tudo!"); return; }
 
-            // GERA O ID NUMÉRICO DE 7 DÍGITOS
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
-
-            await setDoc(doc(db, "ebooks", novoId), { 
-                titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, ratings: [] 
-            });
-
+            await setDoc(doc(db, "ebooks", novoId), { titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, ratings: [] });
             document.getElementById('modal-add-ebook').style.display = 'none';
             carregarEbooks(true, usuarioAtualUid); 
         });
     }
 
-    // ===== ADD CURSO (COM NOVO ID NUMÉRICO!) =====
+    // ===== ADD CURSO =====
     if(document.getElementById('btn-add-curso')) {
         document.getElementById('btn-add-curso').addEventListener('click', () => document.getElementById('modal-add-curso').style.display = 'flex');
         document.getElementById('btn-salvar-curso').addEventListener('click', async () => {
@@ -289,13 +336,8 @@ if (document.body.classList.contains('page-plataforma')) {
             const d = document.getElementById('input-desc-curso').value;
             if(!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
             
-            // GERA O ID NUMÉRICO DE 7 DÍGITOS
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
-
-            await setDoc(doc(db, "cursos", novoId), { 
-                titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] 
-            });
-
+            await setDoc(doc(db, "cursos", novoId), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
             document.getElementById('modal-add-curso').style.display = 'none';
             carregarCursos(true, usuarioAtualUid); 
         });

@@ -11,13 +11,14 @@
     <!-- BARRA SUPERIOR (MENU) -->
     <header class="topbar">
         <div class="topbar-logo">
-            <img src="Elevare Logo.png" alt="Elevare Soluções" class="nav-logo">
+            <img src="Elevare Logo.png" alt="Elevare Soluções" class="nav-logo" id="logo-plataforma">
         </div>
         
         <nav class="topbar-nav">
             <button class="nav-btn active" data-target="tab-ebooks">E-books Premium</button>
             <button class="nav-btn" data-target="tab-cursos">Cursos em Vídeo</button>
-            <button class="nav-btn" data-target="tab-consultoria">Consultoria</button>
+            <!-- NOME ALTERADO AQUI -->
+            <button class="nav-btn" data-target="tab-atendimento">Atendimento ao Cliente</button>
         </nav>
 
         <div class="user-profile">
@@ -59,27 +60,55 @@
                     <button id="btn-add-curso" class="cta-btn btn-admin" style="display: none; background: #8b5cf6; box-shadow: none;">+ Adicionar Curso</button>
                 </div>
             </div>
-            
             <div class="grid-ebooks" id="lista-cursos"></div>
         </section>
 
-        <!-- ABA 3: CONSULTORIA -->
-        <section id="tab-consultoria" class="tab-content">
+        <!-- ABA 3: ATENDIMENTO AO CLIENTE -->
+        <section id="tab-atendimento" class="tab-content">
             <div class="section-header">
-                <h1>Consultoria Elevare</h1>
+                <h1>Atendimento ao Cliente</h1>
             </div>
             <div class="consultoria-grid">
                 <div class="contato-box">
                     <h3>Fale Diretamente Conosco</h3>
-                    <p>Nossos especialistas estão prontos para desenhar um plano de ação para a sua empresa.</p>
+                    <p>Nossos especialistas estão prontos para tirar suas dúvidas e ajudar no seu progresso.</p>
                     <div class="botoes-contato">
-                        <a href="#" class="cta-btn btn-wpp">Agendar via WhatsApp</a>
-                        <a href="#" class="cta-btn btn-email">Enviar E-mail</a>
+                        <a href="#" id="link-zap-atendimento" target="_blank" class="cta-btn btn-wpp">Contato via WhatsApp</a>
+                        <a href="#" id="link-email-atendimento" target="_blank" class="cta-btn btn-email">Enviar E-mail</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- O BOTÃO INVISÍVEL DA CENTRAL (Só Admin vê) -->
+    <button id="btn-central-admin" class="btn-floating-admin btn-admin" style="display: none;">⚙️ Central</button>
+
+    <!-- MODAL: CENTRAL DE COMANDOS (NOVO) -->
+    <div id="modal-central-admin" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 style="color: #d4af37;">⚙️ Central de Comandos Elevare</h2>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Configure os dados globais da plataforma aqui. Eles serão atualizados automaticamente em todos os botões e páginas.</p>
+            
+            <div class="form-group">
+                <label>Número do WhatsApp de Vendas (Ex: 5532999999999):</label>
+                <input type="text" id="cfg-zap" placeholder="Somente números com DDI e DDD">
+            </div>
+            <div class="form-group">
+                <label>E-mail Oficial de Suporte:</label>
+                <input type="text" id="cfg-email" placeholder="contato@elevare.com">
+            </div>
+            <div class="form-group">
+                <label>Logo da Plataforma (Link ImgBB):</label>
+                <input type="text" id="cfg-logo" placeholder="Cole o link da logo aqui para substituir">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-cancelar fechar-modal">Cancelar</button>
+                <button id="btn-salvar-config" class="cta-btn" style="background: #d4af37; color: #0f172a;">Salvar Configurações</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL: ADD E-BOOK -->
     <div id="modal-add-ebook" class="modal-overlay" style="display: none;">
@@ -147,32 +176,20 @@
         </div>
     </div>
 
-   <!-- MODAL: DETALHES CURSO (TELA TRAVADA COM VÍDEO TOP E SCROLL) -->
+   <!-- MODAL: DETALHES CURSO -->
     <div id="modal-detalhes-curso" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 600px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; text-align: left;">
-            
-            <!-- 1. TÍTULO -->
             <h2 id="detalhe-curso-titulo" style="margin-bottom: 15px; color: #fff; font-size: 24px; flex-shrink: 0;"></h2>
-            
-            <!-- 2. VÍDEO RETANGULAR NO TOPO -->
             <div class="video-wrapper" style="flex-shrink: 0; margin-bottom: 15px;">
                 <iframe id="detalhe-curso-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-
-            <!-- 3. BOTÃO ACIMA DA DESCRIÇÃO -->
             <div id="detalhe-curso-acao" style="flex-shrink: 0; margin-bottom: 15px;"></div>
-
-            <!-- 4. DESCRIÇÃO COM SCROLL (TELA NÃO AUMENTA) -->
             <h4 style="color: #00b4d8; margin-bottom: 5px; flex-shrink: 0;">Sobre o Treinamento:</h4>
             <p id="detalhe-curso-desc" style="color: #94a3b8; font-size: 14px; line-height: 1.6; overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-bottom: 15px;"></p>
-            
-            <!-- 5. BOTÃO FECHAR -->
             <button class="btn-cancelar fechar-modal" style="flex-shrink: 0; width: 100%;">Fechar Aula Demonstrativa</button>
         </div>
     </div>
 
-    <!-- ===== AQUI ESTÁ A LINHA MÁGICA QUE FALTAVA! ===== -->
     <script type="module" src="app.js?v=999"></script>
-
 </body>
 </html>
