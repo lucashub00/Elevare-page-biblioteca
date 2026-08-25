@@ -107,13 +107,24 @@ body.page-index::before {
 .vitrine-card {
     background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px);
     padding: 40px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    transition: transform 0.3s; border: 1px solid rgba(0, 180, 216, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
+    
+    /* Borda Dourada Adicionada Aqui */
+    border: 1px solid #d4af37; 
 }
-.vitrine-card:hover { transform: translateY(-10px); border-color: #00b4d8; }
-.vitrine-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #334155; }
+.vitrine-card:hover { 
+    transform: translateY(-10px); 
+    border-color: #fbe58f; /* Dourado mais claro e brilhante ao passar o mouse */
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.15); /* Sombra dourada super leve */
+}
+.vitrine-img { 
+    width: 100%; 
+    height: 220px; /* Aumentado de 180px para 220px (Maior, mas na medida certa) */
+    object-fit: cover; border-radius: 8px; margin-bottom: 20px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #334155; 
+}
 .vitrine-card h3 { font-size: 20px; margin-bottom: 15px; color: #00b4d8; }
 .vitrine-card p { color: #cbd5e1; line-height: 1.6; font-size: 15px; }
-
 /* 7. RODAPÉ */
 footer { background: transparent; color: #64748b; text-align: center; padding: 40px 5%; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.05); }
 .copyright-clause { border: 1px solid #333; padding: 20px; margin-top: 20px; background: rgba(0,0,0,0.4); color: #94a3b8; text-align: left; border-radius: 8px; font-size: 0.85rem; }
