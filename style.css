@@ -6,18 +6,24 @@
 /* ==================================
    ESTILOS ESPECÍFICOS: INDEX (Vendas)
 =================================== */
-body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
+/* 1. FUNDO CONTÍNUO (Azul Dark com Roxo) */
+body.page-index { 
+    background: linear-gradient(135deg, #090e17 0%, #170b29 50%, #090e17 100%); 
+    color: #f1f5f9; 
+    line-height: 1.6; 
+    min-height: 100vh;
+}
 
-/* Cabeçalho Index (Barra preta removida, agora flutua transparente) */
+/* 2. CABEÇALHO FLUTUANTE (Sem barra preta) */
 .page-index header { 
     background: transparent; 
     position: absolute;
     top: 0; left: 0; width: 100%; z-index: 100;
-    color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; 
+    color: #fff; padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; 
 }
-.logo-img { height: 75px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+.logo-img { height: 90px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6)); }
 
-/* Botões Padrão */
+/* 3. BOTÕES PADRÃO */
 .cta-btn { 
     background: linear-gradient(90deg, #00b4d8, #0077b6); color: #fff; padding: 12px 28px; 
     border-radius: 30px; font-weight: bold; text-transform: uppercase; font-size: 14px; 
@@ -25,7 +31,7 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
 }
 .cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
 
-/* NOVO: Botão Neon Chamativo */
+/* 4. BOTÃO NEON CHAMATIVO */
 .btn-neon-cyan {
     background: transparent;
     color: #00b4d8;
@@ -41,6 +47,8 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
     box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.2), 0 0 10px rgba(0, 180, 216, 0.2);
     text-shadow: 0 0 5px #00b4d8;
     display: inline-block;
+    width: 100%;
+    max-width: 450px;
 }
 .btn-neon-cyan:hover {
     background: #00b4d8;
@@ -50,101 +58,79 @@ body.page-index { background-color: #f4f7f6; color: #333; line-height: 1.6; }
     transform: scale(1.05);
 }
 
-/* Botão de Teste (Pode ser removido depois) */
 .btn-teste { background: #10b981; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 
-/* Hero Section */
+/* 5. HERO SECTION (Sem divisões de fundo) */
 .hero { 
-    text-align: center; padding: 140px 5% 100px; position: relative; color: white; overflow: hidden;
-    background: radial-gradient(circle at center, rgba(0, 180, 216, 0.85) 0%, rgba(0, 119, 182, 0.9) 35%, rgba(3, 4, 94, 0.95) 75%, rgba(42, 0, 102, 1) 100%);
+    text-align: center; padding: 160px 5% 80px; position: relative; color: white;
+    background: transparent; /* Remove as quebras de seção */
 }
 .hero::before {
     content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 100%; height: 100%; background-image: url('Elevare Logo.png'); background-size: 60%; 
-    background-position: center; background-repeat: no-repeat; opacity: 0.15; z-index: 0; pointer-events: none; 
+    background-position: center; background-repeat: no-repeat; opacity: 0.05; z-index: 0; pointer-events: none; 
 }
 .hero > * { position: relative; z-index: 1; }
-.hero h1 { font-size: 2.8rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-.hero p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 40px; color: #e0e0e0; }
+.hero h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); line-height: 1.2; }
+.hero p { font-size: 1.25rem; max-width: 800px; margin: 0 auto 50px; color: #cbd5e1; }
 .video-placeholder { 
-    background-color: rgba(0, 0, 0, 0.6); background-size: cover; background-position: center;
-    width: 100%; max-width: 800px; height: 450px; margin: 0 auto 40px; 
-    display: flex; align-items: center; justify-content: center; color: #fff; border-radius: 12px; 
-    border: 2px solid rgba(0, 180, 216, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative;
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
+    width: 100%; max-width: 850px; height: 450px; margin: 0 auto 40px; 
+    display: flex; align-items: center; justify-content: center; color: #fff; border-radius: 16px; 
+    border: 1px solid rgba(0, 180, 216, 0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.6); overflow: hidden; position: relative;
 }
 
-/* Área de Login */
-.login-area { padding: 50px 5%; background: #1e293b; color: white; text-align: center; }
-.login-box { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-.login-box input { padding: 12px; border-radius: 6px; border: none; color: #333; outline: none; }
-.divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #94a3b8; font-size: 14px; }
-.divisor hr { flex: 1; border-color: #334155; }
-.btn-google { 
-    background: white; color: #333; padding: 12px; border-radius: 6px; border: none; font-weight: bold; 
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
-}
-.msg-erro { color: #ef4444; font-size: 14px; display: none; margin-top: 10px; font-weight: bold; }
-
-/* Rodapé */
-footer { background: #0b0c10; color: #888; text-align: center; padding: 40px 5%; font-size: 0.9rem; }
-.copyright-clause { border: 1px solid #333; padding: 20px; margin-top: 20px; background: #111; color: #ccc; text-align: left; border-radius: 8px; font-size: 0.85rem; }
-.copyright-clause strong { color: #e63946; }
-
-/* ==================================
-   VITRINE EXPOSITIVA (Funil Index)
-=================================== */
+/* 6. VITRINE EXPOSITIVA (Sem fundo branco) */
 .vitrine-expositiva {
-    padding: 80px 5%;
-    background-color: #f8fafc;
+    padding: 60px 5%;
+    background: transparent; /* Fundo invisível para mostrar o gradiente azul/roxo */
     text-align: center;
-    color: #1e293b;
+    color: #f1f5f9;
 }
-.vitrine-expositiva h2 {
-    font-size: 32px;
-    margin-bottom: 10px;
-    color: #0f172a;
-}
-.vitrine-expositiva > p {
-    font-size: 18px;
-    color: #64748b;
-    margin-bottom: 50px;
-}
+.vitrine-expositiva h2 { font-size: 32px; margin-bottom: 10px; color: #fff; }
+.vitrine-expositiva > p { font-size: 18px; color: #94a3b8; margin-bottom: 50px; }
 .vitrine-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    max-width: 1100px;
-    margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto;
 }
 .vitrine-card {
-    background: #ffffff;
+    background: rgba(30, 41, 59, 0.5); /* Card de vidro escuro */
+    backdrop-filter: blur(10px);
     padding: 40px 20px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     transition: transform 0.3s;
-    border-top: 4px solid #00b4d8;
+    border: 1px solid rgba(0, 180, 216, 0.2);
 }
-.vitrine-card:hover {
-    transform: translateY(-10px);
-}
+.vitrine-card:hover { transform: translateY(-10px); border-color: #00b4d8; }
 .vitrine-img {
-    width: 100%;
-    height: 180px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
+    width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #334155;
 }
-.vitrine-card h3 {
-    font-size: 22px;
-    margin-bottom: 15px;
+.vitrine-card h3 { font-size: 22px; margin-bottom: 15px; color: #00b4d8; }
+.vitrine-card p { color: #cbd5e1; line-height: 1.6; font-size: 15px; }
+
+/* 7. ÁREA DE LOGIN (Mesclada ao fundo) */
+.login-area { padding: 80px 5%; background: transparent; color: white; text-align: center; }
+.login-box { 
+    max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; 
+    background: rgba(15, 23, 42, 0.8); padding: 40px; border-radius: 16px; 
+    border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 15px 40px rgba(0,0,0,0.6); backdrop-filter: blur(10px);
 }
-.vitrine-card p {
-    color: #64748b;
-    line-height: 1.6;
-    font-size: 15px;
+.login-box input { padding: 14px; border-radius: 8px; border: 1px solid #334155; background: #0b0f19; color: white; outline: none; }
+.login-box input:focus { border-color: #00b4d8; }
+.divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; }
+.divisor hr { flex: 1; border-color: #334155; }
+.btn-google { 
+    background: white; color: #0f172a; padding: 14px; border-radius: 8px; border: none; font-weight: bold; 
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
 }
+.btn-google:hover { background: #e2e8f0; }
+.msg-erro { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 14px; display: none; margin-top: 10px; font-weight: bold; padding: 12px; border-radius: 6px;}
+
+/* 8. RODAPÉ */
+footer { background: transparent; color: #64748b; text-align: center; padding: 40px 5%; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.05); }
+.copyright-clause { border: 1px solid #333; padding: 20px; margin-top: 20px; background: #111; color: #ccc; text-align: left; border-radius: 8px; font-size: 0.85rem; }
+.copyright-clause strong { color: #e63946; }
 
 /* ==================================
    ESTILOS ESPECÍFICOS: PLATAFORMA
@@ -252,7 +238,7 @@ body.page-plataforma {
    ESTILOS ESPECÍFICOS: CADASTRO
 =================================== */
 body.page-cadastro {
-    background-color: #0b0c10;
+    background-color: #090e17;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -262,10 +248,10 @@ body.page-cadastro {
     padding: 20px;
 }
 .cadastro-container {
-    background: #1e293b;
+    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05);
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
     width: 100%;
     max-width: 420px;
 }
