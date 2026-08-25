@@ -29,7 +29,7 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ==========================================
-// FUNÇÕES AUXILIARES MÁGICAS
+// FUNÇÕES AUXILIARES MÁGICAS E BLINDADAS
 // ==========================================
 function extrairLinkImagem(inputTexto) {
     if (!inputTexto) return "";
@@ -43,8 +43,12 @@ function extrairLinkImagem(inputTexto) {
 
 function extrairIdYoutube(url) {
     if (!url) return "";
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const match = String(url).match(regex);
+    let txt = String(url).trim();
+    if (txt.length === 11) return txt; // Aceita se o Admin colar APENAS o ID direto
+    
+    // Regex blindado para Links Longos, Mobile e Shorts
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = txt.match(regex);
     return match ? match[1] : "";
 }
 
@@ -62,6 +66,15 @@ async function lerAcessosComTimeout(uid) {
 // LÓGICA: INDEX E CADASTRO
 // ==========================================
 if (document.body.classList.contains('page-index')) {
+    
+    // Puxar o Vídeo Salvo na Central de Comandos automaticamente sem dar Erro no Player
+    getDoc(doc(db, "config", "geral")).then(snap => {
+        if (snap.exists() && snap.data().videoUrl) {
+            // Insere o link de forma limpa, sem logomarcas pesadas do youtube (?rel=0)
+            document.getElementById('iframe-video-vendas').src = `https://www.youtube.com/embed/${snap.data().videoUrl}?rel=0&modestbranding=1`;
+        }
+    }).catch(e => console.log("Sem vídeo configurado."));
+
     document.querySelectorAll('.action-bridge').forEach(btn => {
         btn.addEventListener('click', e => { e.preventDefault(); document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' }); });
     });
@@ -95,7 +108,6 @@ if (document.body.classList.contains('page-plataforma')) {
     
     const admins = ["pedroeliasm08@gmail.com", "suporteelevaresolucoes@gmail.com"];
     
-    // Variáveis Globais de Configuração (com valores padrão de segurança)
     let NUMERO_DO_ZAP = "5532999999999"; 
     let EMAIL_SUPORTE = "";
     let usuarioAtualUid = "";
@@ -118,7 +130,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 const isAdmin = admins.includes(emailUsuario);
                 if (isAdmin) document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'block');
                 
-                // Puxa as configurações da Central de Comandos antes de carregar o resto
                 await carregarConfiguracoesGerais();
 
                 carregarEbooks(isAdmin, usuarioAtualUid);
@@ -143,17 +154,18 @@ if (document.body.classList.contains('page-plataforma')) {
                 if (cfg.email) EMAIL_SUPORTE = cfg.email;
                 if (cfg.logoUrl) document.getElementById('logo-plataforma').src = cfg.logoUrl;
 
-                // Preenche os botões da aba "Atendimento ao Cliente"
                 const btnZapAtendimento = document.getElementById('link-zap-atendimento');
                 if (btnZapAtendimento) btnZapAtendimento.href = `https://wa.me/${NUMERO_DO_ZAP}?text=Ol%C3%A1,%20preciso%20de%20ajuda%20na%20plataforma.`;
                 
                 const btnEmailAtendimento = document.getElementById('link-email-atendimento');
                 if (btnEmailAtendimento && EMAIL_SUPORTE) btnEmailAtendimento.href = `mailto:${EMAIL_SUPORTE}`;
 
-                // Preenche os campos dentro do próprio Modal da Central para o Admin ver os atuais
                 if(document.getElementById('cfg-zap')) document.getElementById('cfg-zap').value = NUMERO_DO_ZAP;
                 if(document.getElementById('cfg-email')) document.getElementById('cfg-email').value = EMAIL_SUPORTE;
                 if(document.getElementById('cfg-logo') && cfg.logoUrl) document.getElementById('cfg-logo').value = cfg.logoUrl;
+                
+                // Mostra o vídeo atual no campo
+                if(document.getElementById('cfg-video') && cfg.videoUrl) document.getElementById('cfg-video').value = `https://youtu.be/${cfg.videoUrl}`;
             }
         } catch (e) { console.error("Erro config:", e); }
     }
@@ -164,19 +176,29 @@ if (document.body.classList.contains('page-plataforma')) {
         document.getElementById('btn-central-admin').addEventListener('click', () => modalCentral.style.display = 'flex');
         
         document.getElementById('btn-salvar-config').addEventListener('click', async () => {
-            const zapVal = document.getElementById('cfg-zap').value.replace(/\D/g, ''); // Tira traços e espaços, deixa só o número
+            const zapVal = document.getElementById('cfg-zap').value.replace(/\D/g, ''); 
             const emailVal = document.getElementById('cfg-email').value;
             const logoVal = extrairLinkImagem(document.getElementById('cfg-logo').value);
+            
+            // Validação e Extração do Vídeo
+            const videoInput = document.getElementById('cfg-video').value;
+            const videoVal = extrairIdYoutube(videoInput);
+            
+            if (videoInput && !videoVal) {
+                alert("⚠️ O link do YouTube parece inválido! Cole o link correto para funcionar.");
+                return; // Impede que o admin salve um vídeo quebrado
+            }
 
             try {
                 await setDoc(doc(db, "config", "geral"), {
                     telefone: zapVal,
                     email: emailVal,
-                    logoUrl: logoVal
+                    logoUrl: logoVal,
+                    videoUrl: videoVal
                 }, { merge: true });
                 
                 alert("✅ Configurações Globais atualizadas com sucesso!");
-                window.location.reload(); // Recarrega a página para aplicar em todos os botões e logo na hora
+                window.location.reload(); 
             } catch (e) {
                 alert("Erro ao salvar: " + e.message);
             }
