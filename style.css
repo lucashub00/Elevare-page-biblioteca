@@ -8,7 +8,12 @@
 =================================== */
 /* 1. FUNDO CONTÍNUO (Azul com Roxo) */
 body.page-index { 
-    /* LOGO DE FUNDO (Marca d'água gigante na tela toda) */
+    background: linear-gradient(135deg, #090e17 0%, #150e24 50%, #090e17 100%); 
+    color: #f1f5f9; 
+    line-height: 1.6; 
+    min-height: 100vh;
+}
+
 /* LOGO DE FUNDO (Marca d'água gigante na tela toda) */
 body.page-index::before {
     content: "";
@@ -21,11 +26,6 @@ body.page-index::before {
     opacity: 0.05; 
     z-index: -1; /* Fica atrás de tudo */
     pointer-events: none; 
-}
-    background: linear-gradient(135deg, #090e17 0%, #150e24 50%, #090e17 100%); 
-    color: #f1f5f9; 
-    line-height: 1.6; 
-    min-height: 100vh;
 }
 
 /* 2. CABEÇALHO FLUTUANTE (Sem fundo, apenas Logo na Esq e Botão na Dir) */

@@ -8,67 +8,58 @@
 </head>
 <body class="page-index">
 
-    <!-- CABEÇALHO INVISÍVEL (Logo e Botão flutuando) -->
+    <!-- CABEÇALHO FLUTUANTE (Sem barra preta) -->
     <header class="header-index">
         <img src="Elevare Logo.png" alt="Elevare Soluções" class="logo-img">
         <button class="action-bridge btn-neon-cyan btn-login-top">ACESSAR MINHA CONTA</button>
     </header>
 
     <main>
-        <!-- SEÇÃO HERO (Apresentação sem subdivisão de fundo) -->
-        <section class="hero-dark">
-            <h1 class="hero-title">
-                <span class="text-cyan">Estratégias e Soluções práticas</span> para o dia a dia, <br>ocasiões especiais e ambiente de trabalho.
-            </h1>
-            <p class="hero-subtitle">
-                Eleve o patamar das suas ideias com e-books e material em vídeo inéditos no mercado com um toque especial Elevare. Nossos infoprodutos te ajudam a dar o próximo passo no desenvolvimento dos seus projetos de vida, da sua rotina, da sua saúde e do seu negócio.
-            </p>
+        <!-- HERO SECTION (Tudo centralizado à força) -->
+        <section class="hero">
+            <h1><span style="color: #00b4d8;">Estratégias e Soluções práticas</span> para o dia a dia, <br>ocasiões especiais e ambiente de trabalho.</h1>
+            <p>Eleve o patamar das suas ideias com e-books e material em vídeo inéditos no mercado com um toque especial Elevare. Nossos infoprodutos te ajudam a dar o próximo passo no desenvolvimento dos seus projetos de vida, da sua rotina, da sua saúde e do seu negócio.</p>
 
-            <!-- CAIXA DE VÍDEO -->
-            <div class="video-box-dark">
-                <h3 class="text-cyan" style="margin-bottom: 20px; font-size: 22px;">Assista ao vídeo abaixo e obtenha a solução!</h3>
-                <div class="video-wrapper" style="margin-bottom: 25px; border-radius: 8px; overflow: hidden; border: 2px solid rgba(0, 180, 216, 0.3);">
-                    <iframe src="https://www.youtube.com/embed/SEU_VIDEO_AQUI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                
-                <!-- BOTÃO NEON PRINCIPAL -->
-                <button class="action-bridge btn-neon-cyan">QUERO A SOLUÇÃO AGORA</button>
+            <h3 style="color: #00b4d8; font-size: 22px; margin-bottom: 20px;">Assista ao vídeo abaixo e obtenha a solução!</h3>
+            
+            <!-- VÍDEO FORMATO CINEMA (16:9) -->
+            <!-- AQUI FOI CORRIGIDO O NOME DA CLASSE PARA video-box -->
+            <div class="video-box">
+                <iframe src="https://www.youtube.com/embed/SEU_VIDEO_AQUI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
+
+            <!-- BOTÃO NEON -->
+            <button class="action-bridge btn-neon-cyan">QUERO A SOLUÇÃO AGORA</button>
         </section>
 
-        <!-- VITRINE (Com as 3 imagens novas) -->
+        <!-- VITRINE EXPOSITIVA -->
         <section class="vitrine-expositiva">
-            <h2>O que você encontra na <span class="text-cyan">Elevare Soluções?</span></h2>
-            <p>Confira nossos principais pilares de transformação.</p>
+            <h2>O que você encontra na <span style="color: #00b4d8;">Elevare Soluções?</span></h2>
+            <p style="color: #94a3b8; font-size: 18px; margin-bottom: 40px;">Confira nossos principais pilares de transformação.</p>
             
             <div class="vitrine-grid">
-                <!-- CARD 1: E-BOOKS -->
                 <div class="vitrine-card">
                     <img src="vitrine-ebooks.png" alt="E-books Premium" class="vitrine-img">
-                    <h3 class="text-cyan">E-BOOKS PREMIUM EXCLUSIVOS</h3>
+                    <h3 style="color: #00b4d8;">E-BOOKS PREMIUM EXCLUSIVOS</h3>
                     <p>Leituras detalhadas e práticas com estratégias testadas e comprovadas para você aplicar na sua rotina e negócios hoje mesmo!</p>
                 </div>
-                
-                <!-- CARD 2: VÍDEOS -->
                 <div class="vitrine-card">
                     <img src="vitrine-cursos.png" alt="Cursos em Vídeo" class="vitrine-img">
-                    <h3 class="text-cyan">MATERIAL EM VÍDEO</h3>
+                    <h3 style="color: #00b4d8;">MATERIAL EM VÍDEO</h3>
                     <p>Dicas práticas para resolver problemas práticos do cotidiano, para adquirir novas habilidades e conhecimentos práticos e aplicáveis!</p>
                 </div>
-                
-                <!-- CARD 3: CONSULTORIA/ATENDIMENTO -->
                 <div class="vitrine-card">
                     <img src="vitrine-consultoria.png" alt="Atendimento" class="vitrine-img">
-                    <h3 class="text-cyan">ATENDIMENTO PERSONALIZADO</h3>
+                    <h3 style="color: #00b4d8;">ATENDIMENTO PERSONALIZADO</h3>
                     <p>Acesso exclusivo à equipe de atendimento que te oferece diagnósticos precisos e recomendações de infoprodutos certos para o que você busca!</p>
                 </div>
             </div>
         </section>
 
-        <!-- ÁREA DE LOGIN (Fundo translúcido para não quebrar o layout) -->
+        <!-- ÁREA DE LOGIN -->
         <section id="login-section" class="login-area">
             <div class="login-box">
-                <h2 class="text-cyan" style="margin-bottom: 10px;">Acesse sua conta</h2>
+                <h2 style="color: #00b4d8; margin-bottom: 10px;">Acesse sua conta</h2>
                 <p style="margin-bottom: 25px; color: #cbd5e1;">Entre para acessar seus infoprodutos.</p>
                 
                 <div id="mensagem-erro" class="msg-erro"></div>
@@ -84,13 +75,13 @@
                     Entrar com Google
                 </button>
                 
-                <p style="margin-top: 20px; font-size: 14px; color: #94a3b8;">Ainda não tem conta? <a href="cadastro.html" class="text-cyan" style="font-weight: bold; text-decoration: none;">Crie uma grátis</a></p>
+                <p style="margin-top: 20px; font-size: 14px; color: #94a3b8;">Ainda não tem conta? <a href="cadastro.html" style="color: #00b4d8; font-weight: bold; text-decoration: none;">Crie uma grátis</a></p>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
+        <p style="color: #64748b;">&copy; 2026 Elevare Soluções. Todos os direitos reservados.</p>
     </footer>
 
     <script type="module" src="app.js?v=999"></script>
