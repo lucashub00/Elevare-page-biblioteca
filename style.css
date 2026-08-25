@@ -425,3 +425,45 @@ body.page-cadastro {
 /* Cor Roxa pro Curso */
 #btn-add-curso { background: #8b5cf6 !important; }
 #btn-add-curso:hover { background: #7c3aed !important; transform: translateY(-2px); }
+/* ==================================
+   CORREÇÃO DEFINITIVA DOS BOTÕES (ADMIN E MODAIS)
+=================================== */
+button.btn-abrir-gerenciador, 
+button#btn-add-ebook, 
+button#btn-add-curso, 
+button#btn-liberar-acesso, 
+button#btn-salvar-ebook, 
+button#btn-salvar-curso {
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    border: none !important; /* Arranca a borda 3D feia */
+    font-weight: bold !important;
+    font-size: 14px !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    font-family: inherit !important;
+    text-transform: none !important;
+    outline: none !important;
+}
+
+/* Cor Laranja (Gerenciar) */
+button.btn-abrir-gerenciador { background: #f59e0b !important; }
+button.btn-abrir-gerenciador:hover { background: #d97706 !important; transform: translateY(-2px) !important; }
+
+/* Cor Verde (Adicionar E-book, Salvar, Liberar Acesso) */
+button#btn-add-ebook, 
+button#btn-liberar-acesso, 
+button#btn-salvar-ebook { background: #10b981 !important; }
+
+button#btn-add-ebook:hover, 
+button#btn-liberar-acesso:hover, 
+button#btn-salvar-ebook:hover { background: #059669 !important; transform: translateY(-2px) !important; }
+
+/* Cor Roxa (Adicionar Curso, Salvar Curso) */
+button#btn-add-curso, 
+button#btn-salvar-curso { background: #8b5cf6 !important; }
+
+button#btn-add-curso:hover, 
+button#btn-salvar-curso:hover { background: #7c3aed !important; transform: translateY(-2px) !important; }
