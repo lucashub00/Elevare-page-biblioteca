@@ -467,3 +467,42 @@ button#btn-salvar-curso { background: #8b5cf6 !important; }
 
 button#btn-add-curso:hover, 
 button#btn-salvar-curso:hover { background: #7c3aed !important; transform: translateY(-2px) !important; }
+/* ==================================
+   CORREÇÃO DEFINITIVA DOS BOTÕES (ADMIN E MODAIS)
+=================================== */
+button.btn-abrir-gerenciador, 
+button#btn-add-ebook, 
+button#btn-add-curso, 
+button#btn-liberar-acesso, 
+button#btn-salvar-ebook, 
+button#btn-salvar-curso,
+button#btn-salvar-config {
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    font-family: inherit !important;
+    text-transform: none !important;
+    outline: none !important;
+}
+
+/* Laranja (Gerenciar) */
+button.btn-abrir-gerenciador { background: #f59e0b !important; }
+button.btn-abrir-gerenciador:hover { background: #d97706 !important; transform: translateY(-2px) !important; }
+
+/* Verde (Adicionar E-book, Salvar, Liberar) */
+button#btn-add-ebook, button#btn-liberar-acesso, button#btn-salvar-ebook { background: #10b981 !important; }
+button#btn-add-ebook:hover, button#btn-liberar-acesso:hover, button#btn-salvar-ebook:hover { background: #059669 !important; transform: translateY(-2px) !important; }
+
+/* Roxo (Adicionar Curso, Salvar Curso) */
+button#btn-add-curso, button#btn-salvar-curso { background: #8b5cf6 !important; }
+button#btn-add-curso:hover, button#btn-salvar-curso:hover { background: #7c3aed !important; transform: translateY(-2px) !important; }
+
+/* DOURADO NOVO (Salvar Configurações da Central) */
+button#btn-salvar-config { background: #d4af37 !important; color: #0f172a !important; }
+button#btn-salvar-config:hover { background: #fbe58f !important; transform: translateY(-2px) !important; }
