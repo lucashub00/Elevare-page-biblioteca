@@ -76,20 +76,28 @@ body.page-index::before {
     box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative;
 }
 
-/* 5. ÁREA DE LOGIN (Fundo adaptado para o Dark Theme) */
-.login-area { padding: 50px 5%; background: transparent; color: white; text-align: center; }
+/* ÁREA DE LOGIN */
+.login-area { padding: 80px 5%; display: flex; justify-content: center; position: relative; z-index: 10; }
 .login-box { 
-    max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; 
-    background: rgba(15, 23, 42, 0.8); padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+    max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 15px; text-align: center;
+    background: rgba(15, 23, 42, 0.8); padding: 40px; border-radius: 16px; 
+    backdrop-filter: blur(10px); box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    
+    /* BORDA DOURADA ADICIONADA AQUI */
+    border: 1px solid #d4af37; 
 }
-.login-box input { padding: 14px; border-radius: 8px; border: 1px solid #334155; background: #0b0f19; color: white; outline: none; }
-.login-box input:focus { border-color: #00b4d8; }
-.divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #64748b; font-size: 14px; }
-.divisor hr { flex: 1; border-color: #334155; }
-.btn-google { background: white; color: #0f172a; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
-.btn-google:hover { background: #e2e8f0; }
-.msg-erro { color: #ef4444; font-size: 14px; display: none; margin-top: 10px; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 6px; }
+.login-box input { 
+    padding: 14px; border-radius: 8px; border: 1px solid #334155; 
+    background: #0b0f19; color: white; outline: none; transition: 0.3s;
+}
+/* Borda dourada também ao clicar para digitar */
+.login-box input:focus { border-color: #d4af37; } 
 
+.divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; }
+.divisor hr { flex: 1; border-color: #334155; }
+.btn-google { background: white; color: #0f172a; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; width: 100%; }
+.btn-google:hover { background: #e2e8f0; }
+.msg-erro { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 14px; display: none; padding: 12px; border-radius: 6px; font-weight: bold;}
 /* 6. VITRINE EXPOSITIVA (Pilares) */
 .vitrine-expositiva {
     padding: 80px 5%;
