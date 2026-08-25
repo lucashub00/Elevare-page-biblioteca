@@ -38,26 +38,35 @@ body.page-index::before {
 }
 .logo-img { height: 75px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
 
-/* 3. BOTÕES PADRÃO & NEON */
-.cta-btn { 
-    background: linear-gradient(90deg, #00b4d8, #0077b6); color: #fff; padding: 12px 28px; 
-    border-radius: 30px; font-weight: bold; text-transform: uppercase; font-size: 14px; 
-    transition: all 0.3s ease; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4); 
-}
-.cta-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6); }
-
+/* BOTÃO NEON CHAMATIVO (Agora Dourado Premium!) */
 .btn-neon-cyan {
-    background: transparent; color: #00b4d8; border: 2px solid #00b4d8; padding: 16px 40px;
-    border-radius: 8px; font-weight: 900; text-transform: uppercase; font-size: 18px;
-    cursor: pointer; transition: all 0.4s ease-in-out; letter-spacing: 1px;
-    box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.2), 0 0 10px rgba(0, 180, 216, 0.2);
-    text-shadow: 0 0 5px #00b4d8; display: inline-block;
+    background: transparent; 
+    color: #d4af37; /* Texto Dourado */
+    border: 2px solid #d4af37; /* Borda Dourada */
+    padding: 16px 40px;
+    border-radius: 8px; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    font-size: 18px;
+    cursor: pointer; 
+    transition: all 0.4s ease-in-out; 
+    letter-spacing: 1px;
+    /* Efeito Neon Dourado Apagado */
+    box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2), 0 0 10px rgba(212, 175, 55, 0.2);
+    text-shadow: 0 0 5px #d4af37; 
+    display: inline-block; 
+    width: 100%; 
+    max-width: 450px; 
+    margin-top: 10px;
 }
 .btn-neon-cyan:hover {
-    background: #00b4d8; color: #0f172a; text-shadow: none; transform: scale(1.05);
-    box-shadow: 0 0 15px #00b4d8, 0 0 30px #00b4d8, 0 0 60px #00b4d8, inset 0 0 10px rgba(255,255,255,0.5);
+    background: #d4af37; /* Fundo Dourado ao passar o mouse */
+    color: #0f172a; /* Texto escuro ao passar o mouse */
+    text-shadow: none; 
+    transform: scale(1.05);
+    /* Efeito Neon Dourado Aceso! */
+    box-shadow: 0 0 15px #d4af37, 0 0 30px #d4af37, 0 0 60px #d4af37, inset 0 0 10px rgba(255,255,255,0.5);
 }
-
 /* 4. HERO SECTION (Apresentação Centralizada) */
 .hero { 
     text-align: center; 
