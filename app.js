@@ -1,9 +1,9 @@
-window.onerror = function(msg, url, line) {
-    const box = document.createElement('div');
-    box.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:#fff; padding:20px; z-index:99999; border-radius:8px; font-weight:bold; box-shadow:0 10px 25px rgba(0,0,0,0.5);";
-    box.innerHTML = `🚨 O NAVEGADOR TRAVOU!<br>Erro: ${msg}<br>Linha: ${line}`;
-    document.body.appendChild(box);
-};
+// window.onerror = function(msg, url, line) {
+//     const box = document.createElement('div');
+//     box.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:#fff; padding:20px; z-index:99999; border-radius:8px; font-weight:bold; box-shadow:0 10px 25px rgba(0,0,0,0.5);";
+//     box.innerHTML = `🚨 O NAVEGADOR TRAVOU!<br>Erro: ${msg}<br>Linha: ${line}`;
+//     document.body.appendChild(box);
+// };
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { 
@@ -106,7 +106,9 @@ if (document.body.classList.contains('page-cadastro')) {
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
     
-    const admins = ["pedroeliasm08@gmail.com", "suporteelevaresolucoes@gmail.com"];
+    // ======== AQUI ESTAVA O SEU E-MAIL. REMOVIDO! ========
+    const admins = ["suporteelevaresolucoes@gmail.com"];
+    // =====================================================
     
     let NUMERO_DO_ZAP = "5532999999999"; 
     let EMAIL_SUPORTE = "";
