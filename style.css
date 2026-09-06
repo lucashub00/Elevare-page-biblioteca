@@ -104,6 +104,26 @@ body.page-index::before {
 
 .divisor { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; }
 .divisor hr { flex: 1; border-color: #334155; }
+
+/* ==================================
+   BOTÃO CTA BRANCO (Login)
+=================================== */
+.cta-btn {
+    background: #ffffff;
+    color: #0f172a; /* Texto escuro */
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px; /* Cantos arredondados */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cta-btn:hover {
+    background: #e2e8f0; /* Acinzentado ao passar o mouse */
+}
+
 .btn-google { background: white; color: #0f172a; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; width: 100%; }
 .btn-google:hover { background: #e2e8f0; }
 .msg-erro { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 14px; display: none; padding: 12px; border-radius: 6px; font-weight: bold;}
