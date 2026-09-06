@@ -34,10 +34,10 @@ O sistema é alimentado por um Backend as a Service (Firebase), permitindo o ger
 
 1. Faça o clone deste repositório:
    ```bash
-   git clone [https://github.com/SEU-USUARIO/elevare-solucoes.git](https://github.com/SEU-USUARIO/elevare-solucoes.git)
+   git clone https://github.com/SEU-USUARIO/elevare-solucoes.git
 Abra a pasta do projeto no seu editor de código (ex: VS Code).
 
-Certifique-se de configurar as suas próprias credenciais do Firebase no arquivo app.js na constante firebaseConfig.
+Certifique-se de criar um arquivo firebase-config.js com suas credenciais e importar no app.js. Nunca suba suas keys pro GitHub.
 
 Inicie um servidor local (como o Live Server do VS Code) para testar a aplicação.
   
