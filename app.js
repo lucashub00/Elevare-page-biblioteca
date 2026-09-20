@@ -485,10 +485,10 @@ if (document.body.classList.contains('page-plataforma')) {
 
             const acaoContainer = document.getElementById('detalhe-curso-acao');
             if(curso.hasAccess) {
-                 acaoContainer.innerHTML = `<a href="${curso.pdfUrl}" target="_blank" class="btn-download-pdf" style="background:#8b5cf6;">🚀 Acessar Treinamento Completo (Google Drive)</a>`;
+                 acaoContainer.innerHTML = `<a href="${curso.pdfUrl}" target="_blank" class="btn-download-pdf" style="background:#8b5cf6;">🚀 Desbloqueie o tutorial completo ao adquirir o e-book</a>`;
             } else {
-                 const msgZap = encodeURIComponent(`Olá, quero garantir meu acesso ao Treinamento "${curso.titulo}" (ID: ${cursoId}).\n\nMeu ID de Cliente é: ${usuarioAtualUid}\nO e-mail que uso no Google Drive é: [Digite seu e-mail aqui]`);
-                 acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Clique aqui para destravar o curso completo</a>`;
+                 const msgZap = encodeURIComponent(`Olá, quero garantir meu acesso ao Guia "${curso.titulo}" (ID: ${cursoId}).\n\nMeu ID de Cliente é: ${usuarioAtualUid}\nO e-mail que uso no Google Drive é: [Digite seu e-mail aqui]`);
+                 acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Desbloqueie o tutorial completo ao adquirir o e-book</a>`;
             }
 
             document.getElementById('modal-detalhes-curso').style.display = 'flex';
