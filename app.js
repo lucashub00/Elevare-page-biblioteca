@@ -144,7 +144,13 @@ if (document.body.classList.contains('page-plataforma')) {
             window.location.href = "index.html"; 
         }
     });
-
+// FORÇAR ADMIN TEMPORÁRIO (Apagar depois dos testes)
+const forcarAdmin = true; 
+if (forcarAdmin) {
+    document.querySelectorAll('.btn-admin').forEach(btn => {
+        btn.style.display = 'inline-block'; // Mostra Gerenciar Acessos, Add Ebook e Central
+    });
+}
     // ===== CARREGAR CENTRAL DE COMANDOS =====
     async function carregarConfiguracoesGerais() {
         try {
