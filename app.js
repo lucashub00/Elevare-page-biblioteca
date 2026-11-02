@@ -22,7 +22,7 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ==========================================
-// FUNÇÕES AUXILIARES MÁGICAS E BLINDADAS
+// FUNÇÕES AUXILIARES E HORÁRIO DE BRASÍLIA
 // ==========================================
 function extrairLinkImagem(inputTexto) {
     if (!inputTexto) return "";
@@ -38,20 +38,64 @@ function extrairIdYoutube(url) {
     if (!url) return "";
     let txt = String(url).trim();
     if (txt.length === 11) return txt;
-
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = txt.match(regex);
     return match ? match[1] : "";
 }
 
-async function lerAcessosComTimeout(uid) {
+function converterParaPreviewBlindado(url) {
+    if (!url) return "";
+    let link = String(url).trim();
+    // Se for arquivo PDF no Google Drive
+    const matchDrive = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (matchDrive && matchDrive[1]) {
+        return `https://drive.google.com/file/d/${matchDrive[1]}/preview`;
+    }
+    // Se for documento do Google Docs
+    const matchDocs = link.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+    if (matchDocs && matchDocs[1]) {
+        return `https://docs.google.com/document/d/${matchDocs[1]}/preview`;
+    }
+    return link.includes('#') ? link : `${link}#toolbar=0&navpanes=0&scrollbar=0`;
+}
+
+// Obtém o timestamp real direto do servidor (impede burla atrasando o relógio do celular/PC)
+async function obterAgoraServidorMs() {
+    try {
+        const resp = await fetch(window.location.origin, { method: 'HEAD', cache: 'no-store' });
+        const serverDate = resp.headers.get('date');
+        if (serverDate) return new Date(serverDate).getTime();
+    } catch (e) {}
+    return Date.now();
+}
+
+// Formata qualquer data exatamente no Horário Oficial de Brasília
+function formatarDataBrasilia(ms) {
+    return new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    }).format(new Date(ms));
+}
+
+// Lê tanto a lista de produtos como os detalhes de expiração de 7 dias
+async function lerDadosAcessoCompletos(uid) {
     try {
         const snap = await Promise.race([
             getDoc(doc(db, "acessos", uid)),
             new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3500))
         ]);
-        return (snap && snap.exists()) ? (snap.data().produtos || []) : [];
-    } catch (error) { return []; }
+        if (snap && snap.exists()) {
+            const d = snap.data();
+            return {
+                produtos: d.produtos || [],
+                detalhes: d.detalhesAcesso || {}
+            };
+        }
+        return { produtos: [], detalhes: {} };
+    } catch (error) {
+        return { produtos: [], detalhes: {} };
+    }
 }
 
 // ==========================================
@@ -62,7 +106,7 @@ if (document.body.classList.contains('page-index')) {
         if (snap.exists() && snap.data().videoUrl) {
             document.getElementById('iframe-video-vendas').src = `https://www.youtube.com/embed/${snap.data().videoUrl}?rel=0&modestbranding=1`;
         }
-    }).catch(e => console.log("Sem vídeo configurado."));
+    }).catch(() => {});
 
     document.querySelectorAll('.action-bridge').forEach(btn => {
         btn.addEventListener('click', e => { e.preventDefault(); document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' }); });
@@ -98,13 +142,16 @@ if (document.body.classList.contains('page-cadastro')) {
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
 
-    // FORÇAR ADMIN TEMPORÁRIO (Mude para false quando terminar os testes)
+    // FORÇAR ADMIN TEMPORÁRIO (Mude para false quando terminar os ajustes)
     const forcarAdmin = true;
     const admins = ["suporteelevaresolucoes@gmail.com"];
+    const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
 
     let NUMERO_DO_ZAP = "5532999999999";
     let EMAIL_SUPORTE = "";
     let usuarioAtualUid = "";
+    let emailUsuarioAtual = "";
+    let nomeUsuarioAtual = "";
     let statusAdminAtual = false;
 
     window.catalogoEbooks = {};
@@ -114,16 +161,15 @@ if (document.body.classList.contains('page-plataforma')) {
         if (user) {
             try {
                 usuarioAtualUid = user.uid || "SemID";
-                const emailUsuario = user.email || "";
-                const nomeUsuario = user.displayName || (emailUsuario ? emailUsuario.split('@')[0] : "Visitante");
+                emailUsuarioAtual = user.email || "";
+                nomeUsuarioAtual = user.displayName || (emailUsuarioAtual ? emailUsuarioAtual.split('@')[0] : "Visitante");
 
-                document.getElementById('user-nome').textContent = nomeUsuario;
+                document.getElementById('user-nome').textContent = nomeUsuarioAtual;
                 document.getElementById('user-uid').textContent = "ID Cliente: " + usuarioAtualUid;
                 document.getElementById('user-foto').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
                 document.getElementById('user-foto').style.display = "block";
 
-                // Verifica se o e-mail está na lista OU se o modo forçado está ativo
-                statusAdminAtual = admins.includes(emailUsuario) || forcarAdmin;
+                statusAdminAtual = admins.includes(emailUsuarioAtual) || forcarAdmin;
                 if (statusAdminAtual) {
                     document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'inline-block');
                 }
@@ -139,31 +185,30 @@ if (document.body.classList.contains('page-plataforma')) {
         }
     });
 
-    // ===== CARREGAR CENTRAL DE COMANDOS =====
+    // ===== CARREGAR E SALVAR CENTRAL DE COMANDOS =====
     async function carregarConfiguracoesGerais() {
         try {
             const configSnap = await getDoc(doc(db, "config", "geral"));
             if (configSnap.exists()) {
                 const cfg = configSnap.data();
-
                 if (cfg.telefone) NUMERO_DO_ZAP = cfg.telefone;
                 if (cfg.email) EMAIL_SUPORTE = cfg.email;
                 if (cfg.logoUrl) document.getElementById('logo-plataforma').src = cfg.logoUrl;
+
                 const btnZapAtendimento = document.getElementById('link-zap-atendimento');
                 if (btnZapAtendimento) btnZapAtendimento.href = `https://wa.me/${NUMERO_DO_ZAP}?text=Ol%C3%A1,%20preciso%20de%20ajuda%20na%20plataforma.`;
 
                 const btnEmailAtendimento = document.getElementById('link-email-atendimento');
                 if (btnEmailAtendimento && EMAIL_SUPORTE) btnEmailAtendimento.href = `mailto:${EMAIL_SUPORTE}`;
+
                 if (document.getElementById('cfg-zap')) document.getElementById('cfg-zap').value = NUMERO_DO_ZAP;
                 if (document.getElementById('cfg-email')) document.getElementById('cfg-email').value = EMAIL_SUPORTE;
                 if (document.getElementById('cfg-logo') && cfg.logoUrl) document.getElementById('cfg-logo').value = cfg.logoUrl;
-
                 if (document.getElementById('cfg-video') && cfg.videoUrl) document.getElementById('cfg-video').value = `https://youtu.be/${cfg.videoUrl}`;
             }
         } catch (e) { console.error("Erro config:", e); }
     }
 
-    // ===== SALVAR CENTRAL DE COMANDOS =====
     if (document.getElementById('btn-central-admin')) {
         const modalCentral = document.getElementById('modal-central-admin');
         document.getElementById('btn-central-admin').addEventListener('click', () => modalCentral.style.display = 'flex');
@@ -172,61 +217,89 @@ if (document.body.classList.contains('page-plataforma')) {
             const zapVal = document.getElementById('cfg-zap').value.replace(/\D/g, '');
             const emailVal = document.getElementById('cfg-email').value;
             const logoVal = extrairLinkImagem(document.getElementById('cfg-logo').value);
-
             const videoInput = document.getElementById('cfg-video').value;
             const videoVal = extrairIdYoutube(videoInput);
 
             if (videoInput && !videoVal) {
-                alert("⚠️ O link do YouTube parece inválido! Cole o link correto para funcionar.");
+                alert("⚠️ O link do YouTube parece inválido!");
                 return;
             }
             try {
                 await setDoc(doc(db, "config", "geral"), {
-                    telefone: zapVal,
-                    email: emailVal,
-                    logoUrl: logoVal,
-                    videoUrl: videoVal
+                    telefone: zapVal, email: emailVal, logoUrl: logoVal, videoUrl: videoVal
                 }, { merge: true });
-
-                alert("✅ Configurações Globais atualizadas com sucesso!");
+                alert("✅ Configurações Globais atualizadas!");
                 window.location.reload();
-            } catch (e) {
-                alert("Erro ao salvar: " + e.message);
-            }
+            } catch (e) { alert("Erro ao salvar: " + e.message); }
         });
     }
 
-    // ===== 1. CARREGAR E-BOOKS =====
+    // ===== 1. CARREGAR E-BOOKS (Com verificação de 7 Dias em Brasília) =====
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if (!listaEbooks) return;
         listaEbooks.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando e-books...</p>';
         try {
-            let ebooksLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
+            const agoraMs = await obterAgoraServidorMs();
+            const dadosAcesso = await lerDadosAcessoCompletos(uid);
+            const ebooksLiberados = dadosAcesso.produtos;
+            const detalhesAcesso = dadosAcesso.detalhes;
+
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = '';
 
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data(), id = docSnap.id;
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
-                const hasAccess = isAdmin || ebooksLiberados.includes(id);
+                const infoAcesso = detalhesAcesso[id] || null;
+                
+                let hasAccess = isAdmin || ebooksLiberados.includes(id);
+                let modoAcesso = isAdmin ? 'vitalicio' : (infoAcesso ? infoAcesso.tipo : (hasAccess ? 'vitalicio' : 'bloqueado'));
+                let expirado = false;
+                let textoBadge = '🔒 Bloqueado';
+
+                if (hasAccess && modoAcesso === 'teste7dias' && infoAcesso) {
+                    if (infoAcesso.expiraEm && agoraMs > infoAcesso.expiraEm) {
+                        hasAccess = false;
+                        expirado = true;
+                        textoBadge = '⌛ Teste de 7 Dias Expirado';
+                    } else if (infoAcesso.expiraEm) {
+                        const diasRestantes = Math.max(1, Math.ceil((infoAcesso.expiraEm - agoraMs) / (1000 * 60 * 60 * 24)));
+                        textoBadge = `⏳ Teste: ${diasRestantes}d restante(s)`;
+                    } else {
+                        textoBadge = '⏳ Teste 7 Dias (Ativar)';
+                    }
+                }
+
                 let media = 0;
                 if (data.ratings && data.ratings.length > 0) media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
-                window.catalogoEbooks[id] = { ...data, id: id, fotoLimpa: fotoLimpa, media: media, hasAccess: hasAccess };
+                
+                window.catalogoEbooks[id] = {
+                    ...data, id, fotoLimpa, media, hasAccess, modoAcesso, expirado, infoAcesso
+                };
+
                 const tagsHtml = data.hash ? String(data.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
                 let estrelasHtml = '';
                 for (let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
-                
+
+                let badgeHtml = '';
+                if (!hasAccess) {
+                    badgeHtml = `<div class="badge-lock" style="${expirado ? 'background:#ef4444;' : ''}">${textoBadge}</div>`;
+                } else if (modoAcesso === 'teste7dias') {
+                    badgeHtml = `<div class="badge-lock" style="background:#0ea5e9; color:#fff;">${textoBadge}</div>`;
+                }
+
                 const card = document.createElement('div');
                 card.className = 'card-ebook';
                 card.setAttribute('data-id', id);
                 card.innerHTML = `
                     <button class="btn-delete-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Apagar E-book">🗑️</button>
-                    <button class="btn-edit-ebook" style="display: ${isAdmin ? 'flex' : 'none'}; position: absolute; top: 10px; right: 50px; background: #f59e0b; color: #0f172a; border: none; width: 34px; height: 34px; border-radius: 50%; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.4);" title="Editar E-book">✏️</button>
-                    ${hasAccess ? '' : `<div class="badge-lock">🔒 Bloqueado</div>`}
+                    <button class="btn-edit-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Editar E-book">✏️</button>
+                    <button class="btn-teste-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Adicionar/Editar Ficheiro Teste (7 Dias)">📄</button>
+                    ${badgeHtml}
                     <img src="${fotoLimpa}" alt="Capa" class="ebook-cover">
                     <div class="ebook-info">
-                        ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id}</span>` : ''}
+                        ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id} ${data.pdfTesteUrl ? '✅(Teste OK)' : '⚠️(Sem Teste)'}</span>` : ''}
                         <div class="hashtags">${tagsHtml}</div>
                         <h3>${data.titulo || 'Sem Título'}</h3>
                         <p class="desc-preview">${data.desc || ''}</p>
@@ -254,7 +327,8 @@ if (document.body.classList.contains('page-plataforma')) {
         if (!lista) return;
         lista.innerHTML = '<p style="color: #94a3b8; font-size: 18px;">Carregando cursos...</p>';
         try {
-            let cursosLiberados = isAdmin ? [] : await lerAcessosComTimeout(uid);
+            const dadosAcesso = await lerDadosAcessoCompletos(uid);
+            const cursosLiberados = dadosAcesso.produtos;
             const querySnapshot = await getDocs(collection(db, "cursos"));
             lista.innerHTML = '';
 
@@ -265,10 +339,10 @@ if (document.body.classList.contains('page-plataforma')) {
                 const hasAccess = isAdmin || cursosLiberados.includes(id);
                 let media = 0;
                 if (data.ratings && data.ratings.length > 0) media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
-                window.catalogoCursos[id] = { ...data, id: id, fotoLimpa: fotoLimpa, videoId: videoId, hasAccess: hasAccess };
+                window.catalogoCursos[id] = { ...data, id, fotoLimpa, videoId, hasAccess };
                 let estrelasHtml = '';
                 for (let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
-                
+
                 const card = document.createElement('div');
                 card.className = 'card-ebook card-curso';
                 card.setAttribute('data-id', id);
@@ -282,7 +356,6 @@ if (document.body.classList.contains('page-plataforma')) {
                         <h3>${data.titulo || 'Sem Título'}</h3>
                         <p class="desc-preview">${data.desc || ''}</p>
                         <span class="ler-mais-txt">Assistir Aula Demo...</span>
-                        
                         <div class="ebook-rating-interactive" style="display: flex; align-items: center; margin-top: 5px; position: relative; z-index: 10;">
                             <div class="stars-container" style="display: flex; gap: 4px; font-size: 24px; cursor: pointer; color: #334155;">
                                 ${estrelasHtml}
@@ -317,24 +390,61 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     });
 
-    // ===== ADD E-BOOK (Apenas Criação) =====
+    // ===== ADD E EDITAR E-BOOK (Com campo pdfTesteUrl) =====
     if (document.getElementById('btn-add-ebook')) {
         document.getElementById('btn-add-ebook').addEventListener('click', () => document.getElementById('modal-add-ebook').style.display = 'flex');
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
             const f = extrairLinkImagem(document.getElementById('input-foto-ebook').value);
-            const p = document.getElementById('input-pdf-ebook').value;
-            const t = document.getElementById('input-titulo-ebook').value;
-            const d = document.getElementById('input-desc-ebook').value;
-            const h = document.getElementById('input-hash-ebook').value;
-            if (!f || !p || !t || !d) { alert("Preencha tudo!"); return; }
+            const p = document.getElementById('input-pdf-ebook').value.trim();
+            const pt = document.getElementById('input-teste-ebook').value.trim();
+            const t = document.getElementById('input-titulo-ebook').value.trim();
+            const d = document.getElementById('input-desc-ebook').value.trim();
+            const h = document.getElementById('input-hash-ebook').value.trim();
+            if (!f || !p || !t || !d) { alert("Preencha capa, link vitalício, título e descrição!"); return; }
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
-            await setDoc(doc(db, "ebooks", novoId), { titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, ratings: [] });
+            await setDoc(doc(db, "ebooks", novoId), {
+                titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, pdfTesteUrl: pt, ratings: []
+            });
             document.getElementById('modal-add-ebook').style.display = 'none';
             carregarEbooks(statusAdminAtual, usuarioAtualUid);
         });
     }
 
-    // ===== SALVAR EDIÇÃO DE E-BOOK (Separado) =====
+    if (document.getElementById('btn-confirmar-edit-ebook')) {
+        document.getElementById('btn-confirmar-edit-ebook').addEventListener('click', async () => {
+            const id = document.getElementById('edit-id-ebook').value;
+            const f = extrairLinkImagem(document.getElementById('edit-foto-ebook').value);
+            const p = document.getElementById('edit-pdf-ebook').value.trim();
+            const pt = document.getElementById('edit-teste-ebook').value.trim();
+            const t = document.getElementById('edit-titulo-ebook').value.trim();
+            const d = document.getElementById('edit-desc-ebook').value.trim();
+            const h = document.getElementById('edit-hash-ebook').value.trim();
+            if (!id || !f || !p || !t || !d) { alert("Preencha todos os campos obrigatórios!"); return; }
+            try {
+                await updateDoc(doc(db, "ebooks", id), {
+                    fotoUrl: f, pdfUrl: p, pdfTesteUrl: pt, titulo: t, desc: d, hash: h
+                });
+                alert("✅ E-book atualizado com sucesso!");
+                document.getElementById('modal-edit-ebook').style.display = 'none';
+                carregarEbooks(statusAdminAtual, usuarioAtualUid);
+            } catch (err) { alert("Erro ao atualizar: " + err.message); }
+        });
+    }
+
+    // ===== SALVAR FICHEIRO TESTE DIRETO PELO BOTÃO 📄 DO CARD =====
+    if (document.getElementById('btn-salvar-ficheiro-teste')) {
+        document.getElementById('btn-salvar-ficheiro-teste').addEventListener('click', async () => {
+            const id = document.getElementById('teste-id-ebook').value;
+            const pt = document.getElementById('input-rapido-teste-ebook').value.trim();
+            if (!id) return;
+            try {
+                await updateDoc(doc(db, "ebooks", id), { pdfTesteUrl: pt });
+                alert("📄 Ficheiro Teste de 7 Dias salvo com sucesso!");
+                document.getElementById('modal-ficheiro-teste').style.display = 'none';
+                carregarEbooks(statusAdminAtual, usuarioAtualUid);
+            } catch (err) { alert("Erro ao salvar ficheiro teste: " + err.message); }
+        });
+    }
     if (document.getElementById('btn-confirmar-edit-ebook')) {
         document.getElementById('btn-confirmar-edit-ebook').addEventListener('click', async () => {
             const id = document.getElementById('edit-id-ebook').value;
@@ -345,23 +455,15 @@ if (document.body.classList.contains('page-plataforma')) {
             const h = document.getElementById('edit-hash-ebook').value.trim();
             if (!id || !f || !p || !t || !d) { alert("Preencha todos os campos obrigatórios!"); return; }
             try {
-                await updateDoc(doc(db, "ebooks", id), {
-                    fotoUrl: f,
-                    pdfUrl: p,
-                    titulo: t,
-                    desc: d,
-                    hash: h
-                });
+                await updateDoc(doc(db, "ebooks", id), { fotoUrl: f, pdfUrl: p, titulo: t, desc: d, hash: h });
                 alert("✅ E-book atualizado com sucesso!");
                 document.getElementById('modal-edit-ebook').style.display = 'none';
                 carregarEbooks(statusAdminAtual, usuarioAtualUid);
-            } catch (err) {
-                alert("Erro ao atualizar e-book: " + err.message);
-            }
+            } catch (err) { alert("Erro ao atualizar: " + err.message); }
         });
     }
 
-    // ===== ADD CURSO (Apenas Criação) =====
+    // ===== ADD E EDITAR CURSO =====
     if (document.getElementById('btn-add-curso')) {
         document.getElementById('btn-add-curso').addEventListener('click', () => document.getElementById('modal-add-curso').style.display = 'flex');
         document.getElementById('btn-salvar-curso').addEventListener('click', async () => {
@@ -371,7 +473,6 @@ if (document.body.classList.contains('page-plataforma')) {
             const t = document.getElementById('input-titulo-curso').value;
             const d = document.getElementById('input-desc-curso').value;
             if (!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
-
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
             await setDoc(doc(db, "cursos", novoId), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
             document.getElementById('modal-add-curso').style.display = 'none';
@@ -379,7 +480,6 @@ if (document.body.classList.contains('page-plataforma')) {
         });
     }
 
-    // ===== SALVAR EDIÇÃO DE CURSO (Separado) =====
     if (document.getElementById('btn-confirmar-edit-curso')) {
         document.getElementById('btn-confirmar-edit-curso').addEventListener('click', async () => {
             const id = document.getElementById('edit-id-curso').value;
@@ -390,39 +490,68 @@ if (document.body.classList.contains('page-plataforma')) {
             const d = document.getElementById('edit-desc-curso').value.trim();
             if (!id || !f || !y || !p || !t || !d) { alert("Preencha todos os campos!"); return; }
             try {
-                await updateDoc(doc(db, "cursos", id), {
-                    fotoUrl: f,
-                    ytUrl: y,
-                    pdfUrl: p,
-                    titulo: t,
-                    desc: d
-                });
-                alert("✅ Guia em vídeo atualizado com sucesso!");
+                await updateDoc(doc(db, "cursos", id), { fotoUrl: f, ytUrl: y, pdfUrl: p, titulo: t, desc: d });
+                alert("✅ Guia atualizado com sucesso!");
                 document.getElementById('modal-edit-curso').style.display = 'none';
                 carregarCursos(statusAdminAtual, usuarioAtualUid);
-            } catch (err) {
-                alert("Erro ao atualizar guia: " + err.message);
-            }
+            } catch (err) { alert("Erro ao atualizar: " + err.message); }
         });
     }
 
-    // ===== GERENCIAR ACESSOS UNIVERSAL =====
+    // ===== GERENCIAR ACESSOS: 7 DIAS, VITALÍCIO E BLOQUEIO DE FRAUDE =====
     const modalAcesso = document.getElementById('modal-gerenciar-acessos');
     document.querySelectorAll('.btn-abrir-gerenciador').forEach(btn => {
         btn.addEventListener('click', () => modalAcesso.style.display = 'flex');
     });
+
+    // 1. Liberar Teste de 7 Dias (Exige Comprovante de 1ª Abertura e Abre no Leitor Blindado)
+    if (document.getElementById('btn-liberar-7dias')) {
+        document.getElementById('btn-liberar-7dias').addEventListener('click', async () => {
+            const cId = document.getElementById('input-cliente-id').value.trim();
+            const pId = document.getElementById('input-produto-id').value.trim();
+            if (!cId || !pId) { alert("Preencha o ID do Cliente e do Produto!"); return; }
+
+            const agoraMs = await obterAgoraServidorMs();
+            const ref = doc(db, "acessos", cId);
+            const snap = await getDoc(ref);
+            let prod = snap.exists() ? (snap.data().produtos || []) : [];
+            let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
+
+            if (!prod.includes(pId)) prod.push(pId);
+            detalhes[pId] = {
+                tipo: 'teste7dias',
+                liberadoEm: agoraMs,
+                expiraEm: null, // Começa a contar exatamente quando o cliente abrir e enviar o comprovante
+                comprovanteEnviado: false
+            };
+
+            await setDoc(ref, { produtos: prod, detalhesAcesso: detalhes }, { merge: true });
+            alert("⏳ Acesso de Teste (7 Dias Blindado) liberado! O prazo iniciará na 1ª abertura com envio do comprovante no WhatsApp.");
+            carregarEbooks(statusAdminAtual, usuarioAtualUid);
+        });
+    }
+
+    // 2. Liberar Acesso Vitalício Definitivo
     if (document.getElementById('btn-liberar-acesso')) {
         document.getElementById('btn-liberar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
-            if (!cId || !pId) return;
+            if (!cId || !pId) { alert("Preencha o ID do Cliente e do Produto!"); return; }
+
             const ref = doc(db, "acessos", cId);
             const snap = await getDoc(ref);
-            let prod = snap.exists() ? snap.data().produtos || [] : [];
-            if (!prod.includes(pId)) {
-                prod.push(pId); await setDoc(ref, { produtos: prod }, { merge: true }); alert("✅ Acesso Liberado!");
-            } else { alert("O cliente já possui acesso."); }
+            let prod = snap.exists() ? (snap.data().produtos || []) : [];
+            let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
+
+            if (!prod.includes(pId)) prod.push(pId);
+            detalhes[pId] = { tipo: 'vitalicio', comprovanteEnviado: true };
+
+            await setDoc(ref, { produtos: prod, detalhesAcesso: detalhes }, { merge: true });
+            alert("👑 Acesso Vitalício Definitivo Liberado!");
+            carregarEbooks(statusAdminAtual, usuarioAtualUid);
         });
+
+        // 3. Bloquear / Revogar por Fraude ou Reembolso
         document.getElementById('btn-revogar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
@@ -430,29 +559,166 @@ if (document.body.classList.contains('page-plataforma')) {
             const ref = doc(db, "acessos", cId);
             const snap = await getDoc(ref);
             if (snap.exists()) {
-                let prod = snap.data().produtos || [];
-                await setDoc(ref, { produtos: prod.filter(id => id !== pId) }, { merge: true });
-                alert("🚫 Acesso Removido!");
+                let prod = (snap.data().produtos || []).filter(id => id !== pId);
+                let detalhes = snap.data().detalhesAcesso || {};
+                delete detalhes[pId];
+                await setDoc(ref, { produtos: prod, detalhesAcesso: detalhes }, { merge: true });
+                alert("🚫 Acesso Bloqueado e Removido!");
+                carregarEbooks(statusAdminAtual, usuarioAtualUid);
             }
         });
     }
+
+    // ===== FUNÇÃO DO LEITOR BLINDADO E PROTEÇÃO ANTI-PRINT =====
+    function abrirLeitorBlindado(ebook, expiraEmMs) {
+        const modalLeitor = document.getElementById('modal-leitor-blindado');
+        const iframePdf = document.getElementById('iframe-pdf-blindado');
+        const cortinaPreta = document.getElementById('cortina-anti-print');
+        const marcaDagua = document.getElementById('marca-dagua-pdf');
+
+        document.getElementById('leitor-titulo').textContent = `📖 ${ebook.titulo}`;
+        document.getElementById('leitor-status-tempo').textContent = expiraEmMs
+            ? `⏳ Expira em (Horário de Brasília): ${formatarDataBrasilia(expiraEmMs)}`
+            : `🛡️ Modo Protegido Elevare`;
+
+        // Preenche marca d'água com os dados do cliente para rastrear fotos de tela
+        marcaDagua.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+            const span = document.createElement('span');
+            span.style = "transform: rotate(-28deg); color: #ffffff; font-size: 13px; font-weight: bold; padding: 20px; text-align: center;";
+            span.innerHTML = `${nomeUsuarioAtual}<br>${emailUsuarioAtual}<br>ID: ${usuarioAtualUid}`;
+            marcaDagua.appendChild(span);
+        }
+
+        iframePdf.src = converterParaPreviewBlindado(ebook.pdfUrl);
+        cortinaPreta.style.display = 'none';
+        modalLeitor.style.display = 'flex';
+        document.getElementById('modal-detalhes-ebook').style.display = 'none';
+    }
+
+    // Sensores Anti-Print e Perda de Foco no Leitor Blindado
+    const modalLeitorGlobal = document.getElementById('modal-leitor-blindado');
+    const cortinaGlobal = document.getElementById('cortina-anti-print');
+
+    function acionarTelaPreta() {
+        if (modalLeitorGlobal && modalLeitorGlobal.style.display === 'flex') {
+            cortinaGlobal.style.display = 'flex';
+        }
+    }
+
+    window.addEventListener('blur', acionarTelaPreta);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) acionarTelaPreta(); });
+    document.addEventListener('contextmenu', e => {
+        if (modalLeitorGlobal && modalLeitorGlobal.style.display === 'flex') e.preventDefault();
+    });
+    window.addEventListener('keyup', e => {
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+            acionarTelaPreta();
+            navigator.clipboard?.writeText('Protegido por Elevare Soluções').catch(() => {});
+        }
+    });
+    window.addEventListener('keydown', e => {
+        if (modalLeitorGlobal && modalLeitorGlobal.style.display === 'flex') {
+            if ((e.ctrlKey || e.metaKey) && ['p', 's', 'c', 'u'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                acionarTelaPreta();
+            }
+            if (e.metaKey && e.shiftKey) acionarTelaPreta();
+        }
+    });
+
+    document.getElementById('btn-retomar-leitura')?.addEventListener('click', () => {
+        cortinaGlobal.style.display = 'none';
+    });
+
+    document.getElementById('btn-fechar-leitor')?.addEventListener('click', () => {
+        document.getElementById('iframe-pdf-blindado').src = "";
+        modalLeitorGlobal.style.display = 'none';
+    });
 
     // ===== INTERAÇÃO E-BOOKS =====
     const listaEbooks = document.getElementById('lista-ebooks');
     if (listaEbooks) {
         listaEbooks.addEventListener('click', async (event) => {
+            // Abre o Ficheiro Teste (seja um Link PDF/Doc ou Texto Colado) dentro do Leitor Blindado
+    function abrirLeitorBlindado(ebook, expiraEmMs) {
+        const conteudoTeste = (ebook.pdfTesteUrl && ebook.pdfTesteUrl.trim() !== "")
+            ? ebook.pdfTesteUrl.trim()
+            : ebook.pdfUrl;
+
+        if (!conteudoTeste) {
+            alert("⚠️ O ficheiro de teste deste e-book ainda não foi anexado pelo administrador.");
+            return;
+        }
+
+        const modalLeitor = document.getElementById('modal-leitor-blindado');
+        const iframePdf = document.getElementById('iframe-pdf-blindado');
+        const divTexto = document.getElementById('leitor-texto-blindado');
+        const cortinaPreta = document.getElementById('cortina-anti-print');
+        const marcaDagua = document.getElementById('marca-dagua-pdf');
+
+        document.getElementById('leitor-titulo').textContent = `📖 ${ebook.titulo} (Versão de Teste 7 Dias)`;
+        document.getElementById('leitor-status-tempo').textContent = expiraEmMs
+            ? `⏳ Expira em (Horário de Brasília): ${formatarDataBrasilia(expiraEmMs)}`
+            : `🛡️ Modo Protegido Elevare`;
+
+        marcaDagua.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+            const span = document.createElement('span');
+            span.style = "transform: rotate(-28deg); color: #ffffff; font-size: 13px; font-weight: bold; padding: 20px; text-align: center;";
+            span.innerHTML = `${nomeUsuarioAtual}<br>${emailUsuarioAtual}<br>ID: ${usuarioAtualUid}`;
+            marcaDagua.appendChild(span);
+        }
+
+        // Verifica se o Admin colocou um link (https://) ou se colou o texto direto
+        if (/^https?:\/\//i.test(conteudoTeste)) {
+            divTexto.style.display = 'none';
+            iframePdf.style.display = 'block';
+            iframePdf.src = converterParaPreviewBlindado(conteudoTeste);
+        } else {
+            iframePdf.src = "";
+            iframePdf.style.display = 'none';
+            divTexto.style.display = 'block';
+            divTexto.textContent = conteudoTeste;
+        }
+
+        cortinaPreta.style.display = 'none';
+        modalLeitor.style.display = 'flex';
+        document.getElementById('modal-detalhes-ebook').style.display = 'none';
+    }
             const card = event.target.closest('.card-ebook');
             if (!card) return;
             const ebookId = card.getAttribute('data-id');
 
-            // Botão Apagar
             if (event.target.closest('.btn-delete-ebook')) {
                 if (confirm("Apagar E-book?")) { await deleteDoc(doc(db, "ebooks", ebookId)); card.remove(); }
                 return;
             }
 
-            // Botão Editar no Cartão
             if (event.target.closest('.btn-edit-ebook')) {
+                if (event.target.closest('.btn-edit-ebook')) {
+                const eb = window.catalogoEbooks[ebookId];
+                if (!eb) return;
+                document.getElementById('edit-id-ebook').value = ebookId;
+                document.getElementById('edit-foto-ebook').value = eb.fotoUrl || '';
+                document.getElementById('edit-pdf-ebook').value = eb.pdfUrl || '';
+                document.getElementById('edit-teste-ebook').value = eb.pdfTesteUrl || '';
+                document.getElementById('edit-titulo-ebook').value = eb.titulo || '';
+                document.getElementById('edit-desc-ebook').value = eb.desc || '';
+                document.getElementById('edit-hash-ebook').value = eb.hash || '';
+                document.getElementById('modal-edit-ebook').style.display = 'flex';
+                return;
+            }
+
+            if (event.target.closest('.btn-teste-ebook')) {
+                const eb = window.catalogoEbooks[ebookId];
+                if (!eb) return;
+                document.getElementById('teste-id-ebook').value = ebookId;
+                document.getElementById('nome-ebook-teste').textContent = `E-book: ${eb.titulo}`;
+                document.getElementById('input-rapido-teste-ebook').value = eb.pdfTesteUrl || '';
+                document.getElementById('modal-ficheiro-teste').style.display = 'flex';
+                return;
+            }
                 const eb = window.catalogoEbooks[ebookId];
                 if (!eb) return;
                 document.getElementById('edit-id-ebook').value = ebookId;
@@ -465,7 +731,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
-            // Avaliação por Estrelas
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
@@ -487,11 +752,68 @@ if (document.body.classList.contains('page-plataforma')) {
             document.getElementById('detalhe-tags').innerHTML = ebook.hash ? String(ebook.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
 
             const acaoContainer = document.getElementById('detalhe-acao');
+
             if (ebook.hasAccess) {
-                acaoContainer.innerHTML = `<a href="${ebook.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo (Abrir PDF)</a>`;
+                if (ebook.modoAcesso === 'teste7dias') {
+                    const info = ebook.infoAcesso || {};
+                    if (!info.comprovanteEnviado) {
+                        // 1ª Abertura: Exige envio de comprovante no WhatsApp para iniciar os 7 dias
+                        acaoContainer.innerHTML = `
+                            <div style="background: rgba(14, 165, 233, 0.15); border: 1px solid #0ea5e9; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: #e2e8f0;">
+                                📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Garantia de 7 Dias, envie o comprovante de abertura no WhatsApp abaixo.
+                            </div>
+                            <button id="btn-ativar-comprovante" class="btn-wpp-buy" style="width: 100%; border: none; cursor: pointer;">
+                                📲 Enviar Comprovante no WhatsApp e Abrir E-book
+                            </button>
+                        `;
+                        document.getElementById('btn-ativar-comprovante').onclick = async () => {
+                            const agoraMs = await obterAgoraServidorMs();
+                            const expiraMs = agoraMs + SETE_DIAS_MS;
+                            const ref = doc(db, "acessos", usuarioAtualUid);
+                            const snap = await getDoc(ref);
+                            let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
+
+                            detalhes[ebookId] = {
+                                tipo: 'teste7dias',
+                                abertoEm: agoraMs,
+                                expiraEm: expiraMs,
+                                comprovanteEnviado: true
+                            };
+                            await setDoc(ref, { detalhesAcesso: detalhes }, { merge: true });
+
+                            const msgComprovante = encodeURIComponent(
+                                `✅ *COMPROVANTE DE 1ª ABERTURA (GARANTIA 7 DIAS)*\n\n` +
+                                `📘 *E-book:* ${ebook.titulo} (ID: ${ebookId})\n` +
+                                `👤 *Cliente:* ${nomeUsuarioAtual} (${emailUsuarioAtual})\n` +
+                                `🆔 *ID Cliente:* ${usuarioAtualUid}\n` +
+                                `🕒 *Abertura (Brasília):* ${formatarDataBrasilia(agoraMs)}\n` +
+                                `⏳ *Válido até:* ${formatarDataBrasilia(expiraMs)}`
+                            );
+                            window.open(`https://wa.me/${NUMERO_DO_ZAP}?text=${msgComprovante}`, '_blank');
+
+                            await carregarEbooks(statusAdminAtual, usuarioAtualUid);
+                            abrirLeitorBlindado(ebook, expiraMs);
+                        };
+                    } else {
+                        // Já enviou o comprovante e está dentro dos 7 dias
+                        acaoContainer.innerHTML = `
+                            <p style="color: #38bdf8; font-size: 12px; margin-bottom: 8px;">⏳ Válido até: ${formatarDataBrasilia(info.expiraEm)} (Horário de Brasília)</p>
+                            <button id="btn-abrir-blindado" class="btn-download-pdf" style="width: 100%; border: none; cursor: pointer; background: #0ea5e9;">
+                                🛡️ Ler E-book no Leitor Blindado (7 Dias)
+                            </button>
+                        `;
+                        document.getElementById('btn-abrir-blindado').onclick = () => abrirLeitorBlindado(ebook, info.expiraEm);
+                    }
+                } else {
+                    // Acesso Vitalício (ou Admin)
+                    acaoContainer.innerHTML = `<a href="${ebook.pdfUrl}" target="_blank" class="btn-download-pdf">📖 Acessar Conteúdo Vitalício (Abrir PDF)</a>`;
+                }
             } else {
+                const textoBotao = ebook.expirado
+                    ? "⌛ Teste de 7 Dias Expirado — Solicitar Acesso Vitalício"
+                    : "🔒 Clique aqui e garanta já seu acesso";
                 const msgZap = encodeURIComponent(`Olá, quero garantir meu acesso ao E-book "${ebook.titulo}" (ID: ${ebookId}).\n\nMeu ID de Cliente é: ${usuarioAtualUid}\nO e-mail que uso no Google Drive é: [Digite seu e-mail aqui]`);
-                acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">🔒 Clique aqui e garanta já seu acesso</a>`;
+                acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">${textoBotao}</a>`;
             }
             document.getElementById('modal-detalhes-ebook').style.display = 'flex';
         });
@@ -505,13 +827,11 @@ if (document.body.classList.contains('page-plataforma')) {
             if (!card) return;
             const cursoId = card.getAttribute('data-id');
 
-            // Botão Apagar
             if (event.target.closest('.btn-delete-curso')) {
                 if (confirm("Apagar Curso?")) { await deleteDoc(doc(db, "cursos", cursoId)); card.remove(); }
                 return;
             }
 
-            // Botão Editar no Cartão
             if (event.target.closest('.btn-edit-curso')) {
                 const cur = window.catalogoCursos[cursoId];
                 if (!cur) return;
@@ -525,7 +845,6 @@ if (document.body.classList.contains('page-plataforma')) {
                 return;
             }
 
-            // Avaliação por Estrelas
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
                     const valor = parseInt(event.target.getAttribute('data-value'));
