@@ -142,9 +142,11 @@ if (document.body.classList.contains('page-cadastro')) {
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
 
-    // FORÇAR ADMIN TEMPORÁRIO (Mude para false quando terminar os ajustes)
-    const forcarAdmin = true;
-    const admins = ["suporteelevaresolucoes@gmail.com"];
+    // Contas com acesso oficial aos botões de Admin e Edição
+    const admins = [
+    "suporteeresolucoes@gmail.com",
+    "pedroeliasm08@gmail.com"
+];
     const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
 
     let NUMERO_DO_ZAP = "5532999999999";
@@ -169,10 +171,12 @@ if (document.body.classList.contains('page-plataforma')) {
                 document.getElementById('user-foto').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
                 document.getElementById('user-foto').style.display = "block";
 
-                statusAdminAtual = admins.includes(emailUsuarioAtual) || forcarAdmin;
-                if (statusAdminAtual) {
-                    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'inline-block');
-                }
+                // Verifica se o e-mail está na lista oficial
+statusAdminAtual = admins.includes(emailUsuarioAtual);
+
+if (statusAdminAtual) {
+    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'inline-block');
+}
 
                 await carregarConfiguracoesGerais();
                 carregarEbooks(statusAdminAtual, usuarioAtualUid);
