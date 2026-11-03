@@ -762,41 +762,45 @@ if (statusAdminAtual) {
                     const info = ebook.infoAcesso || {};
                     if (!info.comprovanteEnviado) {
                         // 1ª Abertura: Exige envio de comprovante no WhatsApp para iniciar os 7 dias
+                        // Geramos a mensagem antes para o link ficar pronto
+                        const msgComprovante = encodeURIComponent(
+                            `✅ *COMPROVANTE DE 1ª ABERTURA (GARANTIA 7 DIAS)*\n\n` +
+                            `📘 *E-book:* ${ebook.titulo} (ID: ${ebookId})\n` +
+                            `👤 *Cliente:* ${nomeUsuarioAtual} (${emailUsuarioAtual})\n` +
+                            `🆔 *ID Cliente:* ${usuarioAtualUid}\n` +
+                            `🕒 *Abertura de teste iniciada agora.*`
+                        );
+                        const linkZap = `https://wa.me/${NUMERO_DO_ZAP}?text=${msgComprovante}`;
+
                         acaoContainer.innerHTML = `
                             <div style="background: rgba(14, 165, 233, 0.15); border: 1px solid #0ea5e9; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: #e2e8f0;">
                                 📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Garantia de 7 Dias, envie o comprovante de abertura no WhatsApp abaixo.
                             </div>
-                            <button id="btn-ativar-comprovante" class="btn-wpp-buy" style="width: 100%; border: none; cursor: pointer;">
+                            <a href="${linkZap}" target="_blank" id="btn-ativar-comprovante" class="btn-wpp-buy" style="display: block; text-align: center; text-decoration: none; width: 100%; border: none; cursor: pointer; background: #22c55e;">
                                 📲 Enviar Comprovante no WhatsApp e Abrir E-book
-                            </button>
+                            </a>
                         `;
-                        document.getElementById('btn-ativar-comprovante').onclick = async () => {
-                            const agoraMs = await obterAgoraServidorMs();
-                            const expiraMs = agoraMs + SETE_DIAS_MS;
-                            const ref = doc(db, "acessos", usuarioAtualUid);
-                            const snap = await getDoc(ref);
-                            let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
+                        
+                        document.getElementById('btn-ativar-comprovante').onclick = () => {
+                            // Fazemos a gravação no Firebase em segundo plano para não bloquear o redirecionamento
+                            setTimeout(async () => {
+                                const agoraMs = await obterAgoraServidorMs();
+                                const expiraMs = agoraMs + SETE_DIAS_MS;
+                                const ref = doc(db, "acessos", usuarioAtualUid);
+                                const snap = await getDoc(ref);
+                                let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
 
-                            detalhes[ebookId] = {
-                                tipo: 'teste7dias',
-                                abertoEm: agoraMs,
-                                expiraEm: expiraMs,
-                                comprovanteEnviado: true
-                            };
-                            await setDoc(ref, { detalhesAcesso: detalhes }, { merge: true });
+                                detalhes[ebookId] = {
+                                    tipo: 'teste7dias',
+                                    abertoEm: agoraMs,
+                                    expiraEm: expiraMs,
+                                    comprovanteEnviado: true
+                                };
+                                await setDoc(ref, { detalhesAcesso: detalhes }, { merge: true });
 
-                            const msgComprovante = encodeURIComponent(
-                                `✅ *COMPROVANTE DE 1ª ABERTURA (GARANTIA 7 DIAS)*\n\n` +
-                                `📘 *E-book:* ${ebook.titulo} (ID: ${ebookId})\n` +
-                                `👤 *Cliente:* ${nomeUsuarioAtual} (${emailUsuarioAtual})\n` +
-                                `🆔 *ID Cliente:* ${usuarioAtualUid}\n` +
-                                `🕒 *Abertura (Brasília):* ${formatarDataBrasilia(agoraMs)}\n` +
-                                `⏳ *Válido até:* ${formatarDataBrasilia(expiraMs)}`
-                            );
-                            window.open(`https://wa.me/${NUMERO_DO_ZAP}?text=${msgComprovante}`, '_blank');
-
-                            await carregarEbooks(statusAdminAtual, usuarioAtualUid);
-                            abrirLeitorBlindado(ebook, expiraMs);
+                                await carregarEbooks(statusAdminAtual, usuarioAtualUid);
+                                abrirLeitorBlindado(ebook, expiraMs);
+                            }, 300); // 300ms de atraso para garantir que o WhatsApp abre primeiro
                         };
                     } else {
                         // Já enviou o comprovante e está dentro dos 7 dias
