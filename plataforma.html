@@ -324,7 +324,36 @@
                     <button id="btn-retomar-leitura" class="cta-btn" style="background: #00b4d8; color: #0f172a;">Voltar à Leitura</button>
                 </div>
             </div>
+<!-- MODAL DE TERMOS E GARANTIA (MODELO CASARÃO EM AZUL ESCURO) -->
+    <div id="modal-termos-elevare" class="termos-overlay" style="display: none;">
+        <div class="termos-card">
+            <h2 class="termos-titulo">Bem-vindo(a) à Elevare! 🚀</h2>
+            
+            <p class="termos-subtitulo">
+                Para continuar e acessar seus infoprodutos, precisamos que você leia e concorde com os nossos 
+                <a href="termo-de-uso.html" target="_blank">Termos de Uso</a> e 
+                <a href="garantia.html" target="_blank">Política de Garantia</a>.
+            </p>
 
+            <div class="termos-resumo-box">
+                <strong>Resumo Transparente:</strong> Todos os materiais são protegidos por direitos autorais. Durante os primeiros 7 dias de garantia (Art. 49 do CDC), a leitura ocorre exclusivamente pelo <strong>Leitor Blindado</strong> interno (sem download e com bloqueio de captura de tela), ativado via WhatsApp. O download definitivo pelo Google Drive é liberado no <strong>Acesso Vitalício</strong>.
+            </div>
+
+            <label class="termos-check-box" for="chk-aceite-uso">
+                <input type="checkbox" id="chk-aceite-uso">
+                <span>Li e concordo com os <a href="termo-de-uso.html" target="_blank">Termos de Uso e Responsabilidade</a> da plataforma.</span>
+            </label>
+
+            <label class="termos-check-box" for="chk-aceite-garantia">
+                <input type="checkbox" id="chk-aceite-garantia">
+                <span>Li e estou ciente da <a href="garantia.html" target="_blank">Política de Garantia de 7 Dias</a> e regras de Acesso Vitalício.</span>
+            </label>
+
+            <button id="btn-aceitar-termos" class="btn-termos-continuar" disabled>
+                Aceitar e Continuar
+            </button>
+        </div>
+    </div>
     <script type="module" src="app.js?v=1001"></script>
 </body>
 </html>

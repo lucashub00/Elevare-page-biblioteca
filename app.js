@@ -896,3 +896,76 @@ if (statusAdminAtual) {
         }
     }
 }
+// ==========================================
+// CONTROLE INDEPENDENTE DO MODAL DE TERMOS
+// ==========================================
+if (document.body.classList.contains('page-plataforma')) {
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+
+        const modal = document.getElementById('modal-termos-elevare');
+        const chkUso = document.getElementById('chk-aceite-uso');
+        const chkGarantia = document.getElementById('chk-aceite-garantia');
+        const btnAceitar = document.getElementById('btn-aceitar-termos');
+
+        if (!modal || !chkUso || !chkGarantia || !btnAceitar) return;
+
+        const chaveEmail = `elevare_aceite_v1_${user.email || user.uid}`;
+
+        // 1. Se já aceitou neste navegador com este e-mail, mantém fechado
+        if (localStorage.getItem(chaveEmail) === 'true') {
+            modal.style.display = 'none';
+            return;
+        }
+
+        // 2. Exibe o modal imediatamente sem travar o carregamento dos e-books ao fundo
+        modal.style.display = 'flex';
+
+        // 3. Verifica em segundo plano no Firebase se o cliente já havia aceitado antes
+        try {
+            const snap = await getDoc(doc(db, "acessos", user.uid));
+            if (snap.exists() && snap.data().termosAceitos === true) {
+                localStorage.setItem(chaveEmail, 'true');
+                modal.style.display = 'none';
+                return;
+            }
+        } catch (err) {
+            console.warn("Verificação de termos local ativa.");
+        }
+
+        // 4. Libera o botão "Aceitar e Continuar" somente quando as duas caixas estão marcadas
+        const atualizarEstadoBotao = () => {
+            btnAceitar.disabled = !(chkUso.checked && chkGarantia.checked);
+        };
+
+        chkUso.addEventListener('change', atualizarEstadoBotao);
+        chkGarantia.addEventListener('change', atualizarEstadoBotao);
+
+        // 5. Salva a escolha para o e-mail atual e fecha o modal
+        btnAceitar.onclick = async () => {
+            if (!chkUso.checked || !chkGarantia.checked) return;
+
+            btnAceitar.textContent = "Salvando...";
+            btnAceitar.disabled = true;
+
+            localStorage.setItem(chaveEmail, 'true');
+            modal.style.display = 'none';
+
+            try {
+                const dataAceite = new Intl.DateTimeFormat('pt-BR', {
+                    timeZone: 'America/Sao_Paulo',
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                }).format(new Date());
+
+                await setDoc(doc(db, "acessos", user.uid), {
+                    termosAceitos: true,
+                    emailCliente: user.email || "",
+                    dataAceiteTermos: dataAceite
+                }, { merge: true });
+            } catch (e) {
+                console.warn("Aceite salvo localmente no navegador.");
+            }
+        };
+    });
+}
