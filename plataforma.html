@@ -324,8 +324,8 @@
                     <button id="btn-retomar-leitura" class="cta-btn" style="background: #00b4d8; color: #0f172a;">Voltar à Leitura</button>
                 </div>
             </div>
-<!-- MODAL DE TERMOS E GARANTIA (MODELO CASARÃO EM AZUL ESCURO) -->
-    <div id="modal-termos-elevare" class="termos-overlay" style="display: none;">
+<!-- MODAL OBRIGATÓRIO DE TERMOS E GARANTIA (VISÍVEL POR PADRÃO) -->
+    <div id="modal-termos-elevare" class="termos-overlay">
         <div class="termos-card">
             <h2 class="termos-titulo">Bem-vindo(a) à Elevare! 🚀</h2>
             
@@ -350,10 +350,103 @@
             </label>
 
             <button id="btn-aceitar-termos" class="btn-termos-continuar" disabled>
-                Aceitar e Continuar
+                Salvar Alterações e Continuar
             </button>
         </div>
     </div>
-    <script type="module" src="app.js?v=1011"></script>
+
+    <!-- SCRIPT INDEPENDENTE DO MODAL (NÃO DEPENDE DO APP.JS) -->
+    <script type="module">
+        import { getApps, getApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+        const modal = document.getElementById('modal-termos-elevare');
+        const chkUso = document.getElementById('chk-aceite-uso');
+        const chkGarantia = document.getElementById('chk-aceite-garantia');
+        const btnAceitar = document.getElementById('btn-aceitar-termos');
+
+        // 1. Ativa o botão somente quando as DUAS opções estiverem assinadas
+        function validarCaixinhas() {
+            btnAceitar.disabled = !(chkUso.checked && chkGarantia.checked);
+        }
+        chkUso.addEventListener('change', validarCaixinhas);
+        chkGarantia.addEventListener('change', validarCaixinhas);
+
+        // 2. Identifica a conta logada (nova ou existente)
+        let usuarioLogado = null;
+
+        const iniciarVerificacao = () => {
+            if (!getApps().length) {
+                setTimeout(iniciarVerificacao, 200);
+                return;
+            }
+            const app = getApp();
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) return;
+                usuarioLogado = user;
+
+                // Nova chave V2: força todas as contas existentes a assinarem pelo menos uma vez
+                const chaveConta = `elevare_assinado_v2_${user.email || user.uid}`;
+
+                // Se esta conta específica já assinou as duas opções antes, oculta o modal
+                if (localStorage.getItem(chaveConta) === 'true') {
+                    modal.style.display = 'none';
+                    return;
+                }
+
+                // Verifica no banco de dados se esta conta já assinou em outro aparelho
+                try {
+                    const snap = await getDoc(doc(db, "acessos", user.uid));
+                    if (snap.exists() && snap.data().termosAssinadosV2 === true) {
+                        localStorage.setItem(chaveConta, 'true');
+                        modal.style.display = 'none';
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Aguardando assinatura local dos termos.");
+                }
+
+                // Se ainda não assinou, garante que o modal continue na tela
+                modal.style.display = 'flex';
+            });
+
+            // 3. Clique no botão para salvar a assinatura da conta atual
+            btnAceitar.addEventListener('click', async () => {
+                if (!chkUso.checked || !chkGarantia.checked) return;
+
+                btnAceitar.textContent = "Salvando...";
+                btnAceitar.disabled = true;
+
+                if (usuarioLogado) {
+                    const chaveConta = `elevare_assinado_v2_${usuarioLogado.email || usuarioLogado.uid}`;
+                    localStorage.setItem(chaveConta, 'true');
+
+                    try {
+                        const dataBrasilia = new Intl.DateTimeFormat('pt-BR', {
+                            timeZone: 'America/Sao_Paulo',
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit', second: '2-digit'
+                        }).format(new Date());
+
+                        await setDoc(doc(db, "acessos", usuarioLogado.uid), {
+                            termosAssinadosV2: true,
+                            emailCliente: usuarioLogado.email || "",
+                            dataAssinaturaTermos: dataBrasilia
+                        }, { merge: true });
+                    } catch (e) {
+                        console.warn("Assinatura salva localmente.");
+                    }
+                }
+
+                modal.style.display = 'none';
+            });
+        };
+
+        iniciarVerificacao();
+    </script>
 </body>
 </html>
