@@ -271,7 +271,7 @@ if (statusAdminAtual) {
                         const diasRestantes = Math.max(1, Math.ceil((infoAcesso.expiraEm - agoraMs) / (1000 * 60 * 60 * 24)));
                         textoBadge = `⏳ Teste: ${diasRestantes}d restante(s)`;
                     } else {
-                        textoBadge = '⏳ Teste 7 Dias (Ativar)';
+                        textoBadge = '⏳ Período de Teste (Ativar)';
                     }
                 }
 
