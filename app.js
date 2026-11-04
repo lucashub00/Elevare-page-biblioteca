@@ -774,7 +774,7 @@ if (statusAdminAtual) {
 
                         acaoContainer.innerHTML = `
                             <div style="background: rgba(14, 165, 233, 0.15); border: 1px solid #0ea5e9; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: #e2e8f0;">
-                                📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Garantia de 7 Dias, envie o comprovante de abertura no WhatsApp abaixo.
+                                📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Garantia, envie o comprovante de abertura no WhatsApp abaixo.
                             </div>
                             <a href="${linkZap}" target="_blank" id="btn-ativar-comprovante" class="btn-wpp-buy" style="display: block; text-align: center; text-decoration: none; width: 100%; border: none; cursor: pointer; background: #22c55e;">
                                 📲 Enviar Comprovante no WhatsApp e Abrir E-book
