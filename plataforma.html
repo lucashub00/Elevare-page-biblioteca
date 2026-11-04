@@ -324,7 +324,10 @@
                     <button id="btn-retomar-leitura" class="cta-btn" style="background: #00b4d8; color: #0f172a;">Voltar à Leitura</button>
                 </div>
             </div>
-<!-- MODAL OBRIGATÓRIO DE TERMOS E GARANTIA (VISÍVEL POR PADRÃO) -->
+        </div>
+    </div>
+
+    <!-- MODAL OBRIGATÓRIO DE TERMOS E GARANTIA (FORA DO LEITOR BLINDADO) -->
     <div id="modal-termos-elevare" class="termos-overlay">
         <div class="termos-card">
             <h2 class="termos-titulo">Bem-vindo(a) à Elevare! 🚀</h2>
@@ -355,7 +358,10 @@
         </div>
     </div>
 
-    <!-- SCRIPT INDEPENDENTE DO MODAL (NÃO DEPENDE DO APP.JS) -->
+    <!-- 1. CARREGA O APP.JS OFICIAL DA PLATAFORMA (QUE TINHA SIDO APAGADO) -->
+    <script type="module" src="app.js"></script>
+
+    <!-- 2. SCRIPT INDEPENDENTE DO MODAL DE TERMOS -->
     <script type="module">
         import { getApps, getApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
@@ -366,14 +372,12 @@
         const chkGarantia = document.getElementById('chk-aceite-garantia');
         const btnAceitar = document.getElementById('btn-aceitar-termos');
 
-        // 1. Ativa o botão somente quando as DUAS opções estiverem assinadas
         function validarCaixinhas() {
             btnAceitar.disabled = !(chkUso.checked && chkGarantia.checked);
         }
         chkUso.addEventListener('change', validarCaixinhas);
         chkGarantia.addEventListener('change', validarCaixinhas);
 
-        // 2. Identifica a conta logada (nova ou existente)
         let usuarioLogado = null;
 
         const iniciarVerificacao = () => {
@@ -389,16 +393,13 @@
                 if (!user) return;
                 usuarioLogado = user;
 
-                // Nova chave V2: força todas as contas existentes a assinarem pelo menos uma vez
                 const chaveConta = `elevare_assinado_v2_${user.email || user.uid}`;
 
-                // Se esta conta específica já assinou as duas opções antes, oculta o modal
                 if (localStorage.getItem(chaveConta) === 'true') {
                     modal.style.display = 'none';
                     return;
                 }
 
-                // Verifica no banco de dados se esta conta já assinou em outro aparelho
                 try {
                     const snap = await getDoc(doc(db, "acessos", user.uid));
                     if (snap.exists() && snap.data().termosAssinadosV2 === true) {
@@ -407,14 +408,12 @@
                         return;
                     }
                 } catch (e) {
-                    console.warn("Aguardando assinatura local dos termos.");
+                    console.warn("A aguardar assinatura local dos termos.");
                 }
 
-                // Se ainda não assinou, garante que o modal continue na tela
                 modal.style.display = 'flex';
             });
 
-            // 3. Clique no botão para salvar a assinatura da conta atual
             btnAceitar.addEventListener('click', async () => {
                 if (!chkUso.checked || !chkGarantia.checked) return;
 
@@ -438,7 +437,7 @@
                             dataAssinaturaTermos: dataBrasilia
                         }, { merge: true });
                     } catch (e) {
-                        console.warn("Assinatura salva localmente.");
+                        console.warn("Assinatura guardada localmente.");
                     }
                 }
 
