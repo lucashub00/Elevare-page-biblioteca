@@ -144,7 +144,7 @@ if (document.body.classList.contains('page-plataforma')) {
 
     // Contas com acesso oficial aos botões de Admin e Edição
     const admins = [
-    "suporteeresolucoes@gmail.com",
+    "suporteelevaresolucoes@gmail.com",
     "pedroeliasm08@gmail.com"
 ];
     const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
