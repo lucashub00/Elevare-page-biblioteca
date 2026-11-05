@@ -31,18 +31,17 @@
     <!-- Favicon corrigido -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
-
     <!-- Estilos de Blindagem Anti-Print e Anti-Download -->
     <style>
-        .no-select-blindado {
+        .no-select-blindado{
             user-select: none !important;
             -webkit-user-select: none !important;
             -webkit-touch-callout: none !important;
         }
         /* Se tentarem usar Ctrl+P para salvar como PDF, a impressão sai toda preta */
-        @media print {
-            body * { display: none !important; }
-            body::after {
+        @media print{
+            body *{ display: none !important; }
+            body::after{
                 content: "🚫 Proteção de Direitos Autorais Elevare Soluções: Impressão e download desativados.";
                 display: block !important;
                 background: #000;
@@ -123,10 +122,8 @@
             </div>
         </section>
     </main>
-
     <!-- O BOTÃO INVISÍVEL DA CENTRAL (Só Admin vê) -->
     <button id="btn-central-admin" class="btn-floating-admin btn-admin" style="display: none;">⚙️ Central</button>
-
     <!-- MODAL: CENTRAL DE COMANDOS -->
     <div id="modal-central-admin" class="modal-overlay" style="display: none;">
         <div class="modal-content">
@@ -156,17 +153,25 @@
             </div>
         </div>
     </div>
-
-<!-- MODAL: ADD E-BOOK (Com Ficheiro Teste de 7 Dias) -->
+    <!-- MODAL: ADD E-BOOK (Com Opção de Prévia) -->
     <div id="modal-add-ebook" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h2>Adicionar Novo E-book</h2>
             <div class="form-group"><label>Capa (Link ImgBB):</label><input type="text" id="input-foto-ebook"></div>
             <div class="form-group"><label>PDF Vitalício Oficial (Drive Trancado):</label><input type="text" id="input-pdf-ebook" placeholder="Link para quem comprou definitivo"></div>
-            <div class="form-group">
-                <label style="color: #38bdf8;">📄 Ficheiro Teste 7 Dias (Link do PDF de Teste OU cole o texto completo):</label>
-                <textarea id="input-teste-ebook" rows="3" placeholder="Cole aqui o link do documento/PDF de teste OU cole o texto inteiro do e-book para abrir no leitor blindado"></textarea>
+            
+            <!-- Opção de Prévia com Checkbox -->
+            <div class="form-group" style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                <label style="display: flex; align-items: center; gap: 10px; color: #38bdf8; cursor: pointer; margin: 0;">
+                    <input type="checkbox" id="chk-tem-previa-add" style="width: 18px; height: 18px; accent-color: #00b4d8; cursor: pointer;">
+                    <strong>📄 Disponibilizar Prévia neste E-book?</strong>
+                </label>
+                <div id="box-previa-add" style="display: none; margin-top: 12px;">
+                    <label style="color: #cbd5e1; font-size: 13px;">Arquivo da Prévia (Link do PDF de Prévia OU cole o texto):</label>
+                    <textarea id="input-teste-ebook" rows="3" placeholder="Cole aqui o link do documento/PDF da prévia OU cole o texto para abrir no leitor blindado"></textarea>
+                </div>
             </div>
+
             <div class="form-group"><label>Título:</label><input type="text" id="input-titulo-ebook"></div>
             <div class="form-group"><label>Descrição:</label><textarea id="input-desc-ebook" rows="2"></textarea></div>
             <div class="form-group"><label>Hashtags:</label><input type="text" id="input-hash-ebook"></div>
@@ -191,18 +196,26 @@
             </div>
         </div>
     </div>
-
-    <!-- MODAL EXCLUSIVO: EDITAR E-BOOK (Com Ficheiro Teste de 7 Dias) -->
+    <!-- MODAL EXCLUSIVO: EDITAR E-BOOK (Com Opção de Prévia) -->
     <div id="modal-edit-ebook" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h2 style="color: #f59e0b;">✏️ Editar E-book</h2>
             <input type="hidden" id="edit-id-ebook">
             <div class="form-group"><label>Nova Capa (Link da Imagem):</label><input type="text" id="edit-foto-ebook"></div>
             <div class="form-group"><label>PDF Vitalício Oficial (Drive Trancado):</label><input type="text" id="edit-pdf-ebook"></div>
-            <div class="form-group">
-                <label style="color: #38bdf8;">📄 Ficheiro Teste 7 Dias (Link PDF/Doc OU texto completo):</label>
-                <textarea id="edit-teste-ebook" rows="3" placeholder="Link do ficheiro de teste ou texto completo"></textarea>
+            
+            <!-- Opção de Prévia com Checkbox (Editar) -->
+            <div class="form-group" style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                <label style="display: flex; align-items: center; gap: 10px; color: #38bdf8; cursor: pointer; margin: 0;">
+                    <input type="checkbox" id="chk-tem-previa-edit" style="width: 18px; height: 18px; accent-color: #00b4d8; cursor: pointer;">
+                    <strong>📄 Disponibilizar Prévia neste E-book?</strong>
+                </label>
+                <div id="box-previa-edit" style="display: none; margin-top: 12px;">
+                    <label style="color: #cbd5e1; font-size: 13px;">Arquivo da Prévia (Link PDF/Doc OU texto):</label>
+                    <textarea id="edit-teste-ebook" rows="3" placeholder="Link do arquivo da prévia ou texto"></textarea>
+                </div>
             </div>
+
             <div class="form-group"><label>Título:</label><input type="text" id="edit-titulo-ebook"></div>
             <div class="form-group"><label>Descrição:</label><textarea id="edit-desc-ebook" rows="2"></textarea></div>
             <div class="form-group"><label>Hashtags:</label><input type="text" id="edit-hash-ebook"></div>
@@ -212,20 +225,19 @@
             </div>
         </div>
     </div>
-
-    <!-- MODAL RÁPIDO: ADICIONAR / ATUALIZAR FICHEIRO TESTE DIRETO DO CARD -->
+    <!-- MODAL RÁPIDO: ADICIONAR / ATUALIZAR PRÉVIA DIRETO DO CARD -->
     <div id="modal-ficheiro-teste" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <h2 style="color: #0ea5e9;">📄 Configurar Ficheiro Teste (7 Dias)</h2>
+            <h2 style="color: #0ea5e9;">📄 Configurar Prévia do E-book</h2>
             <p id="nome-ebook-teste" style="color: #cbd5e1; font-size: 14px; margin-bottom: 15px; font-weight: bold;"></p>
             <input type="hidden" id="teste-id-ebook">
             <div class="form-group">
-                <label style="color: #38bdf8;">Link do PDF/Doc de Teste OU Conteúdo em Texto:</label>
-                <textarea id="input-rapido-teste-ebook" rows="5" placeholder="Cole o link de visualização do ficheiro de teste (Drive/Docs) OU cole o texto completo do e-book aqui..."></textarea>
+                <label style="color: #38bdf8;">Link do PDF/Doc da Prévia OU Conteúdo em Texto:</label>
+                <textarea id="input-rapido-teste-ebook" rows="5" placeholder="Cole o link de visualização da prévia (Drive/Docs) OU cole o texto completo do e-book aqui..."></textarea>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancelar fechar-modal">Cancelar</button>
-                <button id="btn-salvar-ficheiro-teste" class="cta-btn" style="background: #0ea5e9; color: #fff;">Salvar Ficheiro Teste</button>
+                <button id="btn-salvar-ficheiro-teste" class="cta-btn" style="background: #0ea5e9; color: #fff;">Salvar Prévia</button>
             </div>
         </div>
     </div>
@@ -245,23 +257,21 @@
             </div>
         </div>
     </div>
-
-    <!-- MODAL: GERENCIAR ACESSOS (Com 7 Dias e Vitalício) -->
+    <!-- MODAL: GERENCIAR ACESSOS -->
     <div id="modal-gerenciar-acessos" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 520px;">
             <h2 style="color: #f59e0b;">🛡️ Painel de Liberação</h2>
-            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Escolha entre liberar o modo de garantia (7 dias no leitor blindado) ou o acesso vitalício definitivo.</p>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Escolha entre liberar a Prévia (no leitor blindado) ou o acesso vitalício definitivo.</p>
             <div class="form-group"><label>ID do Cliente:</label><input type="text" id="input-cliente-id" placeholder="Cole o ID do cliente aqui"></div>
             <div class="form-group"><label>ID do Produto (E-book ou Curso):</label><input type="text" id="input-produto-id" placeholder="Cole o ID do produto aqui"></div>
             <div class="modal-actions" style="flex-wrap: wrap; gap: 10px; justify-content: space-between;">
                 <button class="btn-cancelar fechar-modal">Fechar</button>
                 <button id="btn-revogar-acesso" class="btn-cancelar" style="border-color: #ef4444; color: #ef4444;">🚫 Bloquear / Fraude</button>
-                <button id="btn-liberar-7dias" class="cta-btn" style="background: #0ea5e9; color: #fff;">⏳ Liberar 7 Dias</button>
+                <button id="btn-liberar-7dias" class="cta-btn" style="background: #0ea5e9; color: #fff;">⏳ Liberar Prévia</button>
                 <button id="btn-liberar-acesso" class="cta-btn" style="background: #10b981;">👑 Liberar Vitalício</button>
             </div>
         </div>
     </div>
-
     <!-- MODAL: DETALHES EBOOK -->
     <div id="modal-detalhes-ebook" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 650px; text-align: left;">
@@ -278,7 +288,6 @@
             <button class="btn-cancelar fechar-modal" style="margin-top: 25px; width: 100%;">Fechar Detalhes</button>
         </div>
     </div>
-
     <!-- MODAL: DETALHES CURSO -->
     <div id="modal-detalhes-curso" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 600px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; text-align: left;">
@@ -292,8 +301,7 @@
             <button class="btn-cancelar fechar-modal" style="flex-shrink: 0; width: 100%;">Fechar guia demonstrativa</button>
         </div>
     </div>
-
-    <!-- MODAL NOVO: LEITOR BLINDADO DE PDF (7 DIAS SEM DOWNLOAD E ANTI-PRINT) -->
+    <!-- MODAL NOVO: LEITOR BLINDADO DE PDF (PRÉVIA SEM DOWNLOAD E ANTI-PRINT) -->
     <div id="modal-leitor-blindado" class="modal-overlay no-select-blindado" style="display: none; z-index: 99999; background: rgba(0,0,0,0.96);">
         <div style="width: 96%; max-width: 960px; height: 92vh; background: #0f172a; border: 2px solid #00b4d8; border-radius: 12px; display: flex; flex-direction: column; position: relative; overflow: hidden;">
             
@@ -301,11 +309,10 @@
             <div style="padding: 12px 20px; background: #1e293b; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
                 <div>
                     <h3 id="leitor-titulo" style="color: #fff; font-size: 16px; margin: 0;">📖 Leitor Blindado Elevare</h3>
-                    <span id="leitor-status-tempo" style="color: #38bdf8; font-size: 12px; font-weight: bold;">⏳ Modo Garantia - Download Desativado</span>
+                    <span id="leitor-status-tempo" style="color: #38bdf8; font-size: 12px; font-weight: bold;">⏳ Modo Prévia - Download Desativado</span>
                 </div>
                 <button id="btn-fechar-leitor" class="btn-cancelar" style="padding: 6px 14px; width: auto; margin: 0;">✖ Fechar Leitor</button>
             </div>
-
             <!-- Corpo do PDF/Documento com Escudo Anti-Download e Marca d'Água -->
             <div id="container-visor-pdf" style="flex: 1; position: relative; background: #000; overflow: hidden;">
                 <iframe id="iframe-pdf-blindado" src="" style="width: 100%; height: 100%; border: none;" sandbox="allow-scripts allow-same-origin"></iframe>
@@ -313,20 +320,17 @@
                 
                 <!-- Escudo que tapa o botão de abrir em nova aba / download do Google Drive no canto superior direito -->
                 <div style="position: absolute; top: 0; right: 0; width: 90px; height: 65px; background: #1e293b; z-index: 20; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 8px; color: #f59e0b; font-size: 18px;" title="Download Bloqueado">🔒</div>
-
                 <!-- Marca d'água antifraude transparente sobre o PDF -->
                 <div id="marca-dagua-pdf" style="position: absolute; inset: 0; pointer-events: none; z-index: 15; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; opacity: 0.16; overflow: hidden;"></div>
-
                 <!-- Cortina Preta Anti-Print / Perda de Foco -->
                 <div id="cortina-anti-print" style="display: none; position: absolute; inset: 0; background: #000; z-index: 50; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
                     <h2 style="color: #ef4444; margin-bottom: 10px;">🛡️ TELA PROTEGIDA CONTRA CAPTURA</h2>
-                    <p style="color: #cbd5e1; max-width: 450px; margin-bottom: 20px;">Por motivos de direitos autorais durante o período de teste, a visualização fica preta quando você clica fora da janela ou tenta capturar a tela.</p>
+                    <p style="color: #cbd5e1; max-width: 450px; margin-bottom: 20px;">Por motivos de direitos autorais durante a visualização da Prévia, a tela fica preta quando você clica fora da janela ou tenta capturar a tela.</p>
                     <button id="btn-retomar-leitura" class="cta-btn" style="background: #00b4d8; color: #0f172a;">Voltar à Leitura</button>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- MODAL OBRIGATÓRIO DE TERMOS E GARANTIA (FORA DO LEITOR BLINDADO) -->
     <div id="modal-termos-elevare" class="termos-overlay">
         <div class="termos-card">
@@ -337,49 +341,39 @@
                 <a href="termo-de-uso.html" target="_blank">Termos de Uso</a> e 
                 <a href="garantia.html" target="_blank">Política de Garantia</a>.
             </p>
-
             <div class="termos-resumo-box">
-                <strong>Resumo Transparente:</strong> Todos os materiais são protegidos por direitos autorais. Durante os primeiros 7 dias de garantia (Art. 49 do CDC), a leitura ocorre exclusivamente pelo <strong>Leitor Blindado</strong> interno (sem download e com bloqueio de captura de tela), ativado via WhatsApp. O download definitivo pelo Google Drive é liberado no <strong>Acesso Vitalício</strong>.
+                <strong>Resumo Transparente:</strong> Todos os materiais são protegidos por direitos autorais. Durante a visualização da Prévia, a leitura ocorre exclusivamente pelo <strong>Leitor Blindado</strong> interno (sem download e com bloqueio de captura de tela), ativado via WhatsApp. O download definitivo pelo Google Drive é liberado no <strong>Acesso Vitalício</strong>.
             </div>
-
             <label class="termos-check-box" for="chk-aceite-uso">
                 <input type="checkbox" id="chk-aceite-uso">
                 <span>Li e concordo com os <a href="termo-de-uso.html" target="_blank">Termos de Uso e Responsabilidade</a> da plataforma.</span>
             </label>
-
             <label class="termos-check-box" for="chk-aceite-garantia">
                 <input type="checkbox" id="chk-aceite-garantia">
-                <span>Li e estou ciente da <a href="garantia.html" target="_blank">Política de Garantia de 7 Dias</a> e regras de Acesso Vitalício.</span>
+                <span>Li e estou ciente da <a href="garantia.html" target="_blank">Política de Garantia</a> e regras de Acesso Vitalício.</span>
             </label>
-
             <button id="btn-aceitar-termos" class="btn-termos-continuar" disabled>
                 Salvar Alterações e Continuar
             </button>
         </div>
     </div>
-
-    <!-- 1. CARREGA O APP.JS OFICIAL DA PLATAFORMA (QUE TINHA SIDO APAGADO) -->
+    <!-- 1. CARREGA O APP.JS OFICIAL DA PLATAFORMA -->
     <script type="module" src="app.js"></script>
-
     <!-- 2. SCRIPT INDEPENDENTE DO MODAL DE TERMOS -->
     <script type="module">
         import { getApps, getApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-
         const modal = document.getElementById('modal-termos-elevare');
         const chkUso = document.getElementById('chk-aceite-uso');
         const chkGarantia = document.getElementById('chk-aceite-garantia');
         const btnAceitar = document.getElementById('btn-aceitar-termos');
-
         function validarCaixinhas() {
             btnAceitar.disabled = !(chkUso.checked && chkGarantia.checked);
         }
         chkUso.addEventListener('change', validarCaixinhas);
         chkGarantia.addEventListener('change', validarCaixinhas);
-
         let usuarioLogado = null;
-
         const iniciarVerificacao = () => {
             if (!getApps().length) {
                 setTimeout(iniciarVerificacao, 200);
@@ -388,18 +382,14 @@
             const app = getApp();
             const auth = getAuth(app);
             const db = getFirestore(app);
-
             onAuthStateChanged(auth, async (user) => {
                 if (!user) return;
                 usuarioLogado = user;
-
                 const chaveConta = `elevare_assinado_v2_${user.email || user.uid}`;
-
                 if (localStorage.getItem(chaveConta) === 'true') {
                     modal.style.display = 'none';
                     return;
                 }
-
                 try {
                     const snap = await getDoc(doc(db, "acessos", user.uid));
                     if (snap.exists() && snap.data().termosAssinadosV2 === true) {
@@ -410,27 +400,21 @@
                 } catch (e) {
                     console.warn("A aguardar assinatura local dos termos.");
                 }
-
                 modal.style.display = 'flex';
             });
-
             btnAceitar.addEventListener('click', async () => {
                 if (!chkUso.checked || !chkGarantia.checked) return;
-
                 btnAceitar.textContent = "Salvando...";
                 btnAceitar.disabled = true;
-
                 if (usuarioLogado) {
                     const chaveConta = `elevare_assinado_v2_${usuarioLogado.email || usuarioLogado.uid}`;
                     localStorage.setItem(chaveConta, 'true');
-
                     try {
                         const dataBrasilia = new Intl.DateTimeFormat('pt-BR', {
                             timeZone: 'America/Sao_Paulo',
                             day: '2-digit', month: '2-digit', year: 'numeric',
                             hour: '2-digit', minute: '2-digit', second: '2-digit'
                         }).format(new Date());
-
                         await setDoc(doc(db, "acessos", usuarioLogado.uid), {
                             termosAssinadosV2: true,
                             emailCliente: usuarioLogado.email || "",
@@ -440,11 +424,9 @@
                         console.warn("Assinatura guardada localmente.");
                     }
                 }
-
                 modal.style.display = 'none';
             });
         };
-
         iniciarVerificacao();
     </script>
 </body>

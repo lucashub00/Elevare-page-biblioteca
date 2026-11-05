@@ -78,7 +78,7 @@ function formatarDataBrasilia(ms) {
     }).format(new Date(ms));
 }
 
-// Lê tanto a lista de produtos como os detalhes de expiração de 7 dias
+// Lê tanto a lista de produtos como os detalhes de expiração da Prévia
 async function lerDadosAcessoCompletos(uid) {
     try {
         const snap = await Promise.race([
@@ -109,31 +109,60 @@ if (document.body.classList.contains('page-index')) {
     }).catch(() => {});
 
     document.querySelectorAll('.action-bridge').forEach(btn => {
-        btn.addEventListener('click', e => { e.preventDefault(); document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' }); });
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' });
+        });
     });
 
     document.getElementById('btn-entrar').addEventListener('click', () => {
-        const e = document.getElementById('email-login').value, s = document.getElementById('senha-login').value, m = document.getElementById('mensagem-erro');
+        const e = document.getElementById('email-login').value;
+        const s = document.getElementById('senha-login').value;
+        const m = document.getElementById('mensagem-erro');
         m.style.display = 'none';
-        if (!e || !s) { m.textContent = "Preencha e-mail e senha!"; m.style.display = 'block'; return; }
-        signInWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro de login."; m.style.display = 'block'; });
+        if (!e || !s) {
+            m.textContent = "Preencha e-mail e senha!";
+            m.style.display = 'block';
+            return;
+        }
+        signInWithEmailAndPassword(auth, e, s)
+            .then(() => window.location.href = "plataforma.html")
+            .catch(() => {
+                m.textContent = "Erro de login.";
+                m.style.display = 'block';
+            });
     });
 
     document.getElementById('btn-google').addEventListener('click', () => {
-        signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
+        signInWithPopup(auth, googleProvider)
+            .then(() => window.location.href = "plataforma.html")
+            .catch(() => {});
     });
 }
 
 if (document.body.classList.contains('page-cadastro')) {
     document.getElementById('btn-cadastrar-novo').addEventListener('click', () => {
-        const e = document.getElementById('email-cadastro').value, s = document.getElementById('senha-cadastro').value, m = document.getElementById('mensagem-erro-cadastro');
+        const e = document.getElementById('email-cadastro').value;
+        const s = document.getElementById('senha-cadastro').value;
+        const m = document.getElementById('mensagem-erro-cadastro');
         m.style.display = 'none';
-        if (!e || !s) { m.textContent = "Preencha tudo!"; m.style.display = 'block'; return; }
-        createUserWithEmailAndPassword(auth, e, s).then(() => window.location.href = "plataforma.html").catch(() => { m.textContent = "Erro ao criar conta."; m.style.display = 'block'; });
+        if (!e || !s) {
+            m.textContent = "Preencha tudo!";
+            m.style.display = 'block';
+            return;
+        }
+        createUserWithEmailAndPassword(auth, e, s)
+            .then(() => window.location.href = "plataforma.html")
+            .catch(() => {
+                m.textContent = "Erro ao criar conta.";
+                m.style.display = 'block';
+            });
     });
 
     document.getElementById('btn-google-cadastro').addEventListener('click', () => {
-        signInWithPopup(auth, googleProvider).then(() => window.location.href = "plataforma.html").catch(() => {});
+        signInWithPopup(auth, googleProvider)
+            .then(() => window.location.href = "plataforma.html")
+            .catch(() => {});
     });
 }
 
@@ -141,14 +170,14 @@ if (document.body.classList.contains('page-cadastro')) {
 // LÓGICA DA PÁGINA: PLATAFORMA
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
-
     // Contas com acesso oficial aos botões de Admin e Edição
     const admins = [
-    "suporteelevaresolucoes@gmail.com",
-    "pedroeliasm08@gmail.com"
-];
-    const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
+        "suporteeresolucoes@gmail.com",
+        "suporteelevaresolucoes@gmail.com",
+        "pedroeliasm08@gmail.com"
+    ];
 
+    const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
     let NUMERO_DO_ZAP = "5532999999999";
     let EMAIL_SUPORTE = "";
     let usuarioAtualUid = "";
@@ -171,12 +200,11 @@ if (document.body.classList.contains('page-plataforma')) {
                 document.getElementById('user-foto').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
                 document.getElementById('user-foto').style.display = "block";
 
-                // Verifica se o e-mail está na lista oficial
-statusAdminAtual = admins.includes(emailUsuarioAtual);
-
-if (statusAdminAtual) {
-    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'inline-block');
-}
+                // Verifica se o e-mail está na lista oficial de Admins
+                statusAdminAtual = admins.includes(emailUsuarioAtual);
+                if (statusAdminAtual) {
+                    document.querySelectorAll('.btn-admin').forEach(btn => btn.style.display = 'inline-block');
+                }
 
                 await carregarConfiguracoesGerais();
                 carregarEbooks(statusAdminAtual, usuarioAtualUid);
@@ -210,13 +238,14 @@ if (statusAdminAtual) {
                 if (document.getElementById('cfg-logo') && cfg.logoUrl) document.getElementById('cfg-logo').value = cfg.logoUrl;
                 if (document.getElementById('cfg-video') && cfg.videoUrl) document.getElementById('cfg-video').value = `https://youtu.be/${cfg.videoUrl}`;
             }
-        } catch (e) { console.error("Erro config:", e); }
+        } catch (e) {
+            console.error("Erro config:", e);
+        }
     }
 
     if (document.getElementById('btn-central-admin')) {
         const modalCentral = document.getElementById('modal-central-admin');
         document.getElementById('btn-central-admin').addEventListener('click', () => modalCentral.style.display = 'flex');
-
         document.getElementById('btn-salvar-config').addEventListener('click', async () => {
             const zapVal = document.getElementById('cfg-zap').value.replace(/\D/g, '');
             const emailVal = document.getElementById('cfg-email').value;
@@ -234,11 +263,13 @@ if (statusAdminAtual) {
                 }, { merge: true });
                 alert("✅ Configurações Globais atualizadas!");
                 window.location.reload();
-            } catch (e) { alert("Erro ao salvar: " + e.message); }
+            } catch (e) {
+                alert("Erro ao salvar: " + e.message);
+            }
         });
     }
 
-    // ===== 1. CARREGAR E-BOOKS (Com verificação de 7 Dias em Brasília) =====
+    // ===== 1. CARREGAR E-BOOKS (Com delimitação de Prévia) =====
     async function carregarEbooks(isAdmin, uid) {
         const listaEbooks = document.getElementById('lista-ebooks');
         if (!listaEbooks) return;
@@ -248,7 +279,6 @@ if (statusAdminAtual) {
             const dadosAcesso = await lerDadosAcessoCompletos(uid);
             const ebooksLiberados = dadosAcesso.produtos;
             const detalhesAcesso = dadosAcesso.detalhes;
-
             const querySnapshot = await getDocs(collection(db, "ebooks"));
             listaEbooks.innerHTML = '';
 
@@ -256,42 +286,61 @@ if (statusAdminAtual) {
                 const data = docSnap.data(), id = docSnap.id;
                 const fotoLimpa = extrairLinkImagem(data.fotoUrl);
                 const infoAcesso = detalhesAcesso[id] || null;
-                
+
+                // Delimita se este e-book tem a opção de Prévia marcada
+                const temPrevia = data.temPrevia !== undefined
+                    ? Boolean(data.temPrevia)
+                    : Boolean(data.pdfTesteUrl && String(data.pdfTesteUrl).trim() !== "");
+
                 let hasAccess = isAdmin || ebooksLiberados.includes(id);
                 let modoAcesso = isAdmin ? 'vitalicio' : (infoAcesso ? infoAcesso.tipo : (hasAccess ? 'vitalicio' : 'bloqueado'));
                 let expirado = false;
                 let textoBadge = '🔒 Bloqueado';
 
-                if (hasAccess && modoAcesso === 'teste7dias' && infoAcesso) {
+                // Se o e-book NÃO tem prévia marcada, não exibe nem libera prévia nele
+                if (!temPrevia && modoAcesso === 'teste7dias') {
+                    hasAccess = false;
+                    modoAcesso = 'bloqueado';
+                }
+
+                if (hasAccess && modoAcesso === 'teste7dias' && infoAcesso && temPrevia) {
                     if (infoAcesso.expiraEm && agoraMs > infoAcesso.expiraEm) {
                         hasAccess = false;
                         expirado = true;
-                        textoBadge = '⌛ Teste de 7 Dias Expirado';
+                        textoBadge = '⌛ Prévia Expirada';
                     } else if (infoAcesso.expiraEm) {
                         const diasRestantes = Math.max(1, Math.ceil((infoAcesso.expiraEm - agoraMs) / (1000 * 60 * 60 * 24)));
-                        textoBadge = `⏳ Teste: ${diasRestantes}d restante(s)`;
+                        textoBadge = `⏳ Prévia: ${diasRestantes}d restante(s)`;
                     } else {
-                        textoBadge = '⏳ Período de Teste (Ativar)';
+                        textoBadge = '⏳ Prévia (Ativar)';
                     }
                 }
 
                 let media = 0;
-                if (data.ratings && data.ratings.length > 0) media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
-                
+                if (data.ratings && data.ratings.length > 0) {
+                    media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
+                }
+
                 window.catalogoEbooks[id] = {
-                    ...data, id, fotoLimpa, media, hasAccess, modoAcesso, expirado, infoAcesso
+                    ...data, id, fotoLimpa, media, hasAccess, modoAcesso, expirado, infoAcesso, temPrevia
                 };
 
                 const tagsHtml = data.hash ? String(data.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
                 let estrelasHtml = '';
-                for (let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
+                for (let i = 1; i <= 5; i++) {
+                    estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
+                }
 
                 let badgeHtml = '';
                 if (!hasAccess) {
                     badgeHtml = `<div class="badge-lock" style="${expirado ? 'background:#ef4444;' : ''}">${textoBadge}</div>`;
-                } else if (modoAcesso === 'teste7dias') {
+                } else if (modoAcesso === 'teste7dias' && temPrevia) {
                     badgeHtml = `<div class="badge-lock" style="background:#0ea5e9; color:#fff;">${textoBadge}</div>`;
                 }
+
+                const statusPreviaAdmin = temPrevia
+                    ? (data.pdfTesteUrl ? '✅(Prévia OK)' : '⚠️(Falta Prévia)')
+                    : '🚫(Sem Prévia)';
 
                 const card = document.createElement('div');
                 card.className = 'card-ebook';
@@ -299,11 +348,11 @@ if (statusAdminAtual) {
                 card.innerHTML = `
                     <button class="btn-delete-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Apagar E-book">🗑️</button>
                     <button class="btn-edit-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Editar E-book">✏️</button>
-                    <button class="btn-teste-ebook" style="display: ${isAdmin ? 'flex' : 'none'};" title="Adicionar/Editar Ficheiro Teste (7 Dias)">📄</button>
+                    <button class="btn-teste-ebook" style="display: ${(isAdmin && temPrevia) ? 'flex' : 'none'};" title="Adicionar/Editar Prévia">📄</button>
                     ${badgeHtml}
                     <img src="${fotoLimpa}" alt="Capa" class="ebook-cover">
                     <div class="ebook-info">
-                        ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id} ${data.pdfTesteUrl ? '✅(Teste OK)' : '⚠️(Sem Teste)'}</span>` : ''}
+                        ${isAdmin ? `<span class="admin-id-tag">ID Prod: ${id} ${statusPreviaAdmin}</span>` : ''}
                         <div class="hashtags">${tagsHtml}</div>
                         <h3>${data.titulo || 'Sem Título'}</h3>
                         <p class="desc-preview">${data.desc || ''}</p>
@@ -342,10 +391,14 @@ if (statusAdminAtual) {
                 const videoId = extrairIdYoutube(data.ytUrl);
                 const hasAccess = isAdmin || cursosLiberados.includes(id);
                 let media = 0;
-                if (data.ratings && data.ratings.length > 0) media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
+                if (data.ratings && data.ratings.length > 0) {
+                    media = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
+                }
                 window.catalogoCursos[id] = { ...data, id, fotoLimpa, videoId, hasAccess };
                 let estrelasHtml = '';
-                for (let i = 1; i <= 5; i++) estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
+                for (let i = 1; i <= 5; i++) {
+                    estrelasHtml += `<span class="star ${i <= Math.round(media) ? 'active' : ''}" data-value="${i}">★</span>`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'card-ebook card-curso';
@@ -378,9 +431,14 @@ if (statusAdminAtual) {
     }
 
     // Ações Gerais
-    document.getElementById('btn-sair').addEventListener('click', () => { signOut(auth).then(() => { window.location.href = "index.html"; }); });
+    document.getElementById('btn-sair').addEventListener('click', () => {
+        signOut(auth).then(() => { window.location.href = "index.html"; });
+    });
+
     document.querySelectorAll('.fechar-modal').forEach(btn => {
-        btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; });
+        btn.addEventListener('click', e => {
+            e.target.closest('.modal-overlay').style.display = 'none';
+        });
     });
 
     const botoesNav = document.querySelectorAll('.nav-btn');
@@ -394,20 +452,54 @@ if (statusAdminAtual) {
         });
     });
 
-    // ===== ADD E EDITAR E-BOOK (Com campo pdfTesteUrl) =====
+    // ===== CONTROLE DAS CAIXINHAS DE MARCAR "PRÉVIA" (CRIAR E EDITAR) =====
+    const chkPreviaAdd = document.getElementById('chk-tem-previa-add');
+    const boxPreviaAdd = document.getElementById('box-previa-add');
+    if (chkPreviaAdd && boxPreviaAdd) {
+        chkPreviaAdd.addEventListener('change', () => {
+            boxPreviaAdd.style.display = chkPreviaAdd.checked ? 'block' : 'none';
+        });
+    }
+
+    const chkPreviaEdit = document.getElementById('chk-tem-previa-edit');
+    const boxPreviaEdit = document.getElementById('box-previa-edit');
+    if (chkPreviaEdit && boxPreviaEdit) {
+        chkPreviaEdit.addEventListener('change', () => {
+            boxPreviaEdit.style.display = chkPreviaEdit.checked ? 'block' : 'none';
+        });
+    }
+
+    // ===== ADD E EDITAR E-BOOK (Com opção de Prévia) =====
     if (document.getElementById('btn-add-ebook')) {
-        document.getElementById('btn-add-ebook').addEventListener('click', () => document.getElementById('modal-add-ebook').style.display = 'flex');
+        document.getElementById('btn-add-ebook').addEventListener('click', () => {
+            if (chkPreviaAdd) chkPreviaAdd.checked = false;
+            if (boxPreviaAdd) boxPreviaAdd.style.display = 'none';
+            if (document.getElementById('input-teste-ebook')) document.getElementById('input-teste-ebook').value = '';
+            document.getElementById('modal-add-ebook').style.display = 'flex';
+        });
+
         document.getElementById('btn-salvar-ebook').addEventListener('click', async () => {
             const f = extrairLinkImagem(document.getElementById('input-foto-ebook').value);
             const p = document.getElementById('input-pdf-ebook').value.trim();
-            const pt = document.getElementById('input-teste-ebook').value.trim();
+            const inputPrevia = document.getElementById('input-teste-ebook') ? document.getElementById('input-teste-ebook').value.trim() : "";
+            const temPrevia = chkPreviaAdd ? chkPreviaAdd.checked : Boolean(inputPrevia);
+            const pt = temPrevia ? inputPrevia : "";
             const t = document.getElementById('input-titulo-ebook').value.trim();
             const d = document.getElementById('input-desc-ebook').value.trim();
             const h = document.getElementById('input-hash-ebook').value.trim();
-            if (!f || !p || !t || !d) { alert("Preencha capa, link vitalício, título e descrição!"); return; }
+
+            if (!f || !p || !t || !d) {
+                alert("Preencha capa, link vitalício, título e descrição!");
+                return;
+            }
+            if (temPrevia && !pt) {
+                alert("⚠️ Você marcou que este e-book terá Prévia. Insira o link do PDF ou texto da Prévia!");
+                return;
+            }
+
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
             await setDoc(doc(db, "ebooks", novoId), {
-                titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, pdfTesteUrl: pt, ratings: []
+                titulo: t, desc: d, hash: h, fotoUrl: f, pdfUrl: p, temPrevia: temPrevia, pdfTesteUrl: pt, ratings: []
             });
             document.getElementById('modal-add-ebook').style.display = 'none';
             carregarEbooks(statusAdminAtual, usuarioAtualUid);
@@ -419,51 +511,52 @@ if (statusAdminAtual) {
             const id = document.getElementById('edit-id-ebook').value;
             const f = extrairLinkImagem(document.getElementById('edit-foto-ebook').value);
             const p = document.getElementById('edit-pdf-ebook').value.trim();
-            const pt = document.getElementById('edit-teste-ebook').value.trim();
+            const inputPreviaEdit = document.getElementById('edit-teste-ebook') ? document.getElementById('edit-teste-ebook').value.trim() : "";
+            const temPrevia = chkPreviaEdit ? chkPreviaEdit.checked : Boolean(inputPreviaEdit);
+            const pt = temPrevia ? inputPreviaEdit : "";
             const t = document.getElementById('edit-titulo-ebook').value.trim();
             const d = document.getElementById('edit-desc-ebook').value.trim();
             const h = document.getElementById('edit-hash-ebook').value.trim();
-            if (!id || !f || !p || !t || !d) { alert("Preencha todos os campos obrigatórios!"); return; }
+
+            if (!id || !f || !p || !t || !d) {
+                alert("Preencha todos os campos obrigatórios!");
+                return;
+            }
+            if (temPrevia && !pt) {
+                alert("⚠️ Você marcou que este e-book terá Prévia. Insira o link do PDF ou texto da Prévia!");
+                return;
+            }
+
             try {
                 await updateDoc(doc(db, "ebooks", id), {
-                    fotoUrl: f, pdfUrl: p, pdfTesteUrl: pt, titulo: t, desc: d, hash: h
+                    fotoUrl: f, pdfUrl: p, temPrevia: temPrevia, pdfTesteUrl: pt, titulo: t, desc: d, hash: h
                 });
                 alert("✅ E-book atualizado com sucesso!");
                 document.getElementById('modal-edit-ebook').style.display = 'none';
                 carregarEbooks(statusAdminAtual, usuarioAtualUid);
-            } catch (err) { alert("Erro ao atualizar: " + err.message); }
+            } catch (err) {
+                alert("Erro ao atualizar: " + err.message);
+            }
         });
     }
 
-    // ===== SALVAR FICHEIRO TESTE DIRETO PELO BOTÃO 📄 DO CARD =====
+    // ===== SALVAR PRÉVIA DIRETO PELO BOTÃO 📄 DO CARD =====
     if (document.getElementById('btn-salvar-ficheiro-teste')) {
         document.getElementById('btn-salvar-ficheiro-teste').addEventListener('click', async () => {
             const id = document.getElementById('teste-id-ebook').value;
             const pt = document.getElementById('input-rapido-teste-ebook').value.trim();
             if (!id) return;
             try {
-                await updateDoc(doc(db, "ebooks", id), { pdfTesteUrl: pt });
-                alert("📄 Ficheiro Teste de 7 Dias salvo com sucesso!");
+                await updateDoc(doc(db, "ebooks", id), {
+                    temPrevia: Boolean(pt),
+                    pdfTesteUrl: pt
+                });
+                alert("📄 Prévia salva com sucesso!");
                 document.getElementById('modal-ficheiro-teste').style.display = 'none';
                 carregarEbooks(statusAdminAtual, usuarioAtualUid);
-            } catch (err) { alert("Erro ao salvar ficheiro teste: " + err.message); }
-        });
-    }
-    if (document.getElementById('btn-confirmar-edit-ebook')) {
-        document.getElementById('btn-confirmar-edit-ebook').addEventListener('click', async () => {
-            const id = document.getElementById('edit-id-ebook').value;
-            const f = extrairLinkImagem(document.getElementById('edit-foto-ebook').value);
-            const p = document.getElementById('edit-pdf-ebook').value.trim();
-            const t = document.getElementById('edit-titulo-ebook').value.trim();
-            const d = document.getElementById('edit-desc-ebook').value.trim();
-            const h = document.getElementById('edit-hash-ebook').value.trim();
-            if (!id || !f || !p || !t || !d) { alert("Preencha todos os campos obrigatórios!"); return; }
-            try {
-                await updateDoc(doc(db, "ebooks", id), { fotoUrl: f, pdfUrl: p, titulo: t, desc: d, hash: h });
-                alert("✅ E-book atualizado com sucesso!");
-                document.getElementById('modal-edit-ebook').style.display = 'none';
-                carregarEbooks(statusAdminAtual, usuarioAtualUid);
-            } catch (err) { alert("Erro ao atualizar: " + err.message); }
+            } catch (err) {
+                alert("Erro ao salvar prévia: " + err.message);
+            }
         });
     }
 
@@ -476,9 +569,14 @@ if (statusAdminAtual) {
             const p = document.getElementById('input-pdf-curso').value;
             const t = document.getElementById('input-titulo-curso').value;
             const d = document.getElementById('input-desc-curso').value;
-            if (!f || !y || !p || !t || !d) { alert("Preencha todos os links e textos!"); return; }
+            if (!f || !y || !p || !t || !d) {
+                alert("Preencha todos os links e textos!");
+                return;
+            }
             const novoId = Math.floor(1000000 + Math.random() * 9000000).toString();
-            await setDoc(doc(db, "cursos", novoId), { titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: [] });
+            await setDoc(doc(db, "cursos", novoId), {
+                titulo: t, desc: d, ytUrl: y, pdfUrl: p, fotoUrl: f, ratings: []
+            });
             document.getElementById('modal-add-curso').style.display = 'none';
             carregarCursos(statusAdminAtual, usuarioAtualUid);
         });
@@ -492,45 +590,58 @@ if (statusAdminAtual) {
             const p = document.getElementById('edit-pdf-curso').value.trim();
             const t = document.getElementById('edit-titulo-curso').value.trim();
             const d = document.getElementById('edit-desc-curso').value.trim();
-            if (!id || !f || !y || !p || !t || !d) { alert("Preencha todos os campos!"); return; }
+            if (!id || !f || !y || !p || !t || !d) {
+                alert("Preencha todos os campos!");
+                return;
+            }
             try {
-                await updateDoc(doc(db, "cursos", id), { fotoUrl: f, ytUrl: y, pdfUrl: p, titulo: t, desc: d });
+                await updateDoc(doc(db, "cursos", id), {
+                    fotoUrl: f, ytUrl: y, pdfUrl: p, titulo: t, desc: d
+                });
                 alert("✅ Guia atualizado com sucesso!");
                 document.getElementById('modal-edit-curso').style.display = 'none';
                 carregarCursos(statusAdminAtual, usuarioAtualUid);
-            } catch (err) { alert("Erro ao atualizar: " + err.message); }
+            } catch (err) {
+                alert("Erro ao atualizar: " + err.message);
+            }
         });
     }
 
-    // ===== GERENCIAR ACESSOS: 7 DIAS, VITALÍCIO E BLOQUEIO DE FRAUDE =====
+    // ===== GERENCIAR ACESSOS: PRÉVIA MANUAL, VITALÍCIO E BLOQUEIO =====
     const modalAcesso = document.getElementById('modal-gerenciar-acessos');
     document.querySelectorAll('.btn-abrir-gerenciador').forEach(btn => {
         btn.addEventListener('click', () => modalAcesso.style.display = 'flex');
     });
 
-    // 1. Liberar Teste de 7 Dias (Exige Comprovante de 1ª Abertura e Abre no Leitor Blindado)
+    // 1. Liberar Prévia Manualmente para o Cliente
     if (document.getElementById('btn-liberar-7dias')) {
         document.getElementById('btn-liberar-7dias').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
-            if (!cId || !pId) { alert("Preencha o ID do Cliente e do Produto!"); return; }
+            if (!cId || !pId) {
+                alert("Preencha o ID do Cliente e do Produto!");
+                return;
+            }
+
+            if (window.catalogoEbooks[pId] && !window.catalogoEbooks[pId].temPrevia) {
+                alert("⚠️ Este e-book está configurado como SEM PRÉVIA. Marque a opção de Prévia ao editar o e-book antes de liberá-la para um cliente!");
+                return;
+            }
 
             const agoraMs = await obterAgoraServidorMs();
             const ref = doc(db, "acessos", cId);
             const snap = await getDoc(ref);
             let prod = snap.exists() ? (snap.data().produtos || []) : [];
             let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
-
             if (!prod.includes(pId)) prod.push(pId);
             detalhes[pId] = {
                 tipo: 'teste7dias',
                 liberadoEm: agoraMs,
-                expiraEm: null, // Começa a contar exatamente quando o cliente abrir e enviar o comprovante
+                expiraEm: null, // Inicia na 1ª abertura com envio do comprovante
                 comprovanteEnviado: false
             };
-
             await setDoc(ref, { produtos: prod, detalhesAcesso: detalhes }, { merge: true });
-            alert("⏳ Acesso de Teste (7 Dias Blindado) liberado! O prazo iniciará na 1ª abertura com envio do comprovante no WhatsApp.");
+            alert("⏳ Acesso à Prévia liberado para este cliente! O prazo iniciará na 1ª abertura com envio do comprovante no WhatsApp.");
             carregarEbooks(statusAdminAtual, usuarioAtualUid);
         });
     }
@@ -540,22 +651,22 @@ if (statusAdminAtual) {
         document.getElementById('btn-liberar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
-            if (!cId || !pId) { alert("Preencha o ID do Cliente e do Produto!"); return; }
-
+            if (!cId || !pId) {
+                alert("Preencha o ID do Cliente e do Produto!");
+                return;
+            }
             const ref = doc(db, "acessos", cId);
             const snap = await getDoc(ref);
             let prod = snap.exists() ? (snap.data().produtos || []) : [];
             let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
-
             if (!prod.includes(pId)) prod.push(pId);
             detalhes[pId] = { tipo: 'vitalicio', comprovanteEnviado: true };
-
             await setDoc(ref, { produtos: prod, detalhesAcesso: detalhes }, { merge: true });
             alert("👑 Acesso Vitalício Definitivo Liberado!");
             carregarEbooks(statusAdminAtual, usuarioAtualUid);
         });
 
-        // 3. Bloquear / Revogar por Fraude ou Reembolso
+        // 3. Bloquear / Revogar Acesso
         document.getElementById('btn-revogar-acesso').addEventListener('click', async () => {
             const cId = document.getElementById('input-cliente-id').value.trim();
             const pId = document.getElementById('input-produto-id').value.trim();
@@ -573,17 +684,27 @@ if (statusAdminAtual) {
         });
     }
 
-    // ===== FUNÇÃO DO LEITOR BLINDADO E PROTEÇÃO ANTI-PRINT =====
+    // ===== FUNÇÃO DO LEITOR BLINDADO (PRÉVIA) E PROTEÇÃO ANTI-PRINT =====
     function abrirLeitorBlindado(ebook, expiraEmMs) {
+        const conteudoTeste = (ebook.pdfTesteUrl && ebook.pdfTesteUrl.trim() !== "")
+            ? ebook.pdfTesteUrl.trim()
+            : ebook.pdfUrl;
+
+        if (!conteudoTeste) {
+            alert("⚠️ A Prévia deste e-book ainda não foi anexada pelo administrador.");
+            return;
+        }
+
         const modalLeitor = document.getElementById('modal-leitor-blindado');
         const iframePdf = document.getElementById('iframe-pdf-blindado');
+        const divTexto = document.getElementById('leitor-texto-blindado');
         const cortinaPreta = document.getElementById('cortina-anti-print');
         const marcaDagua = document.getElementById('marca-dagua-pdf');
 
-        document.getElementById('leitor-titulo').textContent = `📖 ${ebook.titulo}`;
+        document.getElementById('leitor-titulo').textContent = `📖 ${ebook.titulo} (Prévia)`;
         document.getElementById('leitor-status-tempo').textContent = expiraEmMs
-            ? `⏳ Expira em (Horário de Brasília): ${formatarDataBrasilia(expiraEmMs)}`
-            : `🛡️ Modo Protegido Elevare`;
+            ? `⏳ Prévia válida até (Horário de Brasília): ${formatarDataBrasilia(expiraEmMs)}`
+            : `🛡️ Modo Prévia Elevare`;
 
         // Preenche marca d'água com os dados do cliente para rastrear fotos de tela
         marcaDagua.innerHTML = '';
@@ -594,7 +715,20 @@ if (statusAdminAtual) {
             marcaDagua.appendChild(span);
         }
 
-        iframePdf.src = converterParaPreviewBlindado(ebook.pdfUrl);
+        // Verifica se o Admin colocou um link (https://) ou se colou o texto direto
+        if (/^https?:\/\//i.test(conteudoTeste)) {
+            if (divTexto) divTexto.style.display = 'none';
+            iframePdf.style.display = 'block';
+            iframePdf.src = converterParaPreviewBlindado(conteudoTeste);
+        } else {
+            iframePdf.src = "";
+            iframePdf.style.display = 'none';
+            if (divTexto) {
+                divTexto.style.display = 'block';
+                divTexto.textContent = conteudoTeste;
+            }
+        }
+
         cortinaPreta.style.display = 'none';
         modalLeitor.style.display = 'flex';
         document.getElementById('modal-detalhes-ebook').style.display = 'none';
@@ -634,7 +768,6 @@ if (statusAdminAtual) {
     document.getElementById('btn-retomar-leitura')?.addEventListener('click', () => {
         cortinaGlobal.style.display = 'none';
     });
-
     document.getElementById('btn-fechar-leitor')?.addEventListener('click', () => {
         document.getElementById('iframe-pdf-blindado').src = "";
         modalLeitorGlobal.style.display = 'none';
@@ -644,72 +777,36 @@ if (statusAdminAtual) {
     const listaEbooks = document.getElementById('lista-ebooks');
     if (listaEbooks) {
         listaEbooks.addEventListener('click', async (event) => {
-            // Abre o Ficheiro Teste (seja um Link PDF/Doc ou Texto Colado) dentro do Leitor Blindado
-    function abrirLeitorBlindado(ebook, expiraEmMs) {
-        const conteudoTeste = (ebook.pdfTesteUrl && ebook.pdfTesteUrl.trim() !== "")
-            ? ebook.pdfTesteUrl.trim()
-            : ebook.pdfUrl;
-
-        if (!conteudoTeste) {
-            alert("⚠️ O ficheiro de teste deste e-book ainda não foi anexado pelo administrador.");
-            return;
-        }
-
-        const modalLeitor = document.getElementById('modal-leitor-blindado');
-        const iframePdf = document.getElementById('iframe-pdf-blindado');
-        const divTexto = document.getElementById('leitor-texto-blindado');
-        const cortinaPreta = document.getElementById('cortina-anti-print');
-        const marcaDagua = document.getElementById('marca-dagua-pdf');
-
-        document.getElementById('leitor-titulo').textContent = `📖 ${ebook.titulo} (Versão de Teste 7 Dias)`;
-        document.getElementById('leitor-status-tempo').textContent = expiraEmMs
-            ? `⏳ Expira em (Horário de Brasília): ${formatarDataBrasilia(expiraEmMs)}`
-            : `🛡️ Modo Protegido Elevare`;
-
-        marcaDagua.innerHTML = '';
-        for (let i = 0; i < 12; i++) {
-            const span = document.createElement('span');
-            span.style = "transform: rotate(-28deg); color: #ffffff; font-size: 13px; font-weight: bold; padding: 20px; text-align: center;";
-            span.innerHTML = `${nomeUsuarioAtual}<br>${emailUsuarioAtual}<br>ID: ${usuarioAtualUid}`;
-            marcaDagua.appendChild(span);
-        }
-
-        // Verifica se o Admin colocou um link (https://) ou se colou o texto direto
-        if (/^https?:\/\//i.test(conteudoTeste)) {
-            divTexto.style.display = 'none';
-            iframePdf.style.display = 'block';
-            iframePdf.src = converterParaPreviewBlindado(conteudoTeste);
-        } else {
-            iframePdf.src = "";
-            iframePdf.style.display = 'none';
-            divTexto.style.display = 'block';
-            divTexto.textContent = conteudoTeste;
-        }
-
-        cortinaPreta.style.display = 'none';
-        modalLeitor.style.display = 'flex';
-        document.getElementById('modal-detalhes-ebook').style.display = 'none';
-    }
             const card = event.target.closest('.card-ebook');
             if (!card) return;
             const ebookId = card.getAttribute('data-id');
 
             if (event.target.closest('.btn-delete-ebook')) {
-                if (confirm("Apagar E-book?")) { await deleteDoc(doc(db, "ebooks", ebookId)); card.remove(); }
+                if (confirm("Apagar E-book?")) {
+                    await deleteDoc(doc(db, "ebooks", ebookId));
+                    card.remove();
+                }
                 return;
             }
 
             if (event.target.closest('.btn-edit-ebook')) {
-                if (event.target.closest('.btn-edit-ebook')) {
                 const eb = window.catalogoEbooks[ebookId];
                 if (!eb) return;
                 document.getElementById('edit-id-ebook').value = ebookId;
                 document.getElementById('edit-foto-ebook').value = eb.fotoUrl || '';
                 document.getElementById('edit-pdf-ebook').value = eb.pdfUrl || '';
-                document.getElementById('edit-teste-ebook').value = eb.pdfTesteUrl || '';
+                if (document.getElementById('edit-teste-ebook')) {
+                    document.getElementById('edit-teste-ebook').value = eb.pdfTesteUrl || '';
+                }
                 document.getElementById('edit-titulo-ebook').value = eb.titulo || '';
                 document.getElementById('edit-desc-ebook').value = eb.desc || '';
                 document.getElementById('edit-hash-ebook').value = eb.hash || '';
+
+                if (chkPreviaEdit && boxPreviaEdit) {
+                    chkPreviaEdit.checked = Boolean(eb.temPrevia);
+                    boxPreviaEdit.style.display = eb.temPrevia ? 'block' : 'none';
+                }
+
                 document.getElementById('modal-edit-ebook').style.display = 'flex';
                 return;
             }
@@ -723,17 +820,6 @@ if (statusAdminAtual) {
                 document.getElementById('modal-ficheiro-teste').style.display = 'flex';
                 return;
             }
-                const eb = window.catalogoEbooks[ebookId];
-                if (!eb) return;
-                document.getElementById('edit-id-ebook').value = ebookId;
-                document.getElementById('edit-foto-ebook').value = eb.fotoUrl || '';
-                document.getElementById('edit-pdf-ebook').value = eb.pdfUrl || '';
-                document.getElementById('edit-titulo-ebook').value = eb.titulo || '';
-                document.getElementById('edit-desc-ebook').value = eb.desc || '';
-                document.getElementById('edit-hash-ebook').value = eb.hash || '';
-                document.getElementById('modal-edit-ebook').style.display = 'flex';
-                return;
-            }
 
             if (event.target.closest('.ebook-rating-interactive')) {
                 if (event.target.classList.contains('star')) {
@@ -741,8 +827,10 @@ if (statusAdminAtual) {
                     const ref = doc(db, "ebooks", ebookId);
                     const snap = await getDoc(ref);
                     if (snap.exists()) {
-                        const notas = snap.data().ratings || []; notas.push(valor);
-                        await updateDoc(ref, { ratings: notas }); carregarEbooks(statusAdminAtual, usuarioAtualUid);
+                        const notas = snap.data().ratings || [];
+                        notas.push(valor);
+                        await updateDoc(ref, { ratings: notas });
+                        carregarEbooks(statusAdminAtual, usuarioAtualUid);
                     }
                 }
                 return;
@@ -756,40 +844,34 @@ if (statusAdminAtual) {
             document.getElementById('detalhe-tags').innerHTML = ebook.hash ? String(ebook.hash).split(',').map(t => t.trim() !== "" ? `<span class="hashtag">#${t.trim()}</span>` : "").join('') : '';
 
             const acaoContainer = document.getElementById('detalhe-acao');
-
             if (ebook.hasAccess) {
-                if (ebook.modoAcesso === 'teste7dias') {
+                if (ebook.modoAcesso === 'teste7dias' && ebook.temPrevia) {
                     const info = ebook.infoAcesso || {};
                     if (!info.comprovanteEnviado) {
-                        // 1ª Abertura: Exige envio de comprovante no WhatsApp para iniciar os 7 dias
-                        // Geramos a mensagem antes para o link ficar pronto
                         const msgComprovante = encodeURIComponent(
-                            `✅ *COMPROVANTE DE 1ª ABERTURA (GARANTIA 7 DIAS)*\n\n` +
+                            `✅ *COMPROVANTE DE 1ª ABERTURA (PRÉVIA)*\n\n` +
                             `📘 *E-book:* ${ebook.titulo} (ID: ${ebookId})\n` +
                             `👤 *Cliente:* ${nomeUsuarioAtual} (${emailUsuarioAtual})\n` +
                             `🆔 *ID Cliente:* ${usuarioAtualUid}\n` +
-                            `🕒 *Abertura de teste iniciada agora.*`
+                            `🕒 *Abertura da prévia iniciada agora.*`
                         );
                         const linkZap = `https://wa.me/${NUMERO_DO_ZAP}?text=${msgComprovante}`;
-
                         acaoContainer.innerHTML = `
                             <div style="background: rgba(14, 165, 233, 0.15); border: 1px solid #0ea5e9; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: #e2e8f0;">
-                                📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Garantia, envie o comprovante de abertura no WhatsApp abaixo.
+                                📋 <strong>Ativação Obrigatória (1ª Abertura):</strong> Para abrir o e-book no Modo Prévia, envie o comprovante de abertura no WhatsApp abaixo.
                             </div>
                             <a href="${linkZap}" target="_blank" id="btn-ativar-comprovante" class="btn-wpp-buy" style="display: block; text-align: center; text-decoration: none; width: 100%; border: none; cursor: pointer; background: #22c55e;">
-                                📲 Enviar Comprovante no WhatsApp e Abrir E-book
+                                📲 Enviar Comprovante no WhatsApp e Abrir Prévia
                             </a>
                         `;
-                        
+
                         document.getElementById('btn-ativar-comprovante').onclick = () => {
-                            // Fazemos a gravação no Firebase em segundo plano para não bloquear o redirecionamento
                             setTimeout(async () => {
                                 const agoraMs = await obterAgoraServidorMs();
                                 const expiraMs = agoraMs + SETE_DIAS_MS;
                                 const ref = doc(db, "acessos", usuarioAtualUid);
                                 const snap = await getDoc(ref);
                                 let detalhes = snap.exists() ? (snap.data().detalhesAcesso || {}) : {};
-
                                 detalhes[ebookId] = {
                                     tipo: 'teste7dias',
                                     abertoEm: agoraMs,
@@ -797,17 +879,15 @@ if (statusAdminAtual) {
                                     comprovanteEnviado: true
                                 };
                                 await setDoc(ref, { detalhesAcesso: detalhes }, { merge: true });
-
                                 await carregarEbooks(statusAdminAtual, usuarioAtualUid);
                                 abrirLeitorBlindado(ebook, expiraMs);
-                            }, 300); // 300ms de atraso para garantir que o WhatsApp abre primeiro
+                            }, 300);
                         };
                     } else {
-                        // Já enviou o comprovante e está dentro dos 7 dias
                         acaoContainer.innerHTML = `
-                            <p style="color: #38bdf8; font-size: 12px; margin-bottom: 8px;">⏳ Válido até: ${formatarDataBrasilia(info.expiraEm)} (Horário de Brasília)</p>
+                            <p style="color: #38bdf8; font-size: 12px; margin-bottom: 8px;">⏳ Prévia válida até: ${formatarDataBrasilia(info.expiraEm)} (Horário de Brasília)</p>
                             <button id="btn-abrir-blindado" class="btn-download-pdf" style="width: 100%; border: none; cursor: pointer; background: #0ea5e9;">
-                                🛡️ Ler E-book no Leitor Blindado (7 Dias)
+                                🛡️ Ler Prévia no Leitor Blindado
                             </button>
                         `;
                         document.getElementById('btn-abrir-blindado').onclick = () => abrirLeitorBlindado(ebook, info.expiraEm);
@@ -818,7 +898,7 @@ if (statusAdminAtual) {
                 }
             } else {
                 const textoBotao = ebook.expirado
-                    ? "⌛ Teste de 7 Dias Expirado — Solicitar Acesso Vitalício"
+                    ? "⌛ Prévia Expirada — Solicitar Acesso Vitalício"
                     : "🔒 Clique aqui e garanta já seu acesso";
                 const msgZap = encodeURIComponent(`Olá, quero garantir meu acesso ao E-book "${ebook.titulo}" (ID: ${ebookId}).\n\nMeu ID de Cliente é: ${usuarioAtualUid}\nO e-mail que uso no Google Drive é: [Digite seu e-mail aqui]`);
                 acaoContainer.innerHTML = `<a href="https://wa.me/${NUMERO_DO_ZAP}?text=${msgZap}" target="_blank" class="btn-wpp-buy">${textoBotao}</a>`;
@@ -836,7 +916,10 @@ if (statusAdminAtual) {
             const cursoId = card.getAttribute('data-id');
 
             if (event.target.closest('.btn-delete-curso')) {
-                if (confirm("Apagar Curso?")) { await deleteDoc(doc(db, "cursos", cursoId)); card.remove(); }
+                if (confirm("Apagar Curso?")) {
+                    await deleteDoc(doc(db, "cursos", cursoId));
+                    card.remove();
+                }
                 return;
             }
 
@@ -859,8 +942,10 @@ if (statusAdminAtual) {
                     const ref = doc(db, "cursos", cursoId);
                     const snap = await getDoc(ref);
                     if (snap.exists()) {
-                        const notas = snap.data().ratings || []; notas.push(valor);
-                        await updateDoc(ref, { ratings: notas }); carregarCursos(statusAdminAtual, usuarioAtualUid);
+                        const notas = snap.data().ratings || [];
+                        notas.push(valor);
+                        await updateDoc(ref, { ratings: notas });
+                        carregarCursos(statusAdminAtual, usuarioAtualUid);
                     }
                 }
                 return;
@@ -870,7 +955,6 @@ if (statusAdminAtual) {
             if (!curso) return;
             document.getElementById('detalhe-curso-titulo').textContent = curso.titulo;
             document.getElementById('detalhe-curso-desc').textContent = curso.desc;
-
             const iframe = document.getElementById('detalhe-curso-video');
             if (curso.videoId) {
                 iframe.src = `https://www.youtube.com/embed/${curso.videoId}?autoplay=1`;
@@ -896,18 +980,17 @@ if (statusAdminAtual) {
         }
     }
 }
+
 // ==========================================
 // CONTROLE INDEPENDENTE DO MODAL DE TERMOS
 // ==========================================
 if (document.body.classList.contains('page-plataforma')) {
     onAuthStateChanged(auth, async (user) => {
         if (!user) return;
-
         const modal = document.getElementById('modal-termos-elevare');
         const chkUso = document.getElementById('chk-aceite-uso');
         const chkGarantia = document.getElementById('chk-aceite-garantia');
         const btnAceitar = document.getElementById('btn-aceitar-termos');
-
         if (!modal || !chkUso || !chkGarantia || !btnAceitar) return;
 
         const chaveEmail = `elevare_aceite_v1_${user.email || user.uid}`;
@@ -933,31 +1016,26 @@ if (document.body.classList.contains('page-plataforma')) {
             console.warn("Verificação de termos local ativa.");
         }
 
-        // 4. Libera o botão "Aceitar e Continuar" somente quando as duas caixas estão marcadas
+        // 4. Libera o botão somente quando as duas caixas estão marcadas
         const atualizarEstadoBotao = () => {
             btnAceitar.disabled = !(chkUso.checked && chkGarantia.checked);
         };
-
         chkUso.addEventListener('change', atualizarEstadoBotao);
         chkGarantia.addEventListener('change', atualizarEstadoBotao);
 
         // 5. Salva a escolha para o e-mail atual e fecha o modal
         btnAceitar.onclick = async () => {
             if (!chkUso.checked || !chkGarantia.checked) return;
-
             btnAceitar.textContent = "Salvando...";
             btnAceitar.disabled = true;
-
             localStorage.setItem(chaveEmail, 'true');
             modal.style.display = 'none';
-
             try {
                 const dataAceite = new Intl.DateTimeFormat('pt-BR', {
                     timeZone: 'America/Sao_Paulo',
                     day: '2-digit', month: '2-digit', year: 'numeric',
                     hour: '2-digit', minute: '2-digit', second: '2-digit'
                 }).format(new Date());
-
                 await setDoc(doc(db, "acessos", user.uid), {
                     termosAceitos: true,
                     emailCliente: user.email || "",
