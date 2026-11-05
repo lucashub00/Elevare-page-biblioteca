@@ -163,7 +163,7 @@ if (document.body.classList.contains('page-plataforma')) {
         if (user) {
             try {
                 usuarioAtualUid = user.uid || "SemID";
-                emailUsuarioAtual = user.email || "";
+                emailUsuarioAtual = (user.email || "").toLowerCase().trim();
                 nomeUsuarioAtual = user.displayName || (emailUsuarioAtual ? emailUsuarioAtual.split('@')[0] : "Visitante");
 
                 document.getElementById('user-nome').textContent = nomeUsuarioAtual;
